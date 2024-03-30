@@ -1,11 +1,14 @@
 [package]
 name = "DCA"
 version = "0.0.1"
-published-at = "0x"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.19.1" }
+MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "framework/mainnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+SuiTears = { git = "https://github.com/interest-protocol/suitears.git", subdir = "contracts", rev = "main" }
 
 [addresses]
-dca = "0x"
-
+dca = "0x0"
+std = "0x1"
+sui = "0x2"
+suitears = "0x2085d89f5df00bf6d628748b02a0f23f5d512dc4a23e22d74efeb2c8c86005e0"
