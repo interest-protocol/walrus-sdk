@@ -69,12 +69,12 @@ module dca::trade_policy {
     dca: &mut DCA<Input, Output>,
     clock: &Clock,
     request: Request<Input, Output>,
-    ctx: &mut TxContext    
+    ctx: &mut TxContext
   ) {
-    let Request { 
-      dca_address, 
-      rule, 
-      whitelist, 
+    let Request {
+      dca_address,
+      rule,
+      whitelist,
       output
     } = request;
 
@@ -83,7 +83,7 @@ module dca::trade_policy {
     assert!(vec_set::contains(&whitelist, &option::destroy_some(rule)), EInvalidRule);
 
     dca::resolve(dca, clock, coin::from_balance(output, ctx));
-  } 
+  }
 
   // === Public-View Functions ===
 
@@ -113,5 +113,5 @@ module dca::trade_policy {
     vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
   }
 
-  // === Test Functions === 
+  // === Test Functions ===
 }
