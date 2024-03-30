@@ -1,9 +1,8 @@
 module dca::dca {
   // === Imports ===
-  use std::option::{Self, Option, none, is_some};
+  use std::option::{Self, Option};
 
   use sui::event;
-  use sui::sui::SUI;
   use sui::coin::{Coin, Self};
   use sui::object::{Self, UID};
   use sui::clock::{Self, Clock};
@@ -11,7 +10,7 @@ module dca::dca {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::{public_transfer, share_object};
 
-  use suitears::math64::{div_down, min};
+  use suitears::math64::{div_down, mul_div_up, min};
 
   // === Friends ===
 
@@ -25,6 +24,7 @@ module dca::dca {
   const EInvalidEvery: u64 = 3;
   const EInvalidTimestamp: u64 = 4;
   const ETooEarly: u64 = 5;
+  const EInvalidFee: u64 = 6;
 
   // === Constants ===
   
@@ -33,6 +33,8 @@ module dca::dca {
   const DAY: u64 = 86400; // 3600 * 24
   const WEEK: u64 = 604800; // 86400 * 7
   const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound 
+  const MAX_FEE: u64 = 30000000; // 3%
+  const PRECISION: u64 = 1000000000;
 
   // === Structs ===
 
@@ -40,10 +42,12 @@ module dca::dca {
     id: UID,
     /// The original owner of the funds
     owner: address,
+    /// Account that gets the fee
+    delegatee: address,
     /// Start timestamp determined by the Clock time of when the init
     /// transaction took place
     start_time_ms: u64,
-    /// Last time funds were withdrawn from the balance
+    /// Last trade time
     last_time_ms: u64,
     /// How many units of time, define in terms of time scale
     every: u64,
@@ -60,11 +64,12 @@ module dca::dca {
     cooldown: u64,
     /// Balance to be invested over time. This amount can increase or decrease
     input_balance: Balance<Input>,
-    split_allocation: u64, // amonut to withdraw each time
+    amount_per_trade: u64,
     min_output: Option<u64>,
     active: bool,
-    gas: Balance<SUI>,
-    total_output: u64
+    /// Visual purposes
+    total_output: u64,
+    fee_percent: u64
   }
 
   // === Public-Mutative Functions ===
@@ -72,17 +77,20 @@ module dca::dca {
   public fun start<Input, Output>(
     clock: &Clock,
     coin_in: Coin<Input>,
-    gas: Coin<SUI>,
     every: u64,
     number_of_orders: u64,
     time_scale: u8,
     min_output: u64,
+    fee_percent: u64,
+    delegatee: address,
     ctx: &mut TxContext
   ) {
+    assert!(MAX_FEE > fee_percent, EInvalidFee);
     assert_every(every, time_scale);
+
     let start_time_ms = timestamp_s(clock);
 
-    let split_allocation = div_down(coin::value(&coin_in), number_of_orders);
+    let amount_per_trade = div_down(coin::value(&coin_in), number_of_orders);
 
     let dca = DCA<Input, Output> {
       id: object::new(ctx),
@@ -93,12 +101,13 @@ module dca::dca {
       remaining_orders: number_of_orders,
       time_scale,
       input_balance: coin::into_balance(coin_in),
-      split_allocation,
+      amount_per_trade,
       min_output: if (min_output == 0) option::none() else option::some(min_output),
       active: true,
-      cooldown: convert_to_timestamp(every, time_scale),
-      gas: coin::into_balance(gas),
-      total_output: 0
+      cooldown: convert_to_timestamp(time_scale) * every,
+      total_output: 0,
+      fee_percent,
+      delegatee
     };
 
     share_object(dca);
@@ -108,6 +117,7 @@ module dca::dca {
     self: &mut DCA<Input, Output>,
     clock: &Clock,
     coin_out: Coin<Output>,
+    ctx: &mut TxContext
   ) {
     assert!(self.active, EInactive);
 
@@ -117,13 +127,17 @@ module dca::dca {
 
     let output_value = coin::value(&coin_out);
 
-    if (is_some(&self.min_output))
+    if (option::is_some(&self.min_output))
       assert!(output_value >= option::destroy_some(self.min_output), ESlippage);
 
     self.remaining_orders = self.remaining_orders - 1;
 
     if (self.remaining_orders == 0 || balance::value(&self.input_balance) == 0)
       self.active = false;
+
+    let coin_fee = coin::split(&mut coin_out, mul_div_up(output_value, self.fee_percent, PRECISION), ctx);
+
+    public_transfer(coin_fee, self.delegatee);
 
     public_transfer(coin_out, self.owner);
   }
@@ -136,23 +150,23 @@ module dca::dca {
 
   public(friend) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
     let value = balance::value(&self.input_balance);
-    coin::take(&mut self.input_balance, min(self.split_allocation, value), ctx)
+    coin::take(&mut self.input_balance, min(self.amount_per_trade, value), ctx)
   }
 
   // === Private Functions ===
 
-  fun convert_to_timestamp(every: u64, time_scale: u8): u64 {
-    if (time_scale == 0) return 1 * every;
+  fun convert_to_timestamp(time_scale: u8): u64 {
+    if (time_scale == 0) return 1;
 
-    if (time_scale == 1) return MINUTE * every;
+    if (time_scale == 1) return MINUTE;
 
-    if (time_scale == 2) return HOUR * every;
+    if (time_scale == 2) return HOUR;
 
-    if (time_scale == 3) return DAY * every;
+    if (time_scale == 3) return DAY;
 
-    if (time_scale == 4) return WEEK * every;
+    if (time_scale == 4) return WEEK;
 
-    if (time_scale == 5) return MONTH * every;
+    if (time_scale == 5) return MONTH;
 
     abort EInvalidTimestamp
   }

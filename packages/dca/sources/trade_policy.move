@@ -9,7 +9,6 @@ module dca::trade_policy {
   use sui::transfer::transfer;
   use sui::object::{Self, UID};
   use sui::vec_set::{Self, VecSet};
-  use sui::balance::{Self, Balance};
   use sui::tx_context::{Self, TxContext};
 
   use dca::dca::{Self, DCA};
@@ -32,11 +31,11 @@ module dca::trade_policy {
     whitelist: VecSet<TypeName>
   }
 
-  struct Request<phantom Input, phantom Output> {
+  struct Request<phantom Output> {
     dca_address: address,
     rule: Option<TypeName>,
     whitelist: VecSet<TypeName>,
-    output: Balance<Output>
+    output: Coin<Output>
   }
 
   // === Public-Mutative Functions ===
@@ -49,26 +48,27 @@ module dca::trade_policy {
     self: &TradePolicy,
     dca: &mut DCA<Input, Output>,
     ctx: &mut TxContext
-  ): (Request<Input, Output>, Coin<Input>) {
-    let req = Request {
+  ): (Request<Output>, Coin<Input>) {
+    let request = Request {
       dca_address: object::id_address(dca),
       rule: option::none(),
       whitelist: self.whitelist,
-      output: balance::zero()
+      output: coin::zero(ctx)
     };
 
-    (req, dca::take(dca, ctx))
+    (request, dca::take(dca, ctx))
   }
 
-  public fun add_rule<Witness, Input, Output>(request: &mut Request<Input, Output>) {
+  public fun add<Witness, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
     assert!(option::is_none(&request.rule), ERuleAlreadyAdded);
     request.rule = option::some(type_name::get<Witness>());
+    coin::join(&mut request.output, output);
   }
 
   public fun confirm_request<Input, Output>(
     dca: &mut DCA<Input, Output>,
     clock: &Clock,
-    request: Request<Input, Output>,
+    request: Request<Output>,
     ctx: &mut TxContext
   ) {
     let Request {
@@ -82,7 +82,7 @@ module dca::trade_policy {
     assert!(option::is_some(&rule), EMustHaveARule);
     assert!(vec_set::contains(&whitelist, &option::destroy_some(rule)), EInvalidRule);
 
-    dca::resolve(dca, clock, coin::from_balance(output, ctx));
+    dca::resolve(dca, clock, output, ctx);
   }
 
   // === Public-View Functions ===
@@ -91,16 +91,16 @@ module dca::trade_policy {
     vec_set::into_keys(self.whitelist)
   }
 
-  public fun dca_address<Input, Output>(req: &Request<Input, Output>): address {
-    req.dca_address
+  public fun dca_address<Output>(request: &Request<Output>): address {
+    request.dca_address
   }
 
-  public fun rule<Input, Output>(req: &Request<Input, Output>): Option<TypeName> {
-    req.rule
+  public fun rule<Output>(request: &Request<Output>): Option<TypeName> {
+    request.rule
   }
 
-  public fun output<Input, Output>(req: &Request<Input, Output>): u64 {
-    balance::value(&req.output)
+  public fun output<Output>(request: &Request<Output>): u64 {
+    coin::value(&request.output)
   }
 
   // === Admin Functions ===
