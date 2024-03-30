@@ -262,7 +262,7 @@ module dca::dca {
 
     if (time_scale == 5) return MONTH;
 
-    abort EInvalidTimeScale
+    abort EInvalidTimestamp
   }
 
   fun timestamp_s(clock: &Clock): u64 {

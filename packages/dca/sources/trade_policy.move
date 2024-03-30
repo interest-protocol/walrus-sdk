@@ -89,8 +89,8 @@ module dca::trade_policy {
       whitelist,
       output,
       owner: _,
-      max,
-      min
+      max: _,
+      min: _
     } = request;
 
     assert!(object::id_address(dca) == dca_address, EInvalidDcaAddress);

@@ -2,34 +2,15 @@
 
 [move]
 version = 0
-manifest_digest = "5FD4DD8FACEA812AEAF4BE2D601DB968BDE13BDE63200E5ED702E3526E71CDC0"
-deps_digest = "CAFAD8A7CF51067FB4358215BECB86BD100DD64E57C2AC8A7AE7D74B688F5965"
+manifest_digest = "56A38E2A093E50530D93A255A97152A42AB76A6A8A5482A4358DA2FDDE4FD8FF"
+deps_digest = "52B406A7A21811BEF51751CF88DA0E76DAEFFEAC888D4F4060B1A72BBE7D8D35"
 
 dependencies = [
-  { name = "AftermathAmm" },
   { name = "Cetus" },
   { name = "CetusClmm" },
   { name = "DCA" },
-  { name = "FlowXAMM" },
-  { name = "Sui" },
-  { name = "TurbosCLMM" },
-]
-
-[[move.package]]
-name = "AftermathAmm"
-source = { local = "../interfaces/aftermath/amm/amm" }
-
-dependencies = [
-  { name = "AmmMath" },
-  { name = "ProtocolFeeVault" },
-  { name = "Sui" },
-]
-
-[[move.package]]
-name = "AmmMath"
-source = { local = "../interfaces/aftermath/amm/amm-math" }
-
-dependencies = [
+  { name = "DeepBook" },
+  { name = "MoveStdlib" },
   { name = "Sui" },
 ]
 
@@ -57,22 +38,17 @@ name = "DCA"
 source = { local = "../dca" }
 
 dependencies = [
+  { name = "MoveStdlib" },
   { name = "Sui" },
+  { name = "SuiTears" },
 ]
 
 [[move.package]]
-name = "FlowXAMM"
-source = { local = "../interfaces/flow_x" }
+name = "DeepBook"
+source = { git = "https://github.com/MystenLabs/sui.git", rev = "framework/mainnet", subdir = "crates/sui-framework/packages/deepbook" }
 
 dependencies = [
-  { name = "Sui" },
-]
-
-[[move.package]]
-name = "InsuranceFund"
-source = { local = "../interfaces/aftermath/amm/amm-insurance-fund" }
-
-dependencies = [
+  { name = "MoveStdlib" },
   { name = "Sui" },
 ]
 
@@ -94,61 +70,26 @@ dependencies = [
 
 [[move.package]]
 name = "MoveStdlib"
-source = { git = "https://github.com/MystenLabs/sui.git", rev = "mainnet-v1.19.1", subdir = "crates/sui-framework/packages/move-stdlib" }
-
-[[move.package]]
-name = "ProtocolFeeVault"
-source = { local = "../interfaces/aftermath/amm/amm-protocol-fee-vault" }
-
-dependencies = [
-  { name = "InsuranceFund" },
-  { name = "ReferralVault" },
-  { name = "Sui" },
-  { name = "Treasury" },
-  { name = "utilities" },
-]
-
-[[move.package]]
-name = "ReferralVault"
-source = { local = "../interfaces/aftermath/amm/amm-referral-vault" }
-
-dependencies = [
-  { name = "Sui" },
-]
+source = { git = "https://github.com/MystenLabs/sui.git", rev = "framework/mainnet", subdir = "crates/sui-framework/packages/move-stdlib" }
 
 [[move.package]]
 name = "Sui"
-source = { git = "https://github.com/MystenLabs/sui.git", rev = "mainnet-v1.19.1", subdir = "crates/sui-framework/packages/sui-framework" }
+source = { git = "https://github.com/MystenLabs/sui.git", rev = "framework/mainnet", subdir = "crates/sui-framework/packages/sui-framework" }
 
 dependencies = [
   { name = "MoveStdlib" },
 ]
 
 [[move.package]]
-name = "Treasury"
-source = { local = "../interfaces/aftermath/amm/amm-treasury" }
+name = "SuiTears"
+source = { git = "https://github.com/interest-protocol/suitears.git", rev = "main", subdir = "contracts" }
 
 dependencies = [
-  { name = "Sui" },
-]
-
-[[move.package]]
-name = "TurbosCLMM"
-source = { local = "../interfaces/turbos" }
-
-dependencies = [
-  { name = "Sui" },
-]
-
-[[move.package]]
-name = "utilities"
-source = { local = "../interfaces/aftermath/utility/utilities" }
-
-dependencies = [
+  { name = "MoveStdlib" },
   { name = "Sui" },
 ]
 
 [move.toolchain-version]
-compiler-version = "1.19.1"
+compiler-version = "1.21.0"
 edition = "legacy"
 flavor = "sui"
