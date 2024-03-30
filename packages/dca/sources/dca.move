@@ -262,7 +262,7 @@ module dca::dca {
 
     if (time_scale == 5) return MONTH;
 
-    abort EInvalidTimestamp
+    abort EInvalidTimeScale
   }
 
   fun timestamp_s(clock: &Clock): u64 {
@@ -297,7 +297,7 @@ module dca::dca {
         // Upper bound --> 12 months
         every >= 1 && every <= 12
       } else {
-        abort(EInvalidTimeScale)
+        abort EInvalidTimeScale
       }
     };
 
