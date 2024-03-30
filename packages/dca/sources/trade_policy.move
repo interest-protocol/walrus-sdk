@@ -1,15 +1,15 @@
 module dca::trade_policy {
   // === Imports ===
-	use std::option::{Self, Option};
+  use std::option::{Self, Option};
 
-	use std::type_name::{Self, TypeName};
+  use std::type_name::{Self, TypeName};
 
   use sui::clock::Clock;
   use sui::coin::{Self, Coin};
   use sui::transfer::transfer;
   use sui::object::{Self, UID};
-	use sui::vec_set::{Self, VecSet};
-	use sui::balance::{Self, Balance};
+  use sui::vec_set::{Self, VecSet};
+  use sui::balance::{Self, Balance};
   use sui::tx_context::{Self, TxContext};
 
   use dca::dca::{Self, DCA};
@@ -23,21 +23,21 @@ module dca::trade_policy {
 
   // === Structs ===
 
-	struct Admin has key, store {
-		id: UID
-	}
+  struct Admin has key, store {
+    id: UID
+  }
 
-	struct TradePolicy has key {
-		id: UID,
-		whitelist: VecSet<TypeName>
-	}
+  struct TradePolicy has key {
+    id: UID,
+    whitelist: VecSet<TypeName>
+  }
 
-	struct Request<phantom Input, phantom Output> {
+  struct Request<phantom Input, phantom Output> {
     dca_address: address,
-		rule: Option<TypeName>,
-		whitelist: VecSet<TypeName>,
-		output: Balance<Output>
-	}
+    rule: Option<TypeName>,
+    whitelist: VecSet<TypeName>,
+    output: Balance<Output>
+  }
 
   // === Public-Mutative Functions ===
 
@@ -45,20 +45,20 @@ module dca::trade_policy {
     transfer(Admin { id: object::new(ctx) }, tx_context::sender(ctx));
   }
 
-	public fun request<Input, Output>(
-		self: &TradePolicy,
+  public fun request<Input, Output>(
+    self: &TradePolicy,
     dca: &mut DCA<Input, Output>,
     ctx: &mut TxContext
-	): (Request<Input, Output>, Coin<Input>) {
-		let req = Request {
+  ): (Request<Input, Output>, Coin<Input>) {
+    let req = Request {
       dca_address: object::id_address(dca),
-			rule: option::none(),
-			whitelist: self.whitelist,
-			output: balance::zero()
-		};
+      rule: option::none(),
+      whitelist: self.whitelist,
+      output: balance::zero()
+    };
 
     (req, dca::take(dca, ctx))
-	}
+  }
 
   public fun add_rule<Witness, Input, Output>(request: &mut Request<Input, Output>) {
     assert!(option::is_none(&request.rule), ERuleAlreadyAdded);
@@ -105,13 +105,13 @@ module dca::trade_policy {
 
   // === Admin Functions ===
 
-	public fun add<Witness: drop>(self: &mut TradePolicy) {
-		vec_set::insert(&mut self.whitelist, type_name::get<Witness>());
-	}
+  public fun add<Witness: drop>(self: &mut TradePolicy) {
+    vec_set::insert(&mut self.whitelist, type_name::get<Witness>());
+  }
 
-	public fun remove<Witness: drop>(self: &mut TradePolicy) {
-		vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
-	}
+  public fun remove<Witness: drop>(self: &mut TradePolicy) {
+    vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
+  }
 
   // === Test Functions === 
 }
