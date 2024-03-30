@@ -1,8 +1,6 @@
 module dca::dca {
   // === Imports ===
-  use std::option::{Self, Option};
 
-  use sui::event;
   use sui::coin::{Coin, Self};
   use sui::object::{Self, UID};
   use sui::clock::{Self, Clock};
@@ -10,7 +8,7 @@ module dca::dca {
   use sui::tx_context::{Self, TxContext};
   use sui::transfer::{public_transfer, share_object};
 
-  use suitears::math64::{div_down, mul_div_up, min};
+  use suitears::math64;
 
   // === Friends ===
 
@@ -25,6 +23,8 @@ module dca::dca {
   const EInvalidTimestamp: u64 = 4;
   const ETooEarly: u64 = 5;
   const EInvalidFee: u64 = 6;
+  const EMustBeTheOwner: u64 = 7;
+  const EMustBeInactive: u64 = 8;
 
   // === Constants ===
   
@@ -46,9 +46,9 @@ module dca::dca {
     delegatee: address,
     /// Start timestamp determined by the Clock time of when the init
     /// transaction took place
-    start_time_ms: u64,
+    start_timestamp: u64,
     /// Last trade time
-    last_time_ms: u64,
+    last_trade_timestamp: u64,
     /// How many units of time, define in terms of time scale
     every: u64,
     /// How many orders remain to be executed
@@ -65,9 +65,9 @@ module dca::dca {
     /// Balance to be invested over time. This amount can increase or decrease
     input_balance: Balance<Input>,
     amount_per_trade: u64,
-    min_output: Option<u64>,
+    min: u64,
+    max: u64,
     active: bool,
-    /// Visual purposes
     total_output: u64,
     fee_percent: u64
   }
@@ -80,7 +80,8 @@ module dca::dca {
     every: u64,
     number_of_orders: u64,
     time_scale: u8,
-    min_output: u64,
+    min: u64,
+    max: u64,
     fee_percent: u64,
     delegatee: address,
     ctx: &mut TxContext
@@ -88,21 +89,22 @@ module dca::dca {
     assert!(MAX_FEE > fee_percent, EInvalidFee);
     assert_every(every, time_scale);
 
-    let start_time_ms = timestamp_s(clock);
+    let start_timestamp = timestamp_s(clock);
 
-    let amount_per_trade = div_down(coin::value(&coin_in), number_of_orders);
+    let amount_per_trade = math64::div_down(coin::value(&coin_in), number_of_orders);
 
     let dca = DCA<Input, Output> {
       id: object::new(ctx),
       owner: tx_context::sender(ctx),
-      start_time_ms,
-      last_time_ms: start_time_ms,
+      start_timestamp,
+      last_trade_timestamp: start_timestamp,
       every,
       remaining_orders: number_of_orders,
       time_scale,
       input_balance: coin::into_balance(coin_in),
       amount_per_trade,
-      min_output: if (min_output == 0) option::none() else option::some(min_output),
+      min,
+      max,
       active: true,
       cooldown: convert_to_timestamp(time_scale) * every,
       total_output: 0,
@@ -121,36 +123,128 @@ module dca::dca {
   ) {
     assert!(self.active, EInactive);
 
-    let time_elapsed = timestamp_s(clock);
+    let current_timestamp = timestamp_s(clock);
 
-    assert!(time_elapsed >= self.cooldown, ETooEarly);
+    assert!(current_timestamp - self.last_trade_timestamp >= self.cooldown, ETooEarly);
 
     let output_value = coin::value(&coin_out);
 
-    if (option::is_some(&self.min_output))
-      assert!(output_value >= option::destroy_some(self.min_output), ESlippage);
+    assert!(output_value >= self.min && self.max >= output_value, ESlippage);
 
     self.remaining_orders = self.remaining_orders - 1;
 
     if (self.remaining_orders == 0 || balance::value(&self.input_balance) == 0)
       self.active = false;
 
-    let coin_fee = coin::split(&mut coin_out, mul_div_up(output_value, self.fee_percent, PRECISION), ctx);
+    let coin_fee = coin::split(&mut coin_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION), ctx);
 
     public_transfer(coin_fee, self.delegatee);
 
     public_transfer(coin_out, self.owner);
   }
 
+  public fun stop<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext) {
+    assert!(tx_context::sender(ctx) == self.owner, EMustBeTheOwner);
+    self.active = false;
+  }
+
+  public fun destroy<Input, Output>(self: DCA<Input, Output>, ctx: &mut TxContext) {
+    let DCA { 
+      id,
+      owner,
+      delegatee: _,
+      start_timestamp: _,
+      last_trade_timestamp: _,
+      every: _,
+      remaining_orders: _,
+      time_scale: _,
+      cooldown: _,
+      input_balance,
+      amount_per_trade: _,
+      min: _,
+      max: _,
+      active,
+      total_output: _,
+      fee_percent: _  
+     } = self;
+
+     assert!(!active, EMustBeInactive);
+
+     if (balance::value(&input_balance) == 0)
+      balance::destroy_zero(input_balance)
+    else 
+      public_transfer(coin::from_balance(input_balance, ctx), owner);
+    
+    object::delete(id);
+  }
+
   // === Public-View Functions ===
 
-  // === Admin Functions ===
+  public fun owner<Input, Output>(self: &DCA<Input, Output>): address {
+    self.owner
+  }
+
+  public fun delegatee<Input, Output>(self: &DCA<Input, Output>): address {
+    self.delegatee
+  }
+
+  public fun start_timestamp<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.start_timestamp
+  }
+
+  public fun last_trade_timestamp<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.last_trade_timestamp
+  }
+
+  public fun every<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.every
+  }
+
+  public fun remaining_orders<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.remaining_orders
+  }
+
+  public fun time_scale<Input, Output>(self: &DCA<Input, Output>): u8 {
+    self.time_scale
+  }
+
+  public fun cooldown<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.cooldown
+  }
+
+  public fun input_balance_value<Input, Output>(self: &DCA<Input, Output>): u64 {
+    balance::value(&self.input_balance)
+  }
+
+  public fun amount_per_trade<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.amount_per_trade
+  }
+
+  public fun min<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.min
+  }
+
+  public fun max<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.max
+  }
+
+  public fun active<Input, Output>(self: &DCA<Input, Output>): bool {
+    self.active
+  }
+
+  public fun total_output<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.total_output
+  }
+
+  public fun fee_percent<Input, Output>(self: &DCA<Input, Output>): u64 {
+    self.fee_percent
+  }
 
   // === Public-Friend Functions ===
 
   public(friend) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
     let value = balance::value(&self.input_balance);
-    coin::take(&mut self.input_balance, min(self.amount_per_trade, value), ctx)
+    coin::take(&mut self.input_balance, math64::min(self.amount_per_trade, value), ctx)
   }
 
   // === Private Functions ===

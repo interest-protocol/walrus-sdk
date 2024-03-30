@@ -19,6 +19,7 @@ module dca::trade_policy {
   const ERuleAlreadyAdded: u64 = 1;
   const EMustHaveARule: u64 = 2;
   const EInvalidRule: u64 = 3;
+  const ESlippage: u64 = 4;
 
   // === Structs ===
 
@@ -31,11 +32,15 @@ module dca::trade_policy {
     whitelist: VecSet<TypeName>
   }
 
+  #[allow(lint(coin_field))]
   struct Request<phantom Output> {
     dca_address: address,
     rule: Option<TypeName>,
     whitelist: VecSet<TypeName>,
-    output: Coin<Output>
+    output: Coin<Output>,
+    owner: address,
+    min: u64,
+    max: u64,
   }
 
   // === Public-Mutative Functions ===
@@ -53,14 +58,21 @@ module dca::trade_policy {
       dca_address: object::id_address(dca),
       rule: option::none(),
       whitelist: self.whitelist,
-      output: coin::zero(ctx)
+      output: coin::zero(ctx),
+      owner: dca::owner(dca),
+      min: dca::min(dca),
+      max: dca::max(dca)
     };
 
     (request, dca::take(dca, ctx))
   }
 
-  public fun add<Witness, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
+  public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
     assert!(option::is_none(&request.rule), ERuleAlreadyAdded);
+
+    let output_value = coin::value(&output);
+    assert!(output_value >= request.min && request.max >= output_value, ESlippage);
+    
     request.rule = option::some(type_name::get<Witness>());
     coin::join(&mut request.output, output);
   }
@@ -75,7 +87,10 @@ module dca::trade_policy {
       dca_address,
       rule,
       whitelist,
-      output
+      output,
+      owner: _,
+      max,
+      min
     } = request;
 
     assert!(object::id_address(dca) == dca_address, EInvalidDcaAddress);
@@ -103,13 +118,17 @@ module dca::trade_policy {
     coin::value(&request.output)
   }
 
+  public fun owner<Output>(request: &Request<Output>): address {
+    request.owner
+  }
+
   // === Admin Functions ===
 
-  public fun add<Witness: drop>(self: &mut TradePolicy) {
+  public fun approve<Witness: drop>(self: &mut TradePolicy) {
     vec_set::insert(&mut self.whitelist, type_name::get<Witness>());
   }
 
-  public fun remove<Witness: drop>(self: &mut TradePolicy) {
+  public fun disapprove<Witness: drop>(self: &mut TradePolicy) {
     vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
   }
 
