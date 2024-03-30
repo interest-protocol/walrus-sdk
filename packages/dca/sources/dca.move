@@ -1,6 +1,7 @@
 module dca::dca {
   // === Imports ===
 
+  use sui::event;
   use sui::coin::{Coin, Self};
   use sui::object::{Self, UID};
   use sui::clock::{Self, Clock};
@@ -72,6 +73,27 @@ module dca::dca {
     fee_percent: u64
   }
 
+  struct Start<phantom Input, phantom Output> has copy, drop, store {
+    every: u64,
+    time_scale: u8,
+    input: u64,
+    dca_address: address,
+    delegatee: address,
+  }
+
+  struct Resolve<phantom Input, phantom Output> has copy, drop, store {
+    fee: u64,
+    input: u64,
+    output: u64,
+    dca_address: address,
+  }
+
+  struct Destroy<phantom Input, phantom Output> has copy, drop, store {
+    input: u64,
+    dca_address: address,
+    owner: address
+  }
+
   // === Public-Mutative Functions ===
 
   public fun start<Input, Output>(
@@ -112,6 +134,16 @@ module dca::dca {
       delegatee
     };
 
+    event::emit(
+      Start<Input, Output> {
+        every,
+        time_scale,
+        input: balance::value(&dca.input_balance),
+        dca_address: object::id_address(&dca),
+        delegatee
+      }
+    );
+
     share_object(dca);
   }
 
@@ -137,6 +169,15 @@ module dca::dca {
       self.active = false;
 
     let coin_fee = coin::split(&mut coin_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION), ctx);
+
+    event::emit(
+      Resolve<Input, Output> {
+        fee: coin::value(&coin_fee),
+        input: self.amount_per_trade,
+        output: output_value,
+        dca_address: object::id_address(self)
+      }
+    );
 
     public_transfer(coin_fee, self.delegatee);
 
@@ -170,7 +211,15 @@ module dca::dca {
 
      assert!(!active, EMustBeInactive);
 
-     if (balance::value(&input_balance) == 0)
+    let input = balance::value(&input_balance);
+
+     event::emit(Destroy<Input, Output> {
+      input,
+      dca_address: object::uid_to_address(&id),
+      owner
+     });
+
+     if (input == 0)
       balance::destroy_zero(input_balance)
     else 
       public_transfer(coin::from_balance(input_balance, ctx), owner);
