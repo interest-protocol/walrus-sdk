@@ -73,7 +73,7 @@ module dca::trade_policy {
     coin::join(&mut request.output, output);
   }
 
-  public fun confirm_request<Input, Output>(
+  public fun confirm<Input, Output>(
     dca: &mut DCA<Input, Output>,
     clock: &Clock,
     request: Request<Output>
@@ -109,7 +109,7 @@ module dca::trade_policy {
   public fun output<Output>(request: &Request<Output>): u64 {
     coin::value(&request.output)
   }
-  
+
   // === Admin Functions ===
 
   public fun approve<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
