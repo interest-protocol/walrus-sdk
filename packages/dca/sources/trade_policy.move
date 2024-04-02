@@ -6,10 +6,10 @@ module dca::trade_policy {
 
   use sui::clock::Clock;
   use sui::coin::{Self, Coin};
-  use sui::transfer::transfer;
   use sui::object::{Self, UID};
   use sui::vec_set::{Self, VecSet};
   use sui::tx_context::{Self, TxContext};
+  use sui::transfer::{transfer, share_object};
 
   use dca::dca::{Self, DCA};
 
@@ -46,6 +46,12 @@ module dca::trade_policy {
   // === Public-Mutative Functions ===
 
   fun init(ctx: &mut TxContext) {
+    let trade_policy = TradePolicy {
+      id: object::new(ctx),
+      whitelist: vec_set::empty()
+    };
+
+    share_object(trade_policy);
     transfer(Admin { id: object::new(ctx) }, tx_context::sender(ctx));
   }
 

@@ -281,6 +281,32 @@ struct USDC has drop {}
  }
 
  #[test]
+ fun test_take() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     0,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   assert_eq(burn_for_testing(dca::take(&mut dca, ctx_mut)), 50);
+   assert_eq(burn_for_testing(dca::take(&mut dca, ctx_mut)), 50);
+   assert_eq(burn_for_testing(dca::take(&mut dca, ctx_mut)), 0); 
+
+   destroy(dca);
+   destroy(clock);  
+ }
+
+ #[test]
  fun test_destroy() {
    let scenario = test_scenario::begin(OWNER);
 

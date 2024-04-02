@@ -158,44 +158,6 @@ module dca::dca {
     share_object(self);
   }
 
-  public(friend) fun resolve<Input, Output>(
-    self: &mut DCA<Input, Output>,
-    clock: &Clock,
-    coin_out: Coin<Output>
-  ) {
-    assert!(self.active, EInactive);
-
-    let current_timestamp = timestamp_s(clock);
-
-    assert!(current_timestamp - self.last_trade_timestamp >= self.cooldown, ETooEarly);
-
-    let output_value = coin::value(&coin_out);
-
-    assert!(output_value >= self.min && self.max >= output_value, ESlippage);
-
-    self.remaining_orders = self.remaining_orders - 1;
-
-    if (self.remaining_orders == 0 || balance::value(&self.input_balance) == 0)
-      self.active = false;
-
-    let balance_out = coin::into_balance(coin_out);  
-
-    let balance_fee = balance::split(&mut balance_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION));
-
-    event::emit(
-      Resolve<Input, Output> {
-        fee: balance::value(&balance_fee),
-        input: self.amount_per_trade,
-        output: output_value,
-        dca_address: object::id_address(self)
-      }
-    );
-
-    balance::join(&mut self.delegatee_output, balance_fee);
-
-    balance::join(&mut self.owner_output, balance_out);
-  }
-
   public fun stop<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext) {
     assert!(tx_context::sender(ctx) == self.owner, EMustBeTheOwner);
     self.active = false;
@@ -313,36 +275,7 @@ module dca::dca {
     self.fee_percent
   }
 
-  // === Public-Friend Functions ===
-
-  public(friend) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
-    let value = balance::value(&self.input_balance);
-    coin::take(&mut self.input_balance, math64::min(self.amount_per_trade, value), ctx)
-  }
-
-  // === Private Functions ===
-
-  fun convert_to_timestamp(time_scale: u8): u64 {
-    if (time_scale == 0) return 1;
-
-    if (time_scale == 1) return MINUTE;
-
-    if (time_scale == 2) return HOUR;
-
-    if (time_scale == 3) return DAY;
-
-    if (time_scale == 4) return WEEK;
-
-    if (time_scale == 5) return MONTH;
-
-    abort EInvalidTimestamp
-  }
-
-  fun timestamp_s(clock: &Clock): u64 {
-    clock::timestamp_ms(clock) / 1000
-  }
-
-  fun assert_every(every: u64, time_scale: u8) {
+  public fun assert_every(every: u64, time_scale: u8) {
     // Depending on the time_scale the restrictions on `every` are different
     let is_ok = {
       if (time_scale == 0) { // 0 => seconds
@@ -377,5 +310,70 @@ module dca::dca {
     assert!(is_ok, EInvalidEvery);
   }
 
-  // === Test Functions ===  
+  // === Public-Friend Functions ===
+
+  public(friend) fun resolve<Input, Output>(
+    self: &mut DCA<Input, Output>,
+    clock: &Clock,
+    coin_out: Coin<Output>
+  ) {
+    assert!(self.active, EInactive);
+
+    let current_timestamp = timestamp_s(clock);
+
+    assert!(current_timestamp - self.last_trade_timestamp >= self.cooldown, ETooEarly);
+
+    let output_value = coin::value(&coin_out);
+
+    assert!(output_value >= self.min && self.max >= output_value, ESlippage);
+
+    self.remaining_orders = self.remaining_orders - 1;
+
+    if (self.remaining_orders == 0 || balance::value(&self.input_balance) == 0)
+      self.active = false;
+
+    let balance_out = coin::into_balance(coin_out);  
+
+    let balance_fee = balance::split(&mut balance_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION));
+
+    event::emit(
+      Resolve<Input, Output> {
+        fee: balance::value(&balance_fee),
+        input: self.amount_per_trade,
+        output: output_value,
+        dca_address: object::id_address(self)
+      }
+    );
+
+    balance::join(&mut self.delegatee_output, balance_fee);
+
+    balance::join(&mut self.owner_output, balance_out);
+  }
+
+  public(friend) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
+    let value = balance::value(&self.input_balance);
+    coin::take(&mut self.input_balance, math64::min(self.amount_per_trade, value), ctx)
+  }
+
+  // === Private Functions ===
+
+  fun convert_to_timestamp(time_scale: u8): u64 {
+    if (time_scale == 0) return 1;
+
+    if (time_scale == 1) return MINUTE;
+
+    if (time_scale == 2) return HOUR;
+
+    if (time_scale == 3) return DAY;
+
+    if (time_scale == 4) return WEEK;
+
+    if (time_scale == 5) return MONTH;
+
+    abort EInvalidTimestamp
+  }
+
+  fun timestamp_s(clock: &Clock): u64 {
+    clock::timestamp_ms(clock) / 1000
+  }
 }
