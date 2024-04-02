@@ -69,7 +69,8 @@ module dca::dca {
     min: u64,
     max: u64,
     active: bool,
-    total_output: u64,
+    owner_output: Balance<Output>,
+    delegatee_output: Balance<Output>,
     fee_percent: u64
   }
 
@@ -90,13 +91,15 @@ module dca::dca {
 
   struct Destroy<phantom Input, phantom Output> has copy, drop, store {
     input: u64,
+    owner_output: u64,
+    delegatee_output: u64,
     dca_address: address,
     owner: address
   }
 
   // === Public-Mutative Functions ===
 
-  public fun start<Input, Output>(
+  public fun new<Input, Output>(
     clock: &Clock,
     coin_in: Coin<Input>,
     every: u64,
@@ -107,7 +110,7 @@ module dca::dca {
     fee_percent: u64,
     delegatee: address,
     ctx: &mut TxContext
-  ) {
+  ): DCA<Input, Output> {
     assert!(MAX_FEE > fee_percent, EInvalidFee);
     assert_every(every, time_scale);
 
@@ -129,7 +132,8 @@ module dca::dca {
       max,
       active: true,
       cooldown: convert_to_timestamp(time_scale) * every,
-      total_output: 0,
+      owner_output: balance::zero(),
+      delegatee_output: balance::zero(),
       fee_percent,
       delegatee
     };
@@ -144,7 +148,11 @@ module dca::dca {
       }
     );
 
-    share_object(dca);
+    dca
+  }
+
+  public fun share<Input, Output>(self: DCA<Input, Output>) {
+    share_object(self);
   }
 
   public fun resolve<Input, Output>(
@@ -168,20 +176,22 @@ module dca::dca {
     if (self.remaining_orders == 0 || balance::value(&self.input_balance) == 0)
       self.active = false;
 
-    let coin_fee = coin::split(&mut coin_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION), ctx);
+    let balance_out = coin::into_balance(coin_out);  
+
+    let balance_fee = balance::split(&mut balance_out, math64::mul_div_up(output_value, self.fee_percent, PRECISION));
 
     event::emit(
       Resolve<Input, Output> {
-        fee: coin::value(&coin_fee),
+        fee: balance::value(&balance_fee),
         input: self.amount_per_trade,
         output: output_value,
         dca_address: object::id_address(self)
       }
     );
 
-    public_transfer(coin_fee, self.delegatee);
+    balance::join(&mut self.delegatee_output, balance_fee);
 
-    public_transfer(coin_out, self.owner);
+    balance::join(&mut self.owner_output, balance_out);
   }
 
   public fun stop<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext) {
@@ -193,7 +203,7 @@ module dca::dca {
     let DCA { 
       id,
       owner,
-      delegatee: _,
+      delegatee,
       start_timestamp: _,
       last_trade_timestamp: _,
       every: _,
@@ -205,16 +215,24 @@ module dca::dca {
       min: _,
       max: _,
       active,
-      total_output: _,
+      owner_output,
+      delegatee_output,
       fee_percent: _  
      } = self;
 
      assert!(!active, EMustBeInactive);
 
-    let input = balance::value(&input_balance);
+     let input = balance::value(&input_balance);
+     let owner_output_value = balance::value(&owner_output);
+     let delegatee_output_value = balance::value(&delegatee_output);
+
+     public_transfer(coin::from_balance(owner_output, ctx), owner);
+     public_transfer(coin::from_balance(delegatee_output, ctx), delegatee);
 
      event::emit(Destroy<Input, Output> {
       input,
+      owner_output: owner_output_value,
+      delegatee_output: delegatee_output_value,
       dca_address: object::uid_to_address(&id),
       owner
      });
@@ -261,7 +279,7 @@ module dca::dca {
     self.cooldown
   }
 
-  public fun input_balance_value<Input, Output>(self: &DCA<Input, Output>): u64 {
+  public fun input<Input, Output>(self: &DCA<Input, Output>): u64 {
     balance::value(&self.input_balance)
   }
 
@@ -281,8 +299,12 @@ module dca::dca {
     self.active
   }
 
-  public fun total_output<Input, Output>(self: &DCA<Input, Output>): u64 {
-    self.total_output
+  public fun owner_output<Input, Output>(self: &DCA<Input, Output>): u64 {
+    balance::value(&self.owner_output)
+  }
+
+  public fun delegatee_output<Input, Output>(self: &DCA<Input, Output>): u64 {
+    balance::value(&self.delegatee_output)
   }
 
   public fun fee_percent<Input, Output>(self: &DCA<Input, Output>): u64 {
