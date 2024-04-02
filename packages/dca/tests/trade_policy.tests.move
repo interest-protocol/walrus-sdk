@@ -315,6 +315,29 @@ module dca::trade_policy_tests {
   test_scenario::end(scenario);  
  }
 
+ #[test]
+ fun test_disapprove() {
+  let (scenario, clock) = set_up_with_wit();
+
+  let scenario_mut = &mut scenario;
+
+  next_tx(scenario_mut, ADMIN);
+
+  let admin_cap = test_scenario::take_from_sender<Admin>(scenario_mut);
+  let trade_policy = test_scenario::take_shared<TradePolicy>(scenario_mut);
+
+  assert_eq(trade_policy::whitelist(&trade_policy), vector[type_name::get<Whitelisted>()]);
+
+  trade_policy::disapprove<Whitelisted>(&admin_cap, &mut trade_policy);
+
+  assert_eq(trade_policy::whitelist(&trade_policy), vector[]);
+
+  destroy(admin_cap);
+  destroy(clock);
+  destroy(trade_policy);
+  test_scenario::end(scenario);   
+ }
+
  fun set_up(): (Scenario, Clock) {
   let scenario = test_scenario::begin(ADMIN);
 
