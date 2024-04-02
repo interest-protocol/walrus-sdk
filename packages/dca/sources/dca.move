@@ -13,9 +13,9 @@ module dca::dca {
 
   // === Friends ===
 
-  friend dca::trade_policy;
   #[test_only]
   friend dca::dca_tests;
+  friend dca::trade_policy;
 
   // === Errors ===
 

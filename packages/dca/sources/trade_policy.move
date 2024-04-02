@@ -19,7 +19,6 @@ module dca::trade_policy {
   const ERuleAlreadyAdded: u64 = 1;
   const EMustHaveARule: u64 = 2;
   const EInvalidRule: u64 = 3;
-  const ESlippage: u64 = 4;
 
   // === Structs ===
 
@@ -75,9 +74,6 @@ module dca::trade_policy {
 
   public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
     assert!(option::is_none(&request.rule), ERuleAlreadyAdded);
-
-    let output_value = coin::value(&output);
-    assert!(output_value >= request.min && request.max >= output_value, ESlippage);
     
     request.rule = option::some(type_name::get<Witness>());
     coin::join(&mut request.output, output);
@@ -129,13 +125,18 @@ module dca::trade_policy {
 
   // === Admin Functions ===
 
-  public fun approve<Witness: drop>(self: &mut TradePolicy) {
+  public fun approve<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
     vec_set::insert(&mut self.whitelist, type_name::get<Witness>());
   }
 
-  public fun disapprove<Witness: drop>(self: &mut TradePolicy) {
+  public fun disapprove<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
     vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
   }
 
   // === Test Functions ===
+
+  #[test_only]
+  public fun init_for_testing(ctx: &mut TxContext) {
+    init(ctx);
+  }
 }
