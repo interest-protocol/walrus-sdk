@@ -37,9 +37,6 @@ module dca::trade_policy {
     rule: Option<TypeName>,
     whitelist: VecSet<TypeName>,
     output: Coin<Output>,
-    owner: address,
-    min: u64,
-    max: u64,
   }
 
   // === Public-Mutative Functions ===
@@ -64,9 +61,6 @@ module dca::trade_policy {
       rule: option::none(),
       whitelist: self.whitelist,
       output: coin::zero(ctx),
-      owner: dca::owner(dca),
-      min: dca::min(dca),
-      max: dca::max(dca)
     };
 
     (request, dca::take(dca, ctx))
@@ -88,10 +82,7 @@ module dca::trade_policy {
       dca_address,
       rule,
       whitelist,
-      output,
-      owner: _,
-      max: _,
-      min: _
+      output
     } = request;
 
     assert!(object::id_address(dca) == dca_address, EInvalidDcaAddress);
@@ -118,11 +109,7 @@ module dca::trade_policy {
   public fun output<Output>(request: &Request<Output>): u64 {
     coin::value(&request.output)
   }
-
-  public fun owner<Output>(request: &Request<Output>): address {
-    request.owner
-  }
-
+  
   // === Admin Functions ===
 
   public fun approve<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
