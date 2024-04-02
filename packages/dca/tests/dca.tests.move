@@ -3,29 +3,21 @@ module dca::dca_tests {
 
  use sui::clock;
  use sui::sui::SUI;
- use sui::coin::mint_for_testing;
- use sui::tx_context::new_from_hint;
  use sui::test_utils::{destroy, assert_eq};
+ use sui::tx_context::{new_from_hint, TxContext};
+ use sui::coin::{mint_for_testing, burn_for_testing, Coin};
+ use sui::test_scenario::{Self, take_from_address, next_tx};
 
  use dca::dca;
 
  // Time scale
- const SEC: u8 = 0;
  const MIN: u8 = 1;
- const H: u8 = 2;
- const D: u8 = 3;
- const W: u8 = 4;
- const M: u8 = 5;
 
  const MINUTE: u64 = 60;
- const HOUR: u64 = 3600; // 60 * 60
- const DAY: u64 = 86400; // 3600 * 24
- const WEEK: u64 = 604800; // 86400 * 7
- const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound 
- const MAX_FEE: u64 = 30000000; // 3%
- const PRECISION: u64 = 1000000000; 
+ const MAX_FEE: u64 = 3000000; // 3%
 
  const MILLISECONDS: u64 = 1000;
+ const MAX_U64: u64 = 18446744073709551615;
 
  const OWNER: address = @0x7;
  const DELEGATEE: address = @0x8;
@@ -34,14 +26,7 @@ struct USDC has drop {}
 
  #[test]
  fun test_new() {
-   let ctx = new_from_hint(
-    OWNER, 
-    7, 
-    0, 
-    0, 
-    0
-   );
-   let ctx_mut = &mut ctx;
+   let ctx_mut = &mut ctx();
    let clock = clock::create_for_testing(ctx_mut);
 
    clock::increment_for_testing(&mut clock, 15 * MILLISECONDS);
@@ -80,8 +65,340 @@ struct USDC has drop {}
    assert_eq(dca::owner_output(&dca), 0);
    assert_eq(dca::delegatee_output(&dca), 0);
    assert_eq(dca::fee_percent(&dca), fee_percent);
+   assert_eq(dca::remaining_orders(&dca), 10);
 
    destroy(dca);
    destroy(clock);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::EInvalidFee)]
+ fun test_new_invalid_fee() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let coin_in_value = 100;
+   let every = 3;
+   let number_of_orders = 10;
+   let min = 1;
+   let max = 2;
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(coin_in_value, ctx_mut),
+     every,
+     number_of_orders,
+     MIN,
+     min,
+     max,
+     MAX_FEE,
+     DELEGATEE,
+     ctx_mut
+   );
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ fun test_resolve() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     0,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
+
+   assert_eq(dca::active(&dca), true); 
+   assert_eq(dca::remaining_orders(&dca), 2);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, ctx_mut)
+   );
+   
+   assert_eq(dca::active(&dca), true); 
+   assert_eq(dca::owner_output(&dca), 1998);
+   assert_eq(dca::remaining_orders(&dca), 1);
+   assert_eq(dca::delegatee_output(&dca), 2);
+
+   clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(3000, ctx_mut)
+   );
+   
+   assert_eq(dca::active(&dca), false); 
+   assert_eq(dca::owner_output(&dca), 4995);
+   assert_eq(dca::remaining_orders(&dca), 0);
+   assert_eq(dca::delegatee_output(&dca), 5);   
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::EInactive)]
+ fun test_resolve_inactive_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     0,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
+
+   dca::stop(&mut dca, ctx_mut);
+
+   assert_eq(dca::active(&dca), false); 
+   assert_eq(dca::remaining_orders(&dca), 2);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, ctx_mut)
+   );
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::ETooEarly)]
+ fun test_resolve_too_early_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     0,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   clock::increment_for_testing(&mut clock, (2 * MINUTE * MILLISECONDS) - 1);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, ctx_mut)
+   );
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::ESlippage)]
+ fun test_resolve_min_slippage_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     2001,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   clock::increment_for_testing(&mut clock, (2 * MINUTE * MILLISECONDS));
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, ctx_mut)
+   );
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::ESlippage)]
+ fun test_resolve_max_slippage_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     100,
+     1999,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   ); 
+
+   clock::increment_for_testing(&mut clock, (2 * MINUTE * MILLISECONDS));
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, ctx_mut)
+   );
+
+   destroy(dca);
+   destroy(clock);
+ }
+
+ #[test]
+ fun test_destroy() {
+   let scenario = test_scenario::begin(OWNER);
+
+   let scenario_mut = &mut scenario;
+
+   let clock = clock::create_for_testing(test_scenario::ctx(scenario_mut));
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, test_scenario::ctx(scenario_mut)),
+     2,
+     2,
+     MIN,
+     0,
+     MAX_U64,
+     1000000,
+     DELEGATEE,
+     test_scenario::ctx(scenario_mut)
+   ); 
+
+   clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(2000, test_scenario::ctx(scenario_mut))
+   );
+
+   next_tx(scenario_mut, OWNER);
+
+   clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
+
+   dca::resolve(
+    &mut dca,
+    &clock,
+    mint_for_testing<USDC>(3000, test_scenario::ctx(scenario_mut))
+   ); 
+
+   dca::destroy(dca, test_scenario::ctx(scenario_mut));
+
+   next_tx(scenario_mut, OWNER);
+
+   let owner_coin = take_from_address<Coin<USDC>>(scenario_mut, OWNER);
+   let delegatee_coin = take_from_address<Coin<USDC>>(scenario_mut, DELEGATEE);
+  
+   assert_eq(burn_for_testing(owner_coin), 4995);
+   assert_eq(burn_for_testing(delegatee_coin), 5);
+
+   destroy(clock);  
+   test_scenario::end(scenario);
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::EMustBeTheOwner)] 
+ fun test_stop_must_be_owner_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     100,
+     1999,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   );   
+
+   dca::stop(
+    &mut dca,
+    &mut new_from_hint(
+     @0x9, 
+     7, 
+     0, 
+     0, 
+     0
+    )
+   );
+
+   destroy(dca);
+   destroy(clock); 
+ }
+
+ #[test]
+ #[expected_failure(abort_code = dca::dca::EMustBeInactive)] 
+ fun test_stop_must_be_inactive_error() {
+   let ctx_mut = &mut ctx();
+   let clock = clock::create_for_testing(ctx_mut);
+
+   let dca = dca::new<SUI, USDC>(
+     &clock,
+     mint_for_testing<SUI>(100, ctx_mut),
+     2,
+     2,
+     MIN,
+     100,
+     1999,
+     1000000,
+     DELEGATEE,
+     ctx_mut
+   );   
+
+   dca::destroy(dca, ctx_mut);
+   destroy(clock); 
+ }
+
+ fun ctx(): TxContext {
+   let ctx = new_from_hint(
+    OWNER, 
+    7, 
+    0, 
+    0, 
+    0
+   );
+   
+   ctx
  }
 }

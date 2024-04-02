@@ -80,8 +80,7 @@ module dca::trade_policy {
   public fun confirm_request<Input, Output>(
     dca: &mut DCA<Input, Output>,
     clock: &Clock,
-    request: Request<Output>,
-    ctx: &mut TxContext
+    request: Request<Output>
   ) {
     let Request {
       dca_address,
@@ -97,7 +96,7 @@ module dca::trade_policy {
     assert!(option::is_some(&rule), EMustHaveARule);
     assert!(vec_set::contains(&whitelist, &option::destroy_some(rule)), EInvalidRule);
 
-    dca::resolve(dca, clock, output, ctx);
+    dca::resolve(dca, clock, output);
   }
 
   // === Public-View Functions ===

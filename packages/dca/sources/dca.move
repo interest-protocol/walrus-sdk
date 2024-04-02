@@ -14,6 +14,8 @@ module dca::dca {
   // === Friends ===
 
   friend dca::trade_policy;
+  #[test_only]
+  friend dca::dca_tests;
 
   // === Errors ===
 
@@ -34,7 +36,7 @@ module dca::dca {
   const DAY: u64 = 86400; // 3600 * 24
   const WEEK: u64 = 604800; // 86400 * 7
   const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound 
-  const MAX_FEE: u64 = 30000000; // 3%
+  const MAX_FEE: u64 = 3000000; // 0.3%
   const PRECISION: u64 = 1000000000;
 
   // === Structs ===
@@ -151,15 +153,15 @@ module dca::dca {
     dca
   }
 
+  #[allow(lint(share_owned))]
   public fun share<Input, Output>(self: DCA<Input, Output>) {
     share_object(self);
   }
 
-  public fun resolve<Input, Output>(
+  public(friend) fun resolve<Input, Output>(
     self: &mut DCA<Input, Output>,
     clock: &Clock,
-    coin_out: Coin<Output>,
-    ctx: &mut TxContext
+    coin_out: Coin<Output>
   ) {
     assert!(self.active, EInactive);
 
