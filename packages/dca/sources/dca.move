@@ -323,6 +323,8 @@ module dca::dca {
 
     assert!(current_timestamp - self.last_trade_timestamp >= self.cooldown, ETooEarly);
 
+    self.last_trade_timestamp = current_timestamp;
+
     let output_value = coin::value(&coin_out);
 
     assert!(output_value >= self.min && self.max >= output_value, ESlippage);
