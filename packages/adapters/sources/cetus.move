@@ -1,4 +1,4 @@
-module adapter::cetus_adapter {
+module adapter::admin_adapter {
     // === Imports ===
 
     use sui::{
