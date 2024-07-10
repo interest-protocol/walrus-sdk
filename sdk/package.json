@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@mysten/sui": "^1.2.1",
+    "@polymedia/suitcase-core": "^0.0.7",
     "ramda": "^0.30.1",
     "tiny-invariant": "^1.3.3",
     "typescript": "^5.5.3"

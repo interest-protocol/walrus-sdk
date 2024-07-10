@@ -64,8 +64,6 @@ module dca::dca_tests {
         assert_eq(dca::active(&dca), true);
         assert_eq(dca::cooldown(&dca), MINUTE * every);
         assert_eq(dca::input(&dca), 100);
-        assert_eq(dca::owner_output(&dca), 0);
-        assert_eq(dca::delegatee_output(&dca), 0);
         assert_eq(dca::fee_percent(&dca), fee_percent);
         assert_eq(dca::remaining_orders(&dca), 10);
 
@@ -127,25 +125,27 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, ctx_mut)
+            mint_for_testing<USDC>(2000, ctx_mut),
+            ctx_mut
         );
    
         assert_eq(dca::active(&dca), true); 
-        assert_eq(dca::owner_output(&dca), 1998);
+        assert_eq(dca::total_owner_output(&dca), 1998);
         assert_eq(dca::remaining_orders(&dca), 1);
-        assert_eq(dca::delegatee_output(&dca), 2);
+        assert_eq(dca::total_delegatee_output(&dca), 2);
 
         clock::increment_for_testing(&mut clock, 2 * MINUTE * MILLISECONDS);
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(3000, ctx_mut)
+            mint_for_testing<USDC>(3000, ctx_mut),
+            ctx_mut
         );
    
         assert_eq(dca::active(&dca), false); 
-        assert_eq(dca::owner_output(&dca), 4995);
+        assert_eq(dca::total_owner_output(&dca), 4995);
         assert_eq(dca::remaining_orders(&dca), 0);
-        assert_eq(dca::delegatee_output(&dca), 5);   
+        assert_eq(dca::total_delegatee_output(&dca), 5);   
 
         destroy(dca);
         destroy(clock);
@@ -179,7 +179,8 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, ctx_mut)
+            mint_for_testing<USDC>(2000, ctx_mut),
+            ctx_mut
         );
 
         destroy(dca);
@@ -209,7 +210,8 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, ctx_mut)
+            mint_for_testing<USDC>(2000, ctx_mut),
+            ctx_mut
         );
 
         destroy(dca);
@@ -239,7 +241,8 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, ctx_mut)
+            mint_for_testing<USDC>(2000, ctx_mut),
+            ctx_mut
         );
 
         destroy(dca);
@@ -269,7 +272,8 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, ctx_mut)
+            mint_for_testing<USDC>(2000, ctx_mut),
+            ctx_mut
         );
 
         destroy(dca);
@@ -327,7 +331,8 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(2000, test_scenario::ctx(scenario_mut))
+            mint_for_testing<USDC>(2000, test_scenario::ctx(scenario_mut)),
+            scenario_mut.ctx()
         );
 
         next_tx(scenario_mut, OWNER);
@@ -336,15 +341,23 @@ module dca::dca_tests {
 
         dca.resolve(
             &clock,
-            mint_for_testing<USDC>(3000, test_scenario::ctx(scenario_mut))
+            mint_for_testing<USDC>(3000, test_scenario::ctx(scenario_mut)),
+            scenario_mut.ctx()
         ); 
 
         dca.destroy(test_scenario::ctx(scenario_mut));
 
         next_tx(scenario_mut, OWNER);
 
-        let owner_coin = take_from_address<Coin<USDC>>(scenario_mut, OWNER);
-        let delegatee_coin = take_from_address<Coin<USDC>>(scenario_mut, DELEGATEE);
+        let mut owner_coin = take_from_address<Coin<USDC>>(scenario_mut, OWNER);
+        let second_owner_coin = take_from_address<Coin<USDC>>(scenario_mut, OWNER);
+
+        owner_coin.join(second_owner_coin);
+
+        let mut delegatee_coin = take_from_address<Coin<USDC>>(scenario_mut, DELEGATEE);
+        let second_delegatee_coin = take_from_address<Coin<USDC>>(scenario_mut, DELEGATEE);
+
+        delegatee_coin.join(second_delegatee_coin);
   
         assert_eq(burn_for_testing(owner_coin), 4995);
         assert_eq(burn_for_testing(delegatee_coin), 5);

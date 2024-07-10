@@ -77,7 +77,8 @@ module dca::trade_policy {
     public fun confirm<Input, Output>(
         dca: &mut DCA<Input, Output>,
         clock: &Clock,
-        request: Request<Output>
+        request: Request<Output>,
+        ctx: &mut TxContext
     ) {
         let Request {
             dca:  dca_address,
@@ -91,7 +92,7 @@ module dca::trade_policy {
         assert!(rule.is_some(), EMustHaveARule);
         assert!(whitelist.contains(&rule.destroy_some()), EInvalidRule);
 
-        dca.resolve(clock, output);
+        dca.resolve(clock, output, ctx);
     }
 
     // === Public-View Functions ===

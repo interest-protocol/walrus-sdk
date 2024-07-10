@@ -65,9 +65,9 @@ module dca::dca {
         min: u64,
         max: u64,
         active: bool,
-        owner_output: Balance<Output>,
-        delegatee_output: Balance<Output>,
-        fee_percent: u64
+        fee_percent: u64,
+        total_owner_output: u64,
+        total_delegatee_output: u64,
     }
 
     public struct Start<phantom Input, phantom Output> has copy, drop, store {
@@ -87,8 +87,6 @@ module dca::dca {
 
     public struct Destroy<phantom Input, phantom Output> has copy, drop, store {
         input: u64,
-        owner_output: u64,
-        delegatee_output: u64,
         dca: address,
         owner: address
     }
@@ -128,10 +126,10 @@ module dca::dca {
             max,
             active: true,
             cooldown: convert_to_timestamp(time_scale) * every,
-            owner_output: balance::zero(),
-            delegatee_output: balance::zero(),
             fee_percent,
-            delegatee
+            delegatee,
+            total_owner_output: 0,
+            total_delegatee_output: 0,
         };
 
         event::emit(
@@ -161,7 +159,7 @@ module dca::dca {
         let DCA { 
             id,
             owner,
-            delegatee,
+            delegatee: _,
             start_timestamp: _,
             last_trade_timestamp: _,
             every: _,
@@ -173,24 +171,17 @@ module dca::dca {
             min: _,
             max: _,
             active,
-            owner_output,
-            delegatee_output,
-            fee_percent: _  
+            fee_percent: _,
+            total_owner_output: _,
+            total_delegatee_output: _  
         } = self;
 
         assert!(!active, EMustBeInactive);
 
         let input = input_balance.value();
-        let owner_output_value = owner_output.value();
-        let delegatee_output_value = delegatee_output.value();
-
-        public_transfer(owner_output.into_coin(ctx), owner);
-        public_transfer(delegatee_output.into_coin(ctx), delegatee);
 
         event::emit(Destroy<Input, Output> {
             input,
-            owner_output: owner_output_value,
-            delegatee_output: delegatee_output_value,
             dca: id.uid_to_address(),
             owner
         });
@@ -257,16 +248,16 @@ module dca::dca {
         self.active
     }
 
-    public fun owner_output<Input, Output>(self: &DCA<Input, Output>): u64 {
-        balance::value(&self.owner_output)
-    }
-
-    public fun delegatee_output<Input, Output>(self: &DCA<Input, Output>): u64 {
-        balance::value(&self.delegatee_output)
-    }
-
     public fun fee_percent<Input, Output>(self: &DCA<Input, Output>): u64 {
         self.fee_percent
+    }
+
+    public fun total_owner_output<Input, Output>(self: &DCA<Input, Output>): u64 {
+        self.total_owner_output
+    }
+
+    public fun total_delegatee_output<Input, Output>(self: &DCA<Input, Output>): u64 {
+        self.total_delegatee_output
     }
 
     public fun assert_every(every: u64, time_scale: u8) {
@@ -309,7 +300,8 @@ module dca::dca {
     public(package) fun resolve<Input, Output>(
         self: &mut DCA<Input, Output>,
         clock: &Clock,
-        coin_out: Coin<Output>
+        coin_out: Coin<Output>,
+        ctx: &mut TxContext
     ) {
         assert!(self.active, EInactive);
 
@@ -332,6 +324,9 @@ module dca::dca {
 
         let balance_fee = balance_out.split(math64::mul_div_up(output_value, self.fee_percent, PRECISION));
 
+        self.total_owner_output = self.total_owner_output + balance_out.value();
+        self.total_delegatee_output = self.total_delegatee_output + balance_fee.value();
+
         event::emit(
             Resolve<Input, Output> {
                 fee: balance::value(&balance_fee),
@@ -341,9 +336,8 @@ module dca::dca {
             }
         );
 
-        self.delegatee_output.join(balance_fee);
-
-        self.owner_output.join(balance_out);
+        public_transfer(balance_fee.into_coin(ctx), self.delegatee);
+        public_transfer(balance_out.into_coin(ctx), self.owner);
     }
 
     public(package) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {

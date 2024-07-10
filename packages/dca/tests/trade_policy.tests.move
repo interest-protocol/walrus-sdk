@@ -169,15 +169,15 @@ module dca::trade_policy_tests {
 
         clock::increment_for_testing(&mut clock, 2 * MINUTE);
 
-        assert_eq(dca::owner_output(&dca), 0);
+        assert_eq(dca::total_owner_output(&dca), 0);
         assert_eq(dca::remaining_orders(&dca), 2);
-        assert_eq(dca::delegatee_output(&dca), 0); 
+        assert_eq(dca::total_delegatee_output(&dca), 0); 
 
-        trade_policy::confirm(&mut dca, &clock, request);
+        trade_policy::confirm(&mut dca, &clock, request, scenario_mut.ctx());
 
-        assert_eq(dca::owner_output(&dca), 2997);
+        assert_eq(dca::total_owner_output(&dca), 2997);
         assert_eq(dca::remaining_orders(&dca), 1);
-        assert_eq(dca::delegatee_output(&dca), 3); 
+        assert_eq(dca::total_delegatee_output(&dca), 3); 
 
         destroy(dca);
         destroy(clock);
@@ -229,7 +229,7 @@ module dca::trade_policy_tests {
 
         clock::increment_for_testing(&mut clock, 2 * MINUTE);
 
-        trade_policy::confirm(&mut dca2, &clock, request);
+        trade_policy::confirm(&mut dca2, &clock, request, scenario_mut.ctx());
 
         destroy(dca);
         destroy(dca2);
@@ -267,7 +267,7 @@ module dca::trade_policy_tests {
 
         clock::increment_for_testing(&mut clock, 2 * MINUTE);
 
-        trade_policy::confirm(&mut dca, &clock, request);
+        trade_policy::confirm(&mut dca, &clock, request, scenario_mut.ctx());
 
         destroy(dca);
         destroy(clock);
@@ -306,7 +306,7 @@ module dca::trade_policy_tests {
 
         trade_policy::add(&mut request, Blacklisted {}, mint_for_testing(3_000, test_scenario::ctx(scenario_mut)));
 
-        trade_policy::confirm(&mut dca, &clock, request);
+        trade_policy::confirm(&mut dca, &clock, request, scenario_mut.ctx());
 
         destroy(dca);
         destroy(clock);

@@ -11,6 +11,9 @@ importers:
       '@mysten/sui':
         specifier: ^1.2.1
         version: 1.2.1(svelte@4.2.18)(typescript@5.5.3)
+      '@polymedia/suitcase-core':
+        specifier: ^0.0.7
+        version: 0.0.7(@mysten/sui@1.2.1(svelte@4.2.18)(typescript@5.5.3))
       ramda:
         specifier: ^0.30.1
         version: 0.30.1
@@ -340,6 +343,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@polymedia/suitcase-core@0.0.7':
+    resolution: {integrity: sha512-qE48yaNgUmPqX23K+qIBn8TW35tR12JMOwVtQ6Mro/FF81Wq80aeIDLZV6VJK9eJyI2sqTbCFAhipAEqxzitog==}
+    peerDependencies:
+      '@mysten/sui': ^1.0.3
 
   '@scure/base@1.1.7':
     resolution: {integrity: sha512-PPNYBslrLNNUQ/Yad37MHYsNQtK67EhWb6WtSvNLLPo7SdVZgkUjD6Dg+5On7zNwmskf8OX7I7Nx5oN+MIWE0g==}
@@ -1801,6 +1809,10 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@polymedia/suitcase-core@0.0.7(@mysten/sui@1.2.1(svelte@4.2.18)(typescript@5.5.3))':
+    dependencies:
+      '@mysten/sui': 1.2.1(svelte@4.2.18)(typescript@5.5.3)
 
   '@scure/base@1.1.7': {}
 
