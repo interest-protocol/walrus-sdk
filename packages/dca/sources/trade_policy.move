@@ -1,129 +1,135 @@
 module dca::trade_policy {
-  // === Imports ===
-  use std::option::{Self, Option};
+    // === Imports ===
 
-  use std::type_name::{Self, TypeName};
+    use std::type_name::{Self, TypeName};
 
-  use sui::clock::Clock;
-  use sui::coin::{Self, Coin};
-  use sui::object::{Self, UID};
-  use sui::vec_set::{Self, VecSet};
-  use sui::tx_context::{Self, TxContext};
-  use sui::transfer::{transfer, share_object};
-
-  use dca::dca::{Self, DCA};
-
-  // === Errors ===
-
-  const EInvalidDcaAddress: u64 = 0;
-  const ERuleAlreadyAdded: u64 = 1;
-  const EMustHaveARule: u64 = 2;
-  const EInvalidRule: u64 = 3;
-
-  // === Structs ===
-
-  struct Admin has key, store {
-    id: UID
-  }
-
-  struct TradePolicy has key {
-    id: UID,
-    whitelist: VecSet<TypeName>
-  }
-
-  #[allow(lint(coin_field))]
-  struct Request<phantom Output> {
-    dca_address: address,
-    rule: Option<TypeName>,
-    whitelist: VecSet<TypeName>,
-    output: Coin<Output>,
-  }
-
-  // === Public-Mutative Functions ===
-
-  fun init(ctx: &mut TxContext) {
-    let trade_policy = TradePolicy {
-      id: object::new(ctx),
-      whitelist: vec_set::empty()
+    use sui::{
+        clock::Clock,
+        coin::{Self, Coin},
+        vec_set::{Self, VecSet},
+        transfer::{transfer, share_object}
     };
 
-    share_object(trade_policy);
-    transfer(Admin { id: object::new(ctx) }, tx_context::sender(ctx));
-  }
+    use dca::dca::{Self, DCA};
 
-  public fun request<Input, Output>(
-    self: &TradePolicy,
-    dca: &mut DCA<Input, Output>,
-    ctx: &mut TxContext
-  ): (Request<Output>, Coin<Input>) {
-    let request = Request {
-      dca_address: object::id_address(dca),
-      rule: option::none(),
-      whitelist: self.whitelist,
-      output: coin::zero(ctx),
-    };
+    // === Errors ===
 
-    (request, dca::take(dca, ctx))
-  }
+    const EInvalidDcaAddress: u64 = 0;
+    const ERuleAlreadyAdded: u64 = 1;
+    const EMustHaveARule: u64 = 2;
+    const EInvalidRule: u64 = 3;
 
-  public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
-    assert!(option::is_none(&request.rule), ERuleAlreadyAdded);
+    // === Structs ===
+
+    public struct Admin has key, store {
+        id: UID
+    }
+
+    public struct TradePolicy has key {
+        id: UID,
+        whitelist: VecSet<TypeName>
+    }
+
+    #[allow(lint(coin_field))]
+    public struct Request<phantom Output> {
+        dca: address,
+        owner: address,
+        rule: Option<TypeName>,
+        whitelist: VecSet<TypeName>,
+        output: Coin<Output>,
+    }
+
+    // === Public-Mutative Functions ===
+
+    fun init(ctx: &mut TxContext) {
+        let trade_policy = TradePolicy {
+            id: object::new(ctx),
+            whitelist: vec_set::empty()
+        };
+
+        share_object(trade_policy);
+        transfer(Admin { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun request<Input, Output>(
+        self: &TradePolicy,
+        dca: &mut DCA<Input, Output>,
+        ctx: &mut TxContext
+    ): (Request<Output>, Coin<Input>) {
+        let request = Request {
+            dca: object::id_address(dca),
+            rule: option::none(),
+            whitelist: self.whitelist,
+            output: coin::zero(ctx),
+            owner: dca.owner()
+        };
+
+        (request, dca::take(dca, ctx))
+    }
+
+    public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
+        assert!(request.rule.is_none(), ERuleAlreadyAdded);
     
-    request.rule = option::some(type_name::get<Witness>());
-    coin::join(&mut request.output, output);
-  }
+        request.rule = option::some(type_name::get<Witness>());
+        request.output.join(output);
+    }
 
-  public fun confirm<Input, Output>(
-    dca: &mut DCA<Input, Output>,
-    clock: &Clock,
-    request: Request<Output>
-  ) {
-    let Request {
-      dca_address,
-      rule,
-      whitelist,
-      output
-    } = request;
+    public fun confirm<Input, Output>(
+        dca: &mut DCA<Input, Output>,
+        clock: &Clock,
+        request: Request<Output>
+    ) {
+        let Request {
+            dca:  dca_address,
+            rule,
+            whitelist,
+            output,
+            owner: _
+        } = request;
 
-    assert!(object::id_address(dca) == dca_address, EInvalidDcaAddress);
-    assert!(option::is_some(&rule), EMustHaveARule);
-    assert!(vec_set::contains(&whitelist, &option::destroy_some(rule)), EInvalidRule);
+        assert!(object::id_address(dca) == dca_address, EInvalidDcaAddress);
+        assert!(rule.is_some(), EMustHaveARule);
+        assert!(whitelist.contains(&rule.destroy_some()), EInvalidRule);
 
-    dca::resolve(dca, clock, output);
-  }
+        dca.resolve(clock, output);
+    }
 
-  // === Public-View Functions ===
+    // === Public-View Functions ===
 
-  public fun whitelist(self: &TradePolicy): vector<TypeName> {
-    vec_set::into_keys(self.whitelist)
-  }
+    public fun whitelist(self: &TradePolicy): vector<TypeName> {
+        self.whitelist.into_keys()
+    }
 
-  public fun dca_address<Output>(request: &Request<Output>): address {
-    request.dca_address
-  }
+    public fun owner<Output>(request: &Request<Output>): address {
+        request.owner
+    }
 
-  public fun rule<Output>(request: &Request<Output>): Option<TypeName> {
-    request.rule
-  }
+    public fun dca<Output>(request: &Request<Output>): address {
+        request.dca
+    }
 
-  public fun output<Output>(request: &Request<Output>): u64 {
-    coin::value(&request.output)
-  }
+    public fun rule<Output>(request: &Request<Output>): Option<TypeName> {
+        request.rule
+    }
 
-  // === Admin Functions ===
+    public fun output<Output>(request: &Request<Output>): u64 {
+        request.output.value()
+    }
 
-  public fun approve<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
-    vec_set::insert(&mut self.whitelist, type_name::get<Witness>());
-  }
+    // === Admin Functions ===
 
-  public fun disapprove<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
-    vec_set::remove(&mut self.whitelist, &type_name::get<Witness>());
-  }
+    public fun approve<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
+        self.whitelist.insert(type_name::get<Witness>());
+    }
 
-  // === Test Functions ===
+    public fun disapprove<Witness: drop>(_: &Admin, self: &mut TradePolicy) {
+        self.whitelist.remove(&type_name::get<Witness>());
+    }
 
-  #[test_only]
-  public fun init_for_testing(ctx: &mut TxContext) {
-    init(ctx);
-  }
+    // === Test Functions ===
+
+    #[test_only]
+    public fun init_for_testing(ctx: &mut TxContext) {
+        init(ctx);
+    }
 }
