@@ -25,7 +25,8 @@
     "is-active": "tsx ./src/scripts/is-active.script.ts",
     "get": "tsx ./src/scripts/get.script.ts",
     "stop-and-destroy": "tsx ./src/scripts/stop-and-destroy.script.ts",
-    "approve-hop": "tsx ./src/scripts/approve-hop.script.ts"
+    "approve-hop": "tsx ./src/scripts/approve-hop.script.ts",
+    "swap-hop": "tsx ./src/scripts/swap-hop.script.ts"
   },
   "keywords": [],
   "license": "ISC",

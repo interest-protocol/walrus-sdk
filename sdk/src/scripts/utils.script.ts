@@ -22,6 +22,7 @@ export const DCATestnet = new SDK({
   dcaAddress: OBJECT_IDS.testnet.dca,
   fullNodeUrl: getFullnodeUrl('testnet'),
   adaptersAddress: OBJECT_IDS.testnet.adapters,
+  tradePolicyId: OBJECT_IDS.testnet.tradePolicy,
 });
 
 export const executeTx = async (tx: Transaction) => {

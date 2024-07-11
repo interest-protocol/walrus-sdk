@@ -39,13 +39,21 @@ export interface NewArgs extends MaybeTx {
   delegatee: string;
 }
 
+export interface NestedResult {}
+
 export interface IsActiveArgs extends DcaArgs {}
 
 export interface StopArgs extends DcaArgs {}
 
 export interface DestroyArgs extends DcaArgs {}
 
-export interface SwapHopArgs extends DcaArgs {}
+export interface SwapHopStartArgs extends DcaArgs, MaybeTx {}
+
+export interface SwapHopEndArgs extends DcaArgs, MaybeTx {
+  coinOut: TransactionArgument;
+  request: NestedResult;
+  admin: string;
+}
 
 export interface DCA {
   objectId: string;

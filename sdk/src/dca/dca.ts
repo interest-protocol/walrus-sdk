@@ -5,7 +5,7 @@ import {
   SUI_CLOCK_OBJECT_ID,
   isValidSuiObjectId,
 } from '@mysten/sui/utils';
-import { Transaction } from '@mysten/sui/transactions';
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 import invariant from 'tiny-invariant';
 import { devInspectAndGetResults } from '@polymedia/suitcase-core';
 import { parseDCAObject } from './utils';
@@ -16,6 +16,8 @@ import {
   StopArgs,
   DestroyArgs,
   DCA,
+  SwapHopStartArgs,
+  SwapHopEndArgs,
 } from './dca.types';
 
 export class DcaSDK {
@@ -39,6 +41,9 @@ export class DcaSDK {
     this.#client = new SuiClient({
       url: args?.fullNodeUrl ? args.fullNodeUrl : getFullnodeUrl('mainnet'),
     });
+    this.#tradePolicy = args?.tradePolicyId
+      ? args.tradePolicyId
+      : this.#defaultTradePolicyId;
   }
 
   async get(objectId: string): Promise<DCA> {
@@ -77,8 +82,8 @@ export class DcaSDK {
         tx.pure.u64(every),
         tx.pure.u64(numberOfOrders),
         tx.pure.u8(timeScale),
-        tx.pure.u64(max),
         tx.pure.u64(min),
+        tx.pure.u64(max),
         tx.pure.u64(fee ? BigInt(fee * 1e7) : this.#defaultFee),
         tx.pure.address(delegatee),
       ],
@@ -168,5 +173,54 @@ export class DcaSDK {
     return tx;
   }
 
-  swapHop() {}
+  swapHopStart({
+    dca,
+    coinInType,
+    coinOutType,
+    tx = new Transaction(),
+  }: SwapHopStartArgs) {
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+
+    const [request, coinIn] = tx.moveCall({
+      target: `${this.#dcaPackage}::trade_policy::request`,
+      typeArguments: [coinInType, coinOutType],
+      arguments: [tx.object(this.#tradePolicy), tx.object(dca)],
+    });
+
+    return {
+      coinIn,
+      request,
+      tx,
+    };
+  }
+
+  swapHopEnd({
+    dca,
+    coinInType,
+    coinOutType,
+    tx = new Transaction(),
+    request,
+    coinOut,
+    admin,
+  }: SwapHopEndArgs) {
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+
+    tx.moveCall({
+      target: `${this.#adapters}::hop_adapter::swap`,
+      typeArguments: [coinOutType],
+      arguments: [tx.object(admin), request as TransactionArgument, coinOut],
+    });
+
+    tx.moveCall({
+      target: `${this.#dcaPackage}::trade_policy::confirm`,
+      typeArguments: [coinInType, coinOutType],
+      arguments: [
+        tx.object(dca),
+        tx.object(SUI_CLOCK_OBJECT_ID),
+        request as TransactionArgument,
+      ],
+    });
+
+    return tx;
+  }
 }
