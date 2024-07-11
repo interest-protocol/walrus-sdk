@@ -29,10 +29,18 @@ export const OBJECT_IDS = {
   testnet: {
     dca: '0xbdab48fe3473744154b8249be572d07a527bf97c75ec8a28daa1391edf6b36c6',
     adapters:
-      '0x88d6e637822f3fdcfcc7e7f6037b5b72fd356fb94728032e557e3acdb1c8f786',
+      '0x59454606135d2a898986df7b266e32cebf7d0f5e148ec2e992242de10a7cd8cb',
+    adminCap:
+      '0x5bc59057cf14d0b64ff5f6b919ef2964d4bb8c6ab4a2ca034522ec3670984250',
+    tradePolicy:
+      '0xe3663c9ab5213f2bc6e8ebfe1617d1a7b9611073f8c37cab25b0851dcf422a3d',
   },
   mainnet: {
     dca: '0x0',
     adapters: '0x0',
+    adminCap: '0x0',
+    tradePolicy: '0x0',
   },
 };
+
+export const HOP_TESTNET_WITNESS = `${OBJECT_IDS.testnet.adapters}::hop_adapter::Hop`;

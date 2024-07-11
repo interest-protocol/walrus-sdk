@@ -22,6 +22,8 @@ export class DcaSDK {
   #client: SuiClient;
   #defaultDcaPackage = '0x2';
   #defaultAdaptersPackage = '0x0';
+  #defaultTradePolicyId = '0x3';
+  #tradePolicy: string;
   #dcaPackage: string;
   #adapters: string;
   #MAX_U64 = 18446744073709551615n;
@@ -165,4 +167,6 @@ export class DcaSDK {
 
     return tx;
   }
+
+  swapHop() {}
 }

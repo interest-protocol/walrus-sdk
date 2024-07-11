@@ -4,6 +4,7 @@ export interface DCAConstructorArgs {
   fullNodeUrl?: string;
   dcaAddress?: string;
   adaptersAddress?: string;
+  tradePolicyId?: string;
 }
 
 export enum TimeScale {
@@ -43,6 +44,8 @@ export interface IsActiveArgs extends DcaArgs {}
 export interface StopArgs extends DcaArgs {}
 
 export interface DestroyArgs extends DcaArgs {}
+
+export interface SwapHopArgs extends DcaArgs {}
 
 export interface DCA {
   objectId: string;
