@@ -46,6 +46,7 @@ export interface DestroyArgs extends DcaArgs {}
 
 export interface DCA {
   objectId: string;
+  type: string;
   owner: string;
   delegatee: string;
   start: bigint;

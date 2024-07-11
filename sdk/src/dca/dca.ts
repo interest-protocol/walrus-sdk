@@ -8,7 +8,7 @@ import {
 import { Transaction } from '@mysten/sui/transactions';
 import invariant from 'tiny-invariant';
 import { devInspectAndGetResults } from '@polymedia/suitcase-core';
-
+import { parseDCAObject } from './utils';
 import {
   DCAConstructorArgs,
   NewArgs,
@@ -47,9 +47,7 @@ export class DcaSDK {
       options: { showContent: true, showType: true },
     });
 
-    console.log({ obj });
-
-    return {} as any;
+    return parseDCAObject(obj);
   }
 
   newAndShare({

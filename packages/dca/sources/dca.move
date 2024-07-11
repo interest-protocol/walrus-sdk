@@ -116,7 +116,7 @@ module dca::dca {
             id: object::new(ctx),
             owner: ctx.sender(),
             start_timestamp,
-            last_trade_timestamp: start_timestamp,
+            last_trade_timestamp: 0,
             every,
             remaining_orders: number_of_orders,
             time_scale,

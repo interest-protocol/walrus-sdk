@@ -3,7 +3,7 @@ import { OwnedObjectRef } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction, TransactionResult } from '@mysten/sui/transactions';
 import dotenv from 'dotenv';
-import * as fs from 'fs';
+
 import util from 'util';
 
 import { DcaSDK as SDK } from '../dca';
@@ -94,20 +94,4 @@ export async function getCoinOfValue(
     coinOfValue = tx.splitCoins(firstCoinInput, [tx.pure.u64(coinValue)]);
   }
   return coinOfValue;
-}
-
-export const getId = (type: string): string | undefined => {
-  try {
-    const rawData = fs.readFileSync('../clamm.json', 'utf8');
-    const parsedData: IObjectInfo[] = JSON.parse(rawData);
-    const typeToId = new Map(parsedData.map((item) => [item.type, item.id]));
-    return typeToId.get(type);
-  } catch (error) {
-    console.error('Error reading the CLAMM file:', error);
-  }
-};
-
-export interface IObjectInfo {
-  type: string | undefined;
-  id: string | undefined;
 }

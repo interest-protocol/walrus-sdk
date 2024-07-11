@@ -22,7 +22,8 @@
   },
   "scripts": {
     "new": "tsx ./src/scripts/new.script.ts",
-    "is-active": "tsx ./src/scripts/is-active.script.ts"
+    "is-active": "tsx ./src/scripts/is-active.script.ts",
+    "get": "tsx ./src/scripts/get.script.ts"
   },
   "keywords": [],
   "license": "ISC",
