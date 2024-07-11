@@ -15,20 +15,41 @@ import {
   IsActiveArgs,
   StopArgs,
   DestroyArgs,
+  DCA,
 } from './dca.types';
 
 export class DcaSDK {
   #client: SuiClient;
-  #defaultPackage = '0x2';
-  #package: string;
+  #defaultDcaPackage = '0x2';
+  #defaultAdaptersPackage = '0x0';
+  #dcaPackage: string;
+  #adapters: string;
   #MAX_U64 = 18446744073709551615n;
   #defaultFee = 500000n;
 
-  constructor({ packageAddress, fullNodeUrl }: DCAConstructorArgs) {
-    this.#package = packageAddress ? packageAddress : this.#defaultPackage;
+  constructor(args?: DCAConstructorArgs | undefined) {
+    this.#dcaPackage = args?.dcaAddress
+      ? args.dcaAddress
+      : this.#defaultDcaPackage;
+    this.#adapters = args?.adaptersAddress
+      ? args.adaptersAddress
+      : this.#defaultAdaptersPackage;
     this.#client = new SuiClient({
-      url: fullNodeUrl ? fullNodeUrl : getFullnodeUrl('mainnet'),
+      url: args?.fullNodeUrl ? args.fullNodeUrl : getFullnodeUrl('mainnet'),
     });
+  }
+
+  async get(objectId: string): Promise<DCA> {
+    invariant(isValidSuiObjectId(objectId), 'Invalid DCA id');
+
+    const obj = await this.#client.getObject({
+      id: objectId,
+      options: { showContent: true, showType: true },
+    });
+
+    console.log({ obj });
+
+    return {} as any;
   }
 
   newAndShare({
@@ -48,7 +69,7 @@ export class DcaSDK {
     invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
 
     let dca = tx.moveCall({
-      target: `${this.#package}::dca::new`,
+      target: `${this.#dcaPackage}::dca::new`,
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(SUI_CLOCK_OBJECT_ID),
@@ -64,7 +85,7 @@ export class DcaSDK {
     });
 
     tx.moveCall({
-      target: `${this.#package}::dca::share`,
+      target: `${this.#dcaPackage}::dca::share`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -82,7 +103,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#package}::dca::active`,
+      target: `${this.#dcaPackage}::dca::active`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -105,7 +126,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#package}::dca::stop`,
+      target: `${this.#dcaPackage}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -119,7 +140,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#package}::dca::destroy`,
+      target: `${this.#dcaPackage}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -133,13 +154,13 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#package}::dca::stop`,
+      target: `${this.#dcaPackage}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
 
     tx.moveCall({
-      target: `${this.#package}::dca::destroy`,
+      target: `${this.#dcaPackage}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });

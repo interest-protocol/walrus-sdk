@@ -2,17 +2,16 @@
 name = "Adapter"
 edition = "2024.beta"
 authors = ["Jose Cerqueira (jose@interestprotocol.com)"]
+published-at = "0x88d6e637822f3fdcfcc7e7f6037b5b72fd356fb94728032e557e3acdb1c8f786"
 
 [dependencies]
-MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "framework/mainnet" }
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
-DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "framework/mainnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "testnet" }
 DCA = { local = "../dca" }
-CetusClmm = { local = "../interfaces/cetus/cetus_clmm" }
-Cetus = { local = "../interfaces/cetus/cetus" }
 
 [addresses]
-adapter = "0x0"
+adapter = "0x88d6e637822f3fdcfcc7e7f6037b5b72fd356fb94728032e557e3acdb1c8f786"
 std = "0x1"
 sui = "0x2"
 deepbook = "0xdee9"
+dca = "0xbdab48fe3473744154b8249be572d07a527bf97c75ec8a28daa1391edf6b36c6"

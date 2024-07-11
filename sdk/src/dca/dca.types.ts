@@ -2,7 +2,8 @@ import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
 export interface DCAConstructorArgs {
   fullNodeUrl?: string;
-  packageAddress?: string;
+  dcaAddress?: string;
+  adaptersAddress?: string;
 }
 
 export enum TimeScale {
@@ -29,8 +30,8 @@ export interface NewArgs extends MaybeTx {
   coinOutType: string;
   coinIn: TransactionArgument;
   timeScale: TimeScale;
-  every: bigint;
-  numberOfOrders: bigint;
+  every: number;
+  numberOfOrders: number;
   max?: bigint;
   min?: bigint;
   fee?: number;
@@ -49,8 +50,8 @@ export interface DCA {
   delegatee: string;
   start: bigint;
   lastTrade: bigint;
-  every: bigint;
-  remainingOrders: bigint;
+  every: number;
+  remainingOrders: number;
   timeScale: TimeScale;
   cooldown: bigint;
   coinInBalance: bigint;
@@ -59,4 +60,6 @@ export interface DCA {
   max: bigint;
   active: boolean;
   fee: bigint;
+  totalOwnerOutput: bigint;
+  totalDelegateeOutput: bigint;
 }
