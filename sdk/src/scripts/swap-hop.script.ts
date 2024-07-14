@@ -16,7 +16,7 @@ import { normalizeSuiAddress } from '@mysten/sui/utils';
       tx: initTx,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0xf0d4b116f61e55a941e789d5070c76a1c6c4b10f3529a051fcb11365f3b8cee5',
+      dca: '0xbe76eebdea3f22b8f04fd72fcebd2d986df5aaac858c5882967097b0162f9ed2',
     });
 
     tx1.transferObjects([coinIn], normalizeSuiAddress('0x0'));
@@ -32,7 +32,7 @@ import { normalizeSuiAddress } from '@mysten/sui/utils';
       tx: tx1,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0xf0d4b116f61e55a941e789d5070c76a1c6c4b10f3529a051fcb11365f3b8cee5',
+      dca: '0xbe76eebdea3f22b8f04fd72fcebd2d986df5aaac858c5882967097b0162f9ed2',
       request,
       admin: OBJECT_IDS.testnet.adminCap,
       coinOut: coinETH,

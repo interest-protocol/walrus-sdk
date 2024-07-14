@@ -2,14 +2,14 @@
 name = "DCA"
 edition = "2024.beta"
 authors = ["Jose Cerqueira (jose@interestprotocol.com)"]
-published-at = "0xbdab48fe3473744154b8249be572d07a527bf97c75ec8a28daa1391edf6b36c6"
+published-at = "0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac"
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
 SuiTears = { git = "https://github.com/interest-protocol/suitears.git", subdir = "contracts", rev = "testnet" }
 
 [addresses]
-dca = "0xbdab48fe3473744154b8249be572d07a527bf97c75ec8a28daa1391edf6b36c6"
+dca = "0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac"
 std = "0x1"
 sui = "0x2"
 suitears = "0x0bf4ed8a40599da94afb0f4ab91679de6728b93b748fe24de6fd972a04438529"

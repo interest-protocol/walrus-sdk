@@ -6,17 +6,6 @@
   ],
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/clamm/index.d.ts",
-  "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/clamm/index.d.ts"
-    }
-  },
   "publishConfig": {
     "access": "public"
   },

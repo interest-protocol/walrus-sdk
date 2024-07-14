@@ -5,7 +5,7 @@ import { log } from 'console';
 (async () => {
   try {
     const dcaObject = await DCATestnet.get(
-      '0x04d4e2d1f13381b4e4a8ec916f1f4068721f1b11aeab79815b835ed96db64503'
+      '0xbe76eebdea3f22b8f04fd72fcebd2d986df5aaac858c5882967097b0162f9ed2'
     );
 
     log({ dcaObject });
