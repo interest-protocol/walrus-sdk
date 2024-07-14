@@ -1,7 +1,7 @@
-import { DCATestnet } from './utils.script';
-import { COINS } from './constants.script';
-
 import invariant from 'tiny-invariant';
+
+import { COINS } from './constants.script';
+import { DCATestnet } from './utils.script';
 
 (async () => {
   try {

@@ -1,6 +1,6 @@
-import { DCATestnet } from './utils.script';
-
 import { log } from 'console';
+
+import { DCATestnet } from './utils.script';
 
 (async () => {
   try {

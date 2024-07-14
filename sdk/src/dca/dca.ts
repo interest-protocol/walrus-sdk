@@ -1,25 +1,25 @@
 import { bcs } from '@mysten/sui/bcs';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
-  SUI_CLOCK_OBJECT_ID,
   isValidSuiObjectId,
+  SUI_CLOCK_OBJECT_ID,
 } from '@mysten/sui/utils';
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
-import invariant from 'tiny-invariant';
 import { devInspectAndGetResults } from '@polymedia/suitcase-core';
-import { parseDCAObject } from './utils';
-import {
-  DCAConstructorArgs,
-  NewArgs,
-  IsActiveArgs,
-  StopArgs,
-  DestroyArgs,
-  DCA,
-  SwapHopStartArgs,
-  SwapHopEndArgs,
-} from './dca.types';
+import invariant from 'tiny-invariant';
 
+import {
+  DCA,
+  DCAConstructorArgs,
+  DestroyArgs,
+  IsActiveArgs,
+  NewArgs,
+  StopArgs,
+  SwapHopEndArgs,
+  SwapHopStartArgs,
+} from './dca.types';
+import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
   #defaultDcaPackage = '0x2';
@@ -73,7 +73,7 @@ export class DcaSDK {
     invariant(isValidSuiAddress(delegatee), 'Invalid delegatee address');
     invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
 
-    let dca = tx.moveCall({
+    const dca = tx.moveCall({
       target: `${this.#dcaPackage}::dca::new`,
       typeArguments: [coinInType, coinOutType],
       arguments: [

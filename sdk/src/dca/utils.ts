@@ -1,9 +1,9 @@
 import { SuiObjectResponse } from '@mysten/sui/client';
-import { DCA, TimeScale } from './dca.types';
-
+import { normalizeSuiAddress, normalizeSuiObjectId } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
-import { normalizeSuiAddress, normalizeSuiObjectId } from '@mysten/sui/utils';
+
+import { DCA, TimeScale } from './dca.types';
 
 const getTimeScale = (x: number) => {
   invariant(TimeScale.Month >= x, 'Invalid time scale');

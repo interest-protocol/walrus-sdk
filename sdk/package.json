@@ -15,7 +15,8 @@
     "get": "tsx ./src/scripts/get.script.ts",
     "stop-and-destroy": "tsx ./src/scripts/stop-and-destroy.script.ts",
     "approve-hop": "tsx ./src/scripts/approve-hop.script.ts",
-    "swap-hop": "tsx ./src/scripts/swap-hop.script.ts"
+    "swap-hop": "tsx ./src/scripts/swap-hop.script.ts",
+    "lint": "npx eslint . --fix"
   },
   "keywords": [],
   "license": "ISC",
@@ -25,10 +26,10 @@
     "@types/ramda": "^0.30.1",
     "dotenv": "^16.4.5",
     "eslint": "^8.0.1",
-    "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.3.2",
     "rimraf": "^6.0.0",
     "ts-node": "^10.9.2",

@@ -1,6 +1,7 @@
-import { executeTx, log } from './utils.script';
-import { HOP_TESTNET_WITNESS, OBJECT_IDS } from './constants.script';
 import { Transaction } from '@mysten/sui/transactions';
+
+import { HOP_TESTNET_WITNESS, OBJECT_IDS } from './constants.script';
+import { executeTx, log } from './utils.script';
 
 (async () => {
   try {

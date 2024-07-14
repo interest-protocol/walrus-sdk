@@ -3,13 +3,11 @@ import { OwnedObjectRef } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction, TransactionResult } from '@mysten/sui/transactions';
 import dotenv from 'dotenv';
-
+import invariant from 'tiny-invariant';
 import util from 'util';
 
 import { DcaSDK } from '../dca';
-
 import { OBJECT_IDS } from './constants.script';
-import invariant from 'tiny-invariant';
 
 dotenv.config();
 

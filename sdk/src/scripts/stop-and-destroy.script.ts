@@ -1,5 +1,5 @@
-import { executeTx, log, DCATestnet } from './utils.script';
 import { COINS } from './constants.script';
+import { DCATestnet,executeTx, log } from './utils.script';
 
 (async () => {
   try {

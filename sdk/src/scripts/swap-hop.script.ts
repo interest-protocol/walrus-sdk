@@ -1,8 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
-
-import { executeTx, log, DCATestnet } from './utils.script';
-import { COINS, OBJECT_IDS } from './constants.script';
 import { normalizeSuiAddress } from '@mysten/sui/utils';
+
+import { COINS, OBJECT_IDS } from './constants.script';
+import { DCATestnet,executeTx, log } from './utils.script';
 
 (async () => {
   try {

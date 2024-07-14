@@ -1,8 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
-
-import { keypair, DCATestnet, log, executeTx } from './utils.script.ts';
-import { COINS } from './constants.script';
 import { TimeScale } from 'src/dca';
+
+import { COINS } from './constants.script';
+import { DCATestnet, executeTx,keypair, log } from './utils.script.ts';
 
 (async () => {
   try {
