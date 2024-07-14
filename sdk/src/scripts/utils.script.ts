@@ -9,90 +9,93 @@ import util from 'util';
 import { DcaSDK } from '../dca';
 
 import { OBJECT_IDS } from './constants.script';
+import invariant from 'tiny-invariant';
 
 dotenv.config();
 
+invariant(process.env.KEY, 'Private key missing');
+
 export const keypair = Ed25519Keypair.fromSecretKey(
-    Uint8Array.from(Buffer.from(process.env.KEY!, 'base64')).slice(1)
+  Uint8Array.from(Buffer.from(process.env.KEY, 'base64')).slice(1)
 );
 
 export const client = new SuiClient({ url: getFullnodeUrl('testnet') });
 
 export const DCATestnet = new DcaSDK({
-    dcaAddress: OBJECT_IDS.testnet.dca,
-    fullNodeUrl: getFullnodeUrl('testnet'),
-    adaptersAddress: OBJECT_IDS.testnet.adapters,
-    tradePolicyId: OBJECT_IDS.testnet.tradePolicy,
+  dcaAddress: OBJECT_IDS.testnet.dca,
+  fullNodeUrl: getFullnodeUrl('testnet'),
+  adaptersAddress: OBJECT_IDS.testnet.adapters,
+  tradePolicyId: OBJECT_IDS.testnet.tradePolicy,
 });
 
 export const executeTx = async (tx: Transaction) => {
-    const result = await client.signAndExecuteTransaction({
-        signer: keypair,
-        transaction: tx,
-        options: {
-            showEffects: true,
-        },
-        requestType: 'WaitForLocalExecution',
-    });
+  const result = await client.signAndExecuteTransaction({
+    signer: keypair,
+    transaction: tx,
+    options: {
+      showEffects: true,
+    },
+    requestType: 'WaitForLocalExecution',
+  });
 
-    // return if the tx hasn't succeed
-    if (result.effects?.status?.status !== 'success') {
-        console.log('\n\nCreating a new stable pool failed');
-        return;
-    }
+  // return if the tx hasn't succeed
+  if (result.effects?.status?.status !== 'success') {
+    console.log('\n\nCreating a new stable pool failed');
+    return;
+  }
 
-    console.log('SUCCESS!');
+  console.log('SUCCESS!');
 
-    // get all created objects IDs
-    const createdObjectIds = result.effects.created!.map(
-        (item: OwnedObjectRef) => item.reference.objectId
-    );
+  // get all created objects IDs
+  const createdObjectIds = result.effects.created!.map(
+    (item: OwnedObjectRef) => item.reference.objectId
+  );
 
-    // fetch objects data
-    return client.multiGetObjects({
-        ids: createdObjectIds,
-        options: { showContent: true, showType: true, showOwner: true },
-    });
+  // fetch objects data
+  return client.multiGetObjects({
+    ids: createdObjectIds,
+    options: { showContent: true, showType: true, showOwner: true },
+  });
 };
 
 export const log = (x: unknown) =>
-    console.log(util.inspect(x, false, null, true));
+  console.log(util.inspect(x, false, null, true));
 
 export const sleep = async (ms = 0) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 export const PRECISION = 1000000000000000000n;
 
 export function removeLeadingZeros(address: string): string {
-    return (address as any).replaceAll(/0x0+/g, '0x');
+  return (address as any).replaceAll(/0x0+/g, '0x');
 }
 
 export async function getCoinOfValue(
-    tx: Transaction,
-    coinType: string,
-    coinValue: bigint
+  tx: Transaction,
+  coinType: string,
+  coinValue: bigint
 ): Promise<TransactionResult> {
-    let coinOfValue: TransactionResult;
-    coinType = removeLeadingZeros(coinType);
-    if (coinType === '0x2::sui::SUI') {
-        coinOfValue = tx.splitCoins(tx.gas, [tx.pure.u64(coinValue)]);
-    } else {
-        const paginatedCoins = await client.getCoins({
-            owner: keypair.toSuiAddress(),
-            coinType,
-        });
+  let coinOfValue: TransactionResult;
+  coinType = removeLeadingZeros(coinType);
+  if (coinType === '0x2::sui::SUI') {
+    coinOfValue = tx.splitCoins(tx.gas, [tx.pure.u64(coinValue)]);
+  } else {
+    const paginatedCoins = await client.getCoins({
+      owner: keypair.toSuiAddress(),
+      coinType,
+    });
 
-        const [firstCoin, ...otherCoins] = paginatedCoins.data;
+    const [firstCoin, ...otherCoins] = paginatedCoins.data;
 
-        const firstCoinInput = tx.object(firstCoin.coinObjectId);
+    const firstCoinInput = tx.object(firstCoin.coinObjectId);
 
-        if (otherCoins.length > 0) {
-            tx.mergeCoins(
-                firstCoinInput,
-                otherCoins.map((coin) => coin.coinObjectId)
-            );
-        }
-        coinOfValue = tx.splitCoins(firstCoinInput, [tx.pure.u64(coinValue)]);
+    if (otherCoins.length > 0) {
+      tx.mergeCoins(
+        firstCoinInput,
+        otherCoins.map((coin) => coin.coinObjectId)
+      );
     }
-    return coinOfValue;
+    coinOfValue = tx.splitCoins(firstCoinInput, [tx.pure.u64(coinValue)]);
+  }
+  return coinOfValue;
 }
