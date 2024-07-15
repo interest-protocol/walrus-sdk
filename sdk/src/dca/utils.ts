@@ -29,7 +29,7 @@ export const parseDCAObject = (x: SuiObjectResponse): DCA => {
     start: BigInt(pathOr(0, ['fields', 'start_timestamp'], data)),
     lastTrade: BigInt(pathOr(0, ['fields', 'last_trade_timestamp'], data)),
     every: +pathOr(0, ['fields', 'every'], data),
-    remainingOrders: +pathOr(0, ['fields', ' remaining_orders'], data),
+    remainingOrders: +pathOr(0, ['fields', 'remaining_orders'], data),
     timeScale: getTimeScale(+pathOr(0, ['fields', 'time_scale'], data)),
     cooldown: BigInt(pathOr(0, ['fields', 'cooldown'], data)),
     coinInBalance: BigInt(pathOr(0, ['fields', 'input_balance'], data)),
