@@ -14,5 +14,6 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
     },
+    ignores: ['./dist', './node_modules'],
   }
 );

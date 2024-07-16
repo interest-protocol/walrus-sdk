@@ -51,13 +51,13 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.1.0",
     "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.0"
   },
   "dependencies": {
     "@mysten/sui": "^1.2.1",
     "@polymedia/suitcase-core": "^0.0.7",
     "ramda": "^0.30.1",
-    "tiny-invariant": "^1.3.3",
-    "typescript": "^5.5.3"
+    "tiny-invariant": "^1.3.3"
   }
 }
