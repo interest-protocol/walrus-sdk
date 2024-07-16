@@ -4,6 +4,17 @@
   "files": [
     "dist"
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/dca/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/dca/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/dca/index.d.ts"
+    }
+  },
   "version": "1.0.0",
   "description": "",
   "publishConfig": {
@@ -16,7 +27,12 @@
     "stop-and-destroy": "tsx ./src/scripts/stop-and-destroy.script.ts",
     "approve-hop": "tsx ./src/scripts/approve-hop.script.ts",
     "swap-hop": "tsx ./src/scripts/swap-hop.script.ts",
-    "lint": "npx eslint . --fix"
+    "lint": "npx eslint . --fix",
+    "clean": "rimraf dist && rimraf tsconfig.prod.tsbuildinfo && rimraf tsconfig.tsbuildinfo",
+    "build:tsup": "tsup './src/dca/index.ts' --format esm,cjs --sourcemap",
+    "build:types": "tsc --project tsconfig.prod.json",
+    "build": "pnpm run clean && pnpm run build:tsup && pnpm run build:types",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "keywords": [],
   "license": "ISC",
@@ -33,6 +49,7 @@
     "prettier": "^3.3.2",
     "rimraf": "^6.0.0",
     "ts-node": "^10.9.2",
+    "tsup": "^8.1.0",
     "tsx": "^4.16.2",
     "typescript-eslint": "^7.16.0"
   },
