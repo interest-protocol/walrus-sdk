@@ -52,7 +52,7 @@ export interface SwapHopStartArgs extends DcaArgs, MaybeTx {}
 export interface SwapHopEndArgs extends DcaArgs, MaybeTx {
   coinOut: TransactionArgument;
   request: NestedResult;
-  admin: string;
+  admin?: string;
 }
 
 export interface DCA {

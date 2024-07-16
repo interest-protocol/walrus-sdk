@@ -22,9 +22,14 @@ import {
 import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
-  #defaultDcaPackage = '0x2';
-  #defaultAdaptersPackage = '0x0';
-  #defaultTradePolicyId = '0x3';
+  #defaultDcaPackage =
+    '0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac';
+  #defaultAdaptersPackage =
+    '0xa4c68051bf638dbb2e0e0f6532680a5f4c0cb31a21fb1fbe50f3336c9110ea11';
+  #defaultTradePolicyId =
+    '0x7574069b7fa1a87114433ed3cbcc29fa64fb47e0b0f63ad142484b5cd1babc89';
+  #defaultAdminCap =
+    '0xf933a1b16fac37bba263ed30872f51a39513bbc04bf125bd882414004a33834c';
   #tradePolicy: string;
   #dcaPackage: string;
   #adapters: string;
@@ -201,7 +206,7 @@ export class DcaSDK {
     tx = new Transaction(),
     request,
     coinOut,
-    admin,
+    admin = this.#defaultAdminCap,
   }: SwapHopEndArgs) {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
