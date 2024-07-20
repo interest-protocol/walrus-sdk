@@ -7,7 +7,6 @@ import invariant from 'tiny-invariant';
 import util from 'util';
 
 import { DcaSDK } from '../dca';
-import { OBJECT_IDS } from './constants.script';
 
 dotenv.config();
 
@@ -19,12 +18,7 @@ export const keypair = Ed25519Keypair.fromSecretKey(
 
 export const client = new SuiClient({ url: getFullnodeUrl('testnet') });
 
-export const DCATestnet = new DcaSDK({
-  dcaAddress: OBJECT_IDS.testnet.dca,
-  fullNodeUrl: getFullnodeUrl('testnet'),
-  adaptersAddress: OBJECT_IDS.testnet.adapters,
-  tradePolicyId: OBJECT_IDS.testnet.tradePolicy,
-});
+export const DCATestnet = new DcaSDK();
 
 export const executeTx = async (tx: Transaction) => {
   const result = await client.signAndExecuteTransaction({
@@ -45,15 +39,17 @@ export const executeTx = async (tx: Transaction) => {
   console.log('SUCCESS!');
 
   // get all created objects IDs
-  const createdObjectIds = result.effects.created!.map(
+  const createdObjectIds = result.effects?.created?.map(
     (item: OwnedObjectRef) => item.reference.objectId
   );
 
-  // fetch objects data
-  return client.multiGetObjects({
-    ids: createdObjectIds,
-    options: { showContent: true, showType: true, showOwner: true },
-  });
+  if (createdObjectIds) {
+    // fetch objects data
+    return client.multiGetObjects({
+      ids: createdObjectIds,
+      options: { showContent: true, showType: true, showOwner: true },
+    });
+  }
 };
 
 export const log = (x: unknown) =>

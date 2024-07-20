@@ -1,12 +1,5 @@
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
-export interface DCAConstructorArgs {
-  fullNodeUrl?: string;
-  dcaAddress?: string;
-  adaptersAddress?: string;
-  tradePolicyId?: string;
-}
-
 export enum TimeScale {
   Seconds,
   Minutes,

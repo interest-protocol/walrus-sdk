@@ -2,7 +2,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import { normalizeSuiAddress } from '@mysten/sui/utils';
 
 import { COINS, OBJECT_IDS } from './constants.script';
-import { DCATestnet,executeTx, log } from './utils.script';
+import { DCATestnet, executeTx, log } from './utils.script';
 
 (async () => {
   try {
@@ -16,7 +16,7 @@ import { DCATestnet,executeTx, log } from './utils.script';
       tx: initTx,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0xbe76eebdea3f22b8f04fd72fcebd2d986df5aaac858c5882967097b0162f9ed2',
+      dca: '0xbe3d018c598cfeb77ef164958b0ae3671da59415d3fb6862f47c6d79032bc889',
     });
 
     tx1.transferObjects([coinIn], normalizeSuiAddress('0x0'));
@@ -32,7 +32,7 @@ import { DCATestnet,executeTx, log } from './utils.script';
       tx: tx1,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0xbe76eebdea3f22b8f04fd72fcebd2d986df5aaac858c5882967097b0162f9ed2',
+      dca: '0xbe3d018c598cfeb77ef164958b0ae3671da59415d3fb6862f47c6d79032bc889',
       request,
       admin: OBJECT_IDS.testnet.adminCap,
       coinOut: coinETH,

@@ -2,7 +2,7 @@
 name = "Adapter"
 edition = "2024.beta"
 authors = ["Jose Cerqueira (jose@interestprotocol.com)"]
-published-at = "0xa4c68051bf638dbb2e0e0f6532680a5f4c0cb31a21fb1fbe50f3336c9110ea11"
+published-at = "0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255"
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
@@ -10,8 +10,8 @@ DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui
 DCA = { local = "../dca" }
 
 [addresses]
-adapter = "0xa4c68051bf638dbb2e0e0f6532680a5f4c0cb31a21fb1fbe50f3336c9110ea11"
+adapter = "0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255"
 std = "0x1"
 sui = "0x2"
 deepbook = "0xdee9"
-dca = "0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac"
+dca = "0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c"

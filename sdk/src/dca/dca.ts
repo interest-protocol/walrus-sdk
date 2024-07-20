@@ -1,6 +1,10 @@
 import { bcs } from '@mysten/sui/bcs';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
+import {
+  Inputs,
+  Transaction,
+  TransactionArgument,
+} from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
   isValidSuiObjectId,
@@ -11,7 +15,6 @@ import invariant from 'tiny-invariant';
 
 import {
   DCA,
-  DCAConstructorArgs,
   DestroyArgs,
   IsActiveArgs,
   NewArgs,
@@ -22,33 +25,29 @@ import {
 import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
-  #defaultDcaPackage =
-    '0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac';
-  #defaultAdaptersPackage =
-    '0xa4c68051bf638dbb2e0e0f6532680a5f4c0cb31a21fb1fbe50f3336c9110ea11';
-  #defaultTradePolicyId =
-    '0x7574069b7fa1a87114433ed3cbcc29fa64fb47e0b0f63ad142484b5cd1babc89';
-  #defaultAdminCap =
-    '0xf933a1b16fac37bba263ed30872f51a39513bbc04bf125bd882414004a33834c';
-  #tradePolicy: string;
-  #dcaPackage: string;
-  #adapters: string;
+  #tradePolicy = Inputs.SharedObjectRef({
+    objectId:
+      '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
+    initialSharedVersion: '83443963',
+    mutable: true,
+  });
+  #dcaPackage =
+    '0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c';
+  #adapters =
+    '0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255';
+  #hopAdapterWhitelist = Inputs.SharedObjectRef({
+    objectId:
+      '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
+    initialSharedVersion: '83443964',
+    mutable: true,
+  });
   #MAX_U64 = 18446744073709551615n;
   #defaultFee = 500000n;
 
-  constructor(args?: DCAConstructorArgs | undefined) {
-    this.#dcaPackage = args?.dcaAddress
-      ? args.dcaAddress
-      : this.#defaultDcaPackage;
-    this.#adapters = args?.adaptersAddress
-      ? args.adaptersAddress
-      : this.#defaultAdaptersPackage;
+  constructor(nodeUrl?: string) {
     this.#client = new SuiClient({
-      url: args?.fullNodeUrl ? args.fullNodeUrl : getFullnodeUrl('mainnet'),
+      url: nodeUrl ? nodeUrl : getFullnodeUrl('mainnet'),
     });
-    this.#tradePolicy = args?.tradePolicyId
-      ? args.tradePolicyId
-      : this.#defaultTradePolicyId;
   }
 
   async get(objectId: string): Promise<DCA> {
@@ -206,14 +205,17 @@ export class DcaSDK {
     tx = new Transaction(),
     request,
     coinOut,
-    admin = this.#defaultAdminCap,
   }: SwapHopEndArgs) {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     tx.moveCall({
       target: `${this.#adapters}::hop_adapter::swap`,
       typeArguments: [coinOutType],
-      arguments: [tx.object(admin), request as TransactionArgument, coinOut],
+      arguments: [
+        tx.object(this.#hopAdapterWhitelist),
+        request as TransactionArgument,
+        coinOut,
+      ],
     });
 
     tx.moveCall({

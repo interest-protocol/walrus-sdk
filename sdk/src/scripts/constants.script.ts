@@ -27,19 +27,22 @@ export const COINS = {
 
 export const OBJECT_IDS = {
   testnet: {
-    dca: '0x29d181f4154973ccd5e392ccce3b2ed44d7644ba7e1a2479239bea26c615d9ac',
+    dca: '0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c',
     adapters:
-      '0xa4c68051bf638dbb2e0e0f6532680a5f4c0cb31a21fb1fbe50f3336c9110ea11',
+      '0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255',
     adminCap:
-      '0xf933a1b16fac37bba263ed30872f51a39513bbc04bf125bd882414004a33834c',
+      '0xe0ec337608a170d6c4de73060d640dcc3ca74c76813876dd94c12b642781265d',
     tradePolicy:
-      '0x7574069b7fa1a87114433ed3cbcc29fa64fb47e0b0f63ad142484b5cd1babc89',
+      '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
+    hopWhitelist:
+      '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
   },
   mainnet: {
     dca: '0x0',
     adapters: '0x0',
     adminCap: '0x0',
     tradePolicy: '0x0',
+    hopWhitelist: '0x0',
   },
 };
 
