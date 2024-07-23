@@ -29,7 +29,7 @@ export class DcaSDK {
     objectId:
       '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
     initialSharedVersion: '83443963',
-    mutable: true,
+    mutable: false,
   });
   #dcaPackage =
     '0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c';
@@ -39,7 +39,7 @@ export class DcaSDK {
     objectId:
       '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
     initialSharedVersion: '83443964',
-    mutable: true,
+    mutable: false,
   });
   #MAX_U64 = 18446744073709551615n;
   #defaultFee = 500000n;
