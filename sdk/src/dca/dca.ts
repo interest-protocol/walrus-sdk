@@ -1,7 +1,7 @@
 import { bcs } from '@mysten/sui/bcs';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import {
-  Inputs,
+  // Inputs,
   Transaction,
   TransactionArgument,
 } from '@mysten/sui/transactions';
