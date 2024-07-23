@@ -1,4 +1,4 @@
-module adapter::hop_adapter {
+module adapter::whitelist_adapter {
     // === Imports ===
 
     use sui::{
@@ -14,7 +14,7 @@ module adapter::hop_adapter {
 
     // === Structs ===
 
-    public struct Hop has drop {}
+    public struct Witness has drop {}
     
     public struct Whitelist has key {
         id: UID,
@@ -55,6 +55,6 @@ module adapter::hop_adapter {
     // === Private Functions ===
 
     fun resolve<Output>(request: &mut Request<Output>, output: Coin<Output>) {
-        trade_policy::add<Hop, Output>(request, Hop {}, output);   
+        trade_policy::add<Witness, Output>(request, Witness {}, output);   
     }
 }

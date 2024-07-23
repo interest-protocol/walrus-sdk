@@ -5,10 +5,10 @@ module dca::dca {
 
     use sui::{
         event,
-        coin::Coin,
         clock::Clock,
+        coin::{Self, Coin},
+        vec_set::{Self, VecSet},
         balance::{Self, Balance},
-        transfer::{public_transfer, share_object}
     };
 
     use suitears::math64;
@@ -24,6 +24,11 @@ module dca::dca {
     const EInvalidFee: u64 = 6;
     const EMustBeTheOwner: u64 = 7;
     const EMustBeInactive: u64 = 8;
+    const EInvalidWitness: u64 = 9;
+    const ERuleAlreadyAdded: u64 = 10;
+    const EInvalidDcaAddress: u64 = 11;
+    const EMustHaveARule: u64 = 12;
+    const EInvalidRule: u64 = 13;
 
     // === Constants ===
   
@@ -70,7 +75,28 @@ module dca::dca {
         fee_percent: u64,
         total_owner_output: u64,
         total_delegatee_output: u64,
+        witness: TypeName
     }
+
+    public struct Admin has key, store {
+        id: UID
+    }
+
+    public struct TradePolicy has key {
+        id: UID,
+        whitelist: VecSet<TypeName>
+    }
+
+    #[allow(lint(coin_field))]
+    public struct Request<phantom Output> {
+        dca: address,
+        owner: address,
+        rule: Option<TypeName>,
+        witness: TypeName,
+        output: Coin<Output>,
+    }
+
+    // === Events === 
 
     public struct Start has copy, drop, store {
         input: TypeName,
@@ -101,7 +127,18 @@ module dca::dca {
 
     // === Public-Mutative Functions ===
 
-    public fun new<Input, Output>(
+    fun init(ctx: &mut TxContext) {
+        let trade_policy = TradePolicy {
+            id: object::new(ctx),
+            whitelist: vec_set::empty()
+        };
+
+        transfer::share_object(trade_policy);
+        transfer::public_transfer(Admin { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun new<Input, Output, Witness: drop>(
+        trade_policy: &TradePolicy,
         clock: &Clock,
         coin_in: Coin<Input>,
         every: u64,
@@ -114,6 +151,7 @@ module dca::dca {
         ctx: &mut TxContext
     ): DCA<Input, Output> {
         assert!(MAX_FEE > fee_percent, EInvalidFee);
+        assert!(trade_policy.whitelist.contains(&type_name::get<Witness>()), EInvalidWitness);
         assert_every(every, time_scale);
 
         let start_timestamp = timestamp_s(clock);
@@ -138,6 +176,7 @@ module dca::dca {
             delegatee,
             total_owner_output: 0,
             total_delegatee_output: 0,
+            witness: type_name::get<Witness>()
         };
 
         event::emit(
@@ -157,7 +196,7 @@ module dca::dca {
 
     #[allow(lint(share_owned))]
     public fun share<Input, Output>(self: DCA<Input, Output>) {
-        share_object(self);
+        transfer::share_object(self);
     }
 
     public fun stop<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext) {
@@ -169,21 +208,9 @@ module dca::dca {
         let DCA { 
             id,
             owner,
-            delegatee: _,
-            start_timestamp: _,
-            last_trade_timestamp: _,
-            every: _,
-            remaining_orders: _,
-            time_scale: _,
-            cooldown: _,
             input_balance,
-            amount_per_trade: _,
-            min: _,
-            max: _,
             active,
-            fee_percent: _,
-            total_owner_output: _,
-            total_delegatee_output: _  
+            ..
         } = self;
 
         assert!(!active, EMustBeInactive);
@@ -201,9 +228,52 @@ module dca::dca {
         if (input == 0)
             input_balance.destroy_zero()
         else 
-            public_transfer(input_balance.into_coin(ctx), owner);
+            transfer::public_transfer(input_balance.into_coin(ctx), owner);
     
         id.delete();
+    }
+
+    public fun request<Input, Output>(
+        self: &mut DCA<Input, Output>,
+        ctx: &mut TxContext
+    ): (Request<Output>, Coin<Input>) {
+        let request = Request {
+            dca: self.id.to_address(),
+            rule: option::none(),
+            witness: self.witness,
+            output: coin::zero(ctx),
+            owner: self.owner
+        };
+
+        (request, self.take(ctx))
+    }
+
+    public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
+        assert!(request.rule.is_none(), ERuleAlreadyAdded);
+    
+        request.rule = option::some(type_name::get<Witness>());
+        request.output.join(output);
+    }
+
+    public fun confirm<Input, Output>(
+        self: &mut DCA<Input, Output>,
+        clock: &Clock,
+        request: Request<Output>,
+        ctx: &mut TxContext
+    ) {
+        let Request {
+            dca:  dca_address,
+            rule,
+            witness,
+            output,
+            owner: _
+        } = request;
+
+        assert!(self.id.to_address() == dca_address, EInvalidDcaAddress);
+        assert!(rule.is_some(), EMustHaveARule);
+        assert!(witness == rule.destroy_some(), EInvalidRule);
+
+        self.resolve(clock, output, ctx);
     }
 
   // === Public-View Functions ===
@@ -272,6 +342,31 @@ module dca::dca {
         self.total_delegatee_output
     }
 
+    public fun witness<Input, Output>(self: &DCA<Input, Output>): TypeName {
+        self.witness
+    }
+
+    public fun whitelist(trade_policy: &TradePolicy): vector<TypeName> {
+        trade_policy.whitelist.into_keys()
+    }
+
+    public use fun request_owner as Request.owner;
+    public fun request_owner<Output>(request: &Request<Output>): address {
+        request.owner
+    }
+
+    public fun dca<Output>(request: &Request<Output>): address {
+        request.dca
+    }
+
+    public fun rule<Output>(request: &Request<Output>): Option<TypeName> {
+        request.rule
+    }
+
+    public fun output<Output>(request: &Request<Output>): u64 {
+        request.output.value()
+    }
+
     public fun assert_every(every: u64, time_scale: u8) {
         // Depending on the time_scale the restrictions on `every` are different
         let is_ok = {
@@ -307,9 +402,19 @@ module dca::dca {
         assert!(is_ok, EInvalidEvery);
     }
 
-    // === Public Package Functions ===
+    // === Admin Functions ===
 
-    public(package) fun resolve<Input, Output>(
+    public fun approve<Witness: drop>(_: &Admin, trade_policy: &mut TradePolicy) {
+        trade_policy.whitelist.insert(type_name::get<Witness>());
+    }
+
+    public fun disapprove<Witness: drop>(_: &Admin, trade_policy: &mut TradePolicy) {
+       trade_policy.whitelist.remove(&type_name::get<Witness>());
+    }
+
+    // === Private Functions ===
+
+   fun resolve<Input, Output>(
         self: &mut DCA<Input, Output>,
         clock: &Clock,
         coin_out: Coin<Output>,
@@ -350,16 +455,14 @@ module dca::dca {
             }
         );
 
-        public_transfer(balance_fee.into_coin(ctx), self.delegatee);
-        public_transfer(balance_out.into_coin(ctx), self.owner);
+        transfer::public_transfer(balance_fee.into_coin(ctx), self.delegatee);
+        transfer::public_transfer(balance_out.into_coin(ctx), self.owner);
     }
 
-    public(package) fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
+    fun take<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
         let value = self.input_balance.value();
         self.input_balance.split(math64::min(self.amount_per_trade, value)).into_coin(ctx)
     }
-
-    // === Private Functions ===
 
     fun convert_to_timestamp(time_scale: u8): u64 {
         if (time_scale == 0) return 1;
@@ -379,5 +482,12 @@ module dca::dca {
 
     fun timestamp_s(clock: &Clock): u64 {
         clock.timestamp_ms() / 1000
+    }
+
+    // === Test only Functions ===
+
+    #[test_only]
+    public fun init_for_testing(ctx: &mut TxContext) {
+        init(ctx);
     }
 }

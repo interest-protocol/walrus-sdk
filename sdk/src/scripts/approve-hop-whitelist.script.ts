@@ -13,7 +13,7 @@ import { executeTx, log } from './utils.script';
         tx.object(OBJECT_IDS.testnet.hopWhitelist),
         tx.object(OBJECT_IDS.testnet.adminCap),
         tx.pure.address(
-          '0x94fbcf49867fd909e6b2ecf2802c4b2bba7c9b2d50a13abbb75dbae0216db82a'
+          '0xae67a84ffd814ac5005e2de892be9acb2372712b7ec9605360620e964deb09a4'
         ),
       ],
     });
