@@ -188,7 +188,12 @@ export class DcaSDK {
     const [request, coinIn] = tx.moveCall({
       target: `${this.#dcaPackage}::trade_policy::request`,
       typeArguments: [coinInType, coinOutType],
-      arguments: [tx.object(this.#tradePolicy), tx.object(dca)],
+      arguments: [
+        tx.object(
+          '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209'
+        ),
+        tx.object(dca),
+      ],
     });
 
     return {
@@ -212,7 +217,9 @@ export class DcaSDK {
       target: `${this.#adapters}::hop_adapter::swap`,
       typeArguments: [coinOutType],
       arguments: [
-        tx.object(this.#hopAdapterWhitelist),
+        tx.object(
+          '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58'
+        ),
         request as TransactionArgument,
         coinOut,
       ],
