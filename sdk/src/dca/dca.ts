@@ -25,22 +25,22 @@ import {
 import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
-  #tradePolicy = Inputs.SharedObjectRef({
-    objectId:
-      '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
-    initialSharedVersion: '83443963',
-    mutable: false,
-  });
+  // #tradePolicy = Inputs.SharedObjectRef({
+  //   objectId:
+  //     '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
+  //   initialSharedVersion: '83443963',
+  //   mutable: false,
+  // });
   #dcaPackage =
     '0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c';
   #adapters =
     '0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255';
-  #hopAdapterWhitelist = Inputs.SharedObjectRef({
-    objectId:
-      '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
-    initialSharedVersion: '83443964',
-    mutable: false,
-  });
+  // #hopAdapterWhitelist = Inputs.SharedObjectRef({
+  //   objectId:
+  //     '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
+  //   initialSharedVersion: '83443964',
+  //   mutable: false,
+  // });
   #MAX_U64 = 18446744073709551615n;
   #defaultFee = 500000n;
 
