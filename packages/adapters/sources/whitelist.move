@@ -6,7 +6,7 @@ module adapter::whitelist_adapter {
         vec_set::{Self, VecSet}
     };
 
-    use dca::trade_policy::{Self, Request, Admin};
+    use dca::dca::{Request, Admin};
 
     // === Errors ===
 
@@ -55,6 +55,6 @@ module adapter::whitelist_adapter {
     // === Private Functions ===
 
     fun resolve<Output>(request: &mut Request<Output>, output: Coin<Output>) {
-        trade_policy::add<Witness, Output>(request, Witness {}, output);   
+        request.add<Witness, Output>(Witness {}, output);   
     }
 }

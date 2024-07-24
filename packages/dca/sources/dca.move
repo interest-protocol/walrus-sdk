@@ -404,11 +404,11 @@ module dca::dca {
 
     // === Admin Functions ===
 
-    public fun approve<Witness: drop>(_: &Admin, trade_policy: &mut TradePolicy) {
+    public fun approve<Witness: drop>(trade_policy: &mut TradePolicy, _: &Admin) {
         trade_policy.whitelist.insert(type_name::get<Witness>());
     }
 
-    public fun disapprove<Witness: drop>(_: &Admin, trade_policy: &mut TradePolicy) {
+    public fun disapprove<Witness: drop>(trade_policy: &mut TradePolicy, _: &Admin) {
        trade_policy.whitelist.remove(&type_name::get<Witness>());
     }
 
@@ -489,5 +489,10 @@ module dca::dca {
     #[test_only]
     public fun init_for_testing(ctx: &mut TxContext) {
         init(ctx);
+    }
+
+    #[test_only]
+    public fun take_for_testing<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
+        take(self, ctx)
     }
 }

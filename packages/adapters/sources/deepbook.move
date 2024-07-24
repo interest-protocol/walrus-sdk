@@ -12,7 +12,7 @@ module adapter::deepbook_adapter {
         custodian_v2::AccountCap
     };
 
-    use dca::trade_policy::{Self, Request};
+    use dca::dca::Request;
 
     // === Structs ===
 
@@ -76,6 +76,6 @@ module adapter::deepbook_adapter {
 
     fun resolve<Input, Output>(request: &mut Request<Output>, extra: Coin<Input>, output: Coin<Output>) {
         public_transfer(extra, request.owner());
-        trade_policy::add<Deepbook, Output>(request, Deepbook {}, output);   
+        request.add<Deepbook, Output>(Deepbook {}, output);   
     }
 }
