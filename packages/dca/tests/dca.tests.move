@@ -1,6 +1,7 @@
 #[test_only]
 module dca::dca_tests {
 
+    use std::type_name;
     use sui::{
         sui::SUI,
         clock::{Self, Clock},
@@ -473,6 +474,265 @@ module dca::dca_tests {
         dca::destroy(dca, world.scenario.ctx());
 
         world.end(); 
+    }
+
+    #[test]
+    #[expected_failure(abort_code = dca::EInvalidWitness)] 
+    fun test_new_error_invalid_witness() {
+        let mut world = start_world();
+
+        let dca = dca::new<SUI, USDC, InvalidWitness>(
+            &world.trade_policy,
+            &world.clock,
+            mint_for_testing<SUI>(100, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            100,
+            1999,
+            1000000,
+            DELEGATEE,
+            world.scenario.ctx()
+        );   
+
+        dca.share();
+        world.end(); 
+    }
+
+    #[test]
+    fun test_request() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            0,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        world.clock.increment_for_testing(120 * MILLISECONDS);
+
+        let (mut request, input) = dca.request(world.scenario.ctx());
+
+        assert_eq(input.burn_for_testing(), 500);
+        assert_eq(world.trade_policy.whitelist(), vector[type_name::get<ValidWitness>()]);
+        assert_eq(request.dca(), object::id_address(&dca));
+        assert_eq(request.rule(), option::none());
+        assert_eq(request.output(), 0);
+
+        request.add(ValidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+
+        dca.confirm(
+            &world.clock,
+            request,
+            world.scenario.ctx()
+        );
+
+        dca.share();
+        world.end();
+    }
+
+    #[test]
+    fun test_add() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            0,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        world.clock.increment_for_testing(120 * MILLISECONDS);
+
+        let (mut request, input) = dca.request(world.scenario.ctx());
+
+        request.add(ValidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+
+        assert_eq(request.rule(), option::some(type_name::get<ValidWitness>()));
+        assert_eq(request.output(), 3_000);
+
+        destroy(input);
+        destroy(dca);
+        destroy(request);
+        
+        world.end();
+    }
+
+    #[test]
+    #[expected_failure(abort_code = dca::ERuleAlreadyAdded)]
+    fun test_add_rule_already_added_error() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            0,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        let (mut request, input) = dca.request(world.scenario.ctx());
+
+        request.add(ValidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+        request.add(ValidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+
+        destroy(dca);
+        destroy(request);
+        destroy(input);
+        
+        world.end();
+    }
+
+    #[test]
+    fun test_confirm() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            1000000,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
+
+        let (mut request, input) = dca.request(world.scenario.ctx());
+
+        request.add(ValidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+
+        assert_eq(dca.total_owner_output(), 0);
+        assert_eq(dca.remaining_orders(), 2);
+        assert_eq(dca.total_delegatee_output(), 0); 
+
+        dca.confirm(
+            &world.clock,
+            request,
+            world.scenario.ctx()
+        );
+
+        assert_eq(dca.total_owner_output(), 2997);
+        assert_eq(dca.remaining_orders(), 1);
+        assert_eq(dca.total_delegatee_output(), 3); 
+
+        destroy(input);
+        destroy(dca);
+        
+        world.end();
+    }
+
+    #[test]
+    #[expected_failure(abort_code = dca::EMustHaveARule)]
+    fun test_confirm_must_have_a_rule_error() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            1000000,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        let (request, input) = dca.request(world.scenario.ctx());
+
+        world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
+
+        dca.confirm(
+            &world.clock,
+            request,
+            world.scenario.ctx()
+        );
+        
+        destroy(input);
+        destroy(dca);
+        
+        world.end();
+    }
+
+    #[test]
+    #[expected_failure(abort_code = dca::EInvalidRule)]
+    fun test_confirm_invalid_rule_error() {
+        let mut world = start_world();
+
+        let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.trade_policy,
+            &world.clock, 
+            mint_for_testing(1000, world.scenario.ctx()),
+            2,
+            2,
+            MIN,
+            0,
+            10_000,
+            1000000,
+            DELEGATEE, 
+            world.scenario.ctx()
+        );
+
+        world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
+
+        let (mut request, input) = dca.request(world.scenario.ctx());
+
+        request.add(InvalidWitness {}, mint_for_testing<USDC>(3000, world.scenario.ctx()));
+
+        dca.confirm(
+            &world.clock,
+            request,
+            world.scenario.ctx()
+        );
+
+        destroy(input);
+        destroy(dca);
+
+        world.end();  
+    }
+
+    #[test]
+    fun test_disapprove() {
+       let mut world = start_world();
+
+        assert_eq(world.trade_policy.whitelist(), vector[type_name::get<ValidWitness>()]);
+
+        let cap = &world.admin;
+
+        world.trade_policy.disapprove<ValidWitness>(cap);
+
+        assert_eq(world.trade_policy.whitelist(), vector[]);
+
+        world.end();  
     }
 
     public struct World {
