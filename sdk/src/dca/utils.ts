@@ -44,5 +44,6 @@ export const parseDCAObject = (x: SuiObjectResponse): DCA => {
     totalDelegateeOutput: BigInt(
       pathOr(0, ['fields', 'total_owner_output'], data)
     ),
+    witness: pathOr('', ['fields', 'witness', 'fields', 'name'], data),
   };
 };

@@ -6,7 +6,7 @@ import { DCATestnet } from './utils.script';
 (async () => {
   try {
     const isActive = await DCATestnet.isActive({
-      dca: '0xbe3d018c598cfeb77ef164958b0ae3671da59415d3fb6862f47c6d79032bc889',
+      dca: '0x18260caaa53dd5229d2344f02def6dd811b9ed0166ae99d2f05f39fa999389c5',
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
     });

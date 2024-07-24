@@ -30,6 +30,7 @@ export interface NewArgs extends MaybeTx {
   min?: bigint;
   fee?: number;
   delegatee: string;
+  witnessType: string;
 }
 
 export interface NestedResult {}
@@ -67,4 +68,5 @@ export interface DCA {
   fee: bigint;
   totalOwnerOutput: bigint;
   totalDelegateeOutput: bigint;
+  witness: string;
 }

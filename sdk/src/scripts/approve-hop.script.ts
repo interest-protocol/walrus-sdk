@@ -1,6 +1,6 @@
 import { Transaction } from '@mysten/sui/transactions';
 
-import { HOP_TESTNET_WITNESS, OBJECT_IDS } from './constants.script';
+import { OBJECT_IDS, WHITELIST_TESTNET_WITNESS } from './constants.script';
 import { executeTx, log } from './utils.script';
 
 (async () => {
@@ -8,11 +8,11 @@ import { executeTx, log } from './utils.script';
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${OBJECT_IDS.testnet.dca}::trade_policy::approve`,
-      typeArguments: [HOP_TESTNET_WITNESS],
+      target: `${OBJECT_IDS.testnet.dca}::dca::approve`,
+      typeArguments: [WHITELIST_TESTNET_WITNESS],
       arguments: [
-        tx.object(OBJECT_IDS.testnet.adminCap),
         tx.object(OBJECT_IDS.testnet.tradePolicy),
+        tx.object(OBJECT_IDS.testnet.adminCap),
       ],
     });
 

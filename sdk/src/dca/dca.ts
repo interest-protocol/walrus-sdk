@@ -1,7 +1,7 @@
 import { bcs } from '@mysten/sui/bcs';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import {
-  // Inputs,
+  Inputs,
   Transaction,
   TransactionArgument,
 } from '@mysten/sui/transactions';
@@ -25,22 +25,22 @@ import {
 import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
-  // #tradePolicy = Inputs.SharedObjectRef({
-  //   objectId:
-  //     '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209',
-  //   initialSharedVersion: '83443963',
-  //   mutable: false,
-  // });
+  #tradePolicy = Inputs.SharedObjectRef({
+    objectId:
+      '0x68fec6e6f2528821bcaba9f6fd1750e8eac7de75fc09dc68e03174c04c828539',
+    initialSharedVersion: '89042362',
+    mutable: false,
+  });
   #dcaPackage =
-    '0xd94222253b6e3139c443077a6f783c2a3054479cfcc858bcd30fce352656474c';
+    '0x8cff310615dd198bb64af09efcf1bc54bd6a71bcc2fe2a1c8302b6f76f8ee427';
   #adapters =
-    '0x721d95ec2f1b21b032bb54a85a4a79636a420c6131b633f4fbcebe054f6c8255';
-  // #hopAdapterWhitelist = Inputs.SharedObjectRef({
-  //   objectId:
-  //     '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58',
-  //   initialSharedVersion: '83443964',
-  //   mutable: false,
-  // });
+    '0x5fee448eda1dd26b9fe1c8d72ee5228631c4b337c995d1e62dc8e61ef4aa30b9';
+  #adapterWhitelist = Inputs.SharedObjectRef({
+    objectId:
+      '0xb977fc79289fd51c932ec8de1ca460b4d1bc8875adc5d363ae5eb0920ed8152d',
+    initialSharedVersion: '89042363',
+    mutable: false,
+  });
   #MAX_U64 = 18446744073709551615n;
   #defaultFee = 500000n;
 
@@ -58,6 +58,8 @@ export class DcaSDK {
       options: { showContent: true, showType: true },
     });
 
+    console.log(obj);
+
     return parseDCAObject(obj);
   }
 
@@ -65,6 +67,7 @@ export class DcaSDK {
     tx = new Transaction(),
     coinInType,
     coinOutType,
+    witnessType,
     coinIn,
     timeScale,
     every,
@@ -79,8 +82,9 @@ export class DcaSDK {
 
     const dca = tx.moveCall({
       target: `${this.#dcaPackage}::dca::new`,
-      typeArguments: [coinInType, coinOutType],
+      typeArguments: [coinInType, coinOutType, witnessType],
       arguments: [
+        tx.object(this.#tradePolicy),
         tx.object(SUI_CLOCK_OBJECT_ID),
         tx.object(coinIn),
         tx.pure.u64(every),
@@ -186,14 +190,9 @@ export class DcaSDK {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const [request, coinIn] = tx.moveCall({
-      target: `${this.#dcaPackage}::trade_policy::request`,
+      target: `${this.#dcaPackage}::dca::request`,
       typeArguments: [coinInType, coinOutType],
-      arguments: [
-        tx.object(
-          '0x1f35cd42b9534e39617d8e2f49783f97eaa7b78e5d624d3a119bc40c97206209'
-        ),
-        tx.object(dca),
-      ],
+      arguments: [tx.object(dca)],
     });
 
     return {
@@ -214,19 +213,17 @@ export class DcaSDK {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     tx.moveCall({
-      target: `${this.#adapters}::hop_adapter::swap`,
+      target: `${this.#adapters}::whitelist_adapter::swap`,
       typeArguments: [coinOutType],
       arguments: [
-        tx.object(
-          '0xaa7646745007ea8ee8abf10d26c330d02b15ff312a11c9bbe217a55094903d58'
-        ),
+        tx.object(this.#adapterWhitelist),
         request as TransactionArgument,
         coinOut,
       ],
     });
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::trade_policy::confirm`,
+      target: `${this.#dcaPackage}::dca::confirm`,
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(dca),
