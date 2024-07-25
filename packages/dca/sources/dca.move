@@ -207,20 +207,7 @@ module dca::dca {
             owner,
             input_balance,
             active,
-            amount_per_trade: _,
-            cooldown: _,
-            delegatee: _,
-            every: _,
-            fee_percent: _,
-            last_trade_timestamp: _,
-            max: _,
-            min: _,
-            remaining_orders: _,
-            start_timestamp: _,
-            time_scale: _,
-            total_delegatee_output: _,
-            total_owner_output: _,
-            witness: _,
+            ..
         } = self;
 
         assert!(!active, EMustBeInactive);
