@@ -1,6 +1,5 @@
 #[test_only]
 module dca::dca_tests {
-
     use std::type_name;
     use sui::{
         sui::SUI,
@@ -13,7 +12,7 @@ module dca::dca_tests {
     use dca::dca::{Self, TradePolicy, Admin};
 
     // Time scale
-    const MIN: u8 = 1;
+    const MIN: u8 = 0;
 
     const MINUTE: u64 = 60;
     const MAX_FEE: u64 = 3000000; // 3%
@@ -53,7 +52,7 @@ module dca::dca_tests {
             max,
             fee_percent,
             DELEGATEE,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         assert_eq(dca.owner(), OWNER);
@@ -97,7 +96,7 @@ module dca::dca_tests {
             max,
             MAX_FEE,
             DELEGATEE,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         dca.share();
@@ -120,13 +119,12 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
-
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
 
-        assert_eq(dca.active(), true); 
+        assert_eq(dca.active(), true);
         assert_eq(dca.remaining_orders(), 2);
 
         let (mut request, input) = dca.request(world.scenario.ctx());
@@ -138,16 +136,15 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
-   
-        assert_eq(dca::active(&dca), true); 
+
+        assert_eq(dca::active(&dca), true);
         assert_eq(dca::total_owner_output(&dca), 1998);
         assert_eq(dca::remaining_orders(&dca), 1);
         assert_eq(dca::total_delegatee_output(&dca), 2);
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
-
 
         let (mut request, input) = dca.request(world.scenario.ctx());
 
@@ -158,13 +155,13 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
-   
-        assert_eq(dca::active(&dca), false); 
+
+        assert_eq(dca::active(&dca), false);
         assert_eq(dca::total_owner_output(&dca), 4995);
         assert_eq(dca::remaining_orders(&dca), 0);
-        assert_eq(dca::total_delegatee_output(&dca), 5);   
+        assert_eq(dca::total_delegatee_output(&dca), 5);
 
         dca.share();
         world.end();
@@ -186,14 +183,14 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
 
         dca.stop(world.scenario.ctx());
 
-        assert_eq(dca::active(&dca), false); 
+        assert_eq(dca::active(&dca), false);
         assert_eq(dca::remaining_orders(&dca), 2);
 
         let (mut request, input) = dca.request(world.scenario.ctx());
@@ -205,7 +202,7 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         destroy(dca);
@@ -229,8 +226,8 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing((2 * MINUTE * MILLISECONDS) - 1);
 
@@ -243,11 +240,11 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         destroy(dca);
-        
+
         world.end();
     }
 
@@ -267,8 +264,8 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing((2 * MINUTE * MILLISECONDS));
 
@@ -281,11 +278,11 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
-        
+
         destroy(dca);
-        
+
         world.end();
     }
 
@@ -305,8 +302,8 @@ module dca::dca_tests {
             1999,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing((2 * MINUTE * MILLISECONDS));
 
@@ -319,11 +316,11 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         destroy(dca);
-        
+
         world.end();
     }
 
@@ -342,16 +339,16 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         assert_eq(dca.take_for_testing(world.scenario.ctx()).burn_for_testing(), 50);
         assert_eq(dca.take_for_testing(world.scenario.ctx()).burn_for_testing(), 50);
-        assert_eq(dca.take_for_testing(world.scenario.ctx()).burn_for_testing(), 0); 
+        assert_eq(dca.take_for_testing(world.scenario.ctx()).burn_for_testing(), 0);
 
         destroy(dca);
 
-        world.end(); 
+        world.end();
     }
 
     #[test]
@@ -369,8 +366,8 @@ module dca::dca_tests {
             MAX_U64,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        ); 
+            world.scenario.ctx(),
+        );
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
 
@@ -383,7 +380,7 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         world.scenario.next_tx(OWNER);
@@ -399,7 +396,7 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         dca.destroy(world.scenario.ctx());
@@ -415,15 +412,15 @@ module dca::dca_tests {
         let second_delegatee_coin = world.scenario.take_from_address<Coin<USDC>>(DELEGATEE);
 
         delegatee_coin.join(second_delegatee_coin);
-  
+
         assert_eq(owner_coin.burn_for_testing(), 4995);
         assert_eq(delegatee_coin.burn_for_testing(), 5);
-        
+
         world.end();
     }
 
     #[test]
-    #[expected_failure(abort_code = dca::EMustBeTheOwner)] 
+    #[expected_failure(abort_code = dca::EMustBeTheOwner)]
     fun test_stop_must_be_owner_error() {
         let mut world = start_world();
 
@@ -440,20 +437,20 @@ module dca::dca_tests {
             1999,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        );   
+            world.scenario.ctx(),
+        );
 
         world.scenario.next_tx(OWNER);
 
         dca.stop(world.scenario.ctx());
 
         destroy(dca);
-        
+
         world.end();
     }
 
     #[test]
-    #[expected_failure(abort_code = dca::EMustBeInactive)] 
+    #[expected_failure(abort_code = dca::EMustBeInactive)]
     fun test_stop_must_be_inactive_error() {
         let mut world = start_world();
 
@@ -468,16 +465,16 @@ module dca::dca_tests {
             1999,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        );   
+            world.scenario.ctx(),
+        );
 
         dca::destroy(dca, world.scenario.ctx());
 
-        world.end(); 
+        world.end();
     }
 
     #[test]
-    #[expected_failure(abort_code = dca::EInvalidWitness)] 
+    #[expected_failure(abort_code = dca::EInvalidWitness)]
     fun test_new_error_invalid_witness() {
         let mut world = start_world();
 
@@ -492,11 +489,11 @@ module dca::dca_tests {
             1999,
             1000000,
             DELEGATEE,
-            world.scenario.ctx()
-        );   
+            world.scenario.ctx(),
+        );
 
         dca.share();
-        world.end(); 
+        world.end();
     }
 
     #[test]
@@ -505,7 +502,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -513,8 +510,8 @@ module dca::dca_tests {
             0,
             10_000,
             0,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         world.clock.increment_for_testing(120 * MILLISECONDS);
@@ -532,7 +529,7 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         dca.share();
@@ -545,7 +542,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -553,8 +550,8 @@ module dca::dca_tests {
             0,
             10_000,
             0,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         world.clock.increment_for_testing(120 * MILLISECONDS);
@@ -569,7 +566,7 @@ module dca::dca_tests {
         destroy(input);
         destroy(dca);
         destroy(request);
-        
+
         world.end();
     }
 
@@ -580,7 +577,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -588,8 +585,8 @@ module dca::dca_tests {
             0,
             10_000,
             0,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         let (mut request, input) = dca.request(world.scenario.ctx());
@@ -600,7 +597,7 @@ module dca::dca_tests {
         destroy(dca);
         destroy(request);
         destroy(input);
-        
+
         world.end();
     }
 
@@ -610,7 +607,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -618,8 +615,8 @@ module dca::dca_tests {
             0,
             10_000,
             1000000,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
@@ -630,21 +627,21 @@ module dca::dca_tests {
 
         assert_eq(dca.total_owner_output(), 0);
         assert_eq(dca.remaining_orders(), 2);
-        assert_eq(dca.total_delegatee_output(), 0); 
+        assert_eq(dca.total_delegatee_output(), 0);
 
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         assert_eq(dca.total_owner_output(), 2997);
         assert_eq(dca.remaining_orders(), 1);
-        assert_eq(dca.total_delegatee_output(), 3); 
+        assert_eq(dca.total_delegatee_output(), 3);
 
         destroy(input);
         destroy(dca);
-        
+
         world.end();
     }
 
@@ -655,7 +652,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -663,8 +660,8 @@ module dca::dca_tests {
             0,
             10_000,
             1000000,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         let (request, input) = dca.request(world.scenario.ctx());
@@ -674,12 +671,12 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
-        
+
         destroy(input);
         destroy(dca);
-        
+
         world.end();
     }
 
@@ -690,7 +687,7 @@ module dca::dca_tests {
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
             &world.trade_policy,
-            &world.clock, 
+            &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
             2,
             2,
@@ -698,8 +695,8 @@ module dca::dca_tests {
             0,
             10_000,
             1000000,
-            DELEGATEE, 
-            world.scenario.ctx()
+            DELEGATEE,
+            world.scenario.ctx(),
         );
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
@@ -711,18 +708,18 @@ module dca::dca_tests {
         dca.confirm(
             &world.clock,
             request,
-            world.scenario.ctx()
+            world.scenario.ctx(),
         );
 
         destroy(input);
         destroy(dca);
 
-        world.end();  
+        world.end();
     }
 
     #[test]
     fun test_disapprove() {
-       let mut world = start_world();
+        let mut world = start_world();
 
         assert_eq(world.trade_policy.whitelist(), vector[type_name::get<ValidWitness>()]);
 
@@ -732,14 +729,14 @@ module dca::dca_tests {
 
         assert_eq(world.trade_policy.whitelist(), vector[]);
 
-        world.end();  
+        world.end();
     }
 
     public struct World {
         scenario: Scenario,
         trade_policy: TradePolicy,
         clock: Clock,
-        admin: Admin
+        admin: Admin,
     }
 
     fun start_world(): World {
@@ -760,10 +757,9 @@ module dca::dca_tests {
             scenario,
             clock,
             trade_policy,
-
-            admin
+            admin,
         }
-    }  
+    }
 
     fun end(world: World) {
         destroy(world);

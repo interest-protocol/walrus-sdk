@@ -31,12 +31,12 @@ module dca::dca {
     const EInvalidRule: u64 = 13;
 
     // === Constants ===
-  
+
     const MINUTE: u64 = 60;
     const HOUR: u64 = 3600; // 60 * 60
     const DAY: u64 = 86400; // 3600 * 24
     const WEEK: u64 = 604800; // 86400 * 7
-    const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound 
+    const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound
     const MAX_FEE: u64 = 3000000; // 0.3%
     const PRECISION: u64 = 1000000000;
 
@@ -58,12 +58,11 @@ module dca::dca {
         /// How many orders remain to be executed
         remaining_orders: u64,
         /// Bit Flag representing the time scale
-        /// 0 => seconds
-        /// 1 => minutes
-        /// 2 => hour
-        /// 3 => day
-        /// 4 => week
-        /// 5 => month
+        /// 0 => minutes
+        /// 1 => hour
+        /// 2 => day
+        /// 3 => week
+        /// 4 => month
         time_scale: u8,
         cooldown: u64,
         /// Balance to be invested over time. This amount can increase or decrease
@@ -75,16 +74,16 @@ module dca::dca {
         fee_percent: u64,
         total_owner_output: u64,
         total_delegatee_output: u64,
-        witness: TypeName
+        witness: TypeName,
     }
 
     public struct Admin has key, store {
-        id: UID
+        id: UID,
     }
 
     public struct TradePolicy has key {
         id: UID,
-        whitelist: VecSet<TypeName>
+        whitelist: VecSet<TypeName>,
     }
 
     #[allow(lint(coin_field))]
@@ -96,7 +95,7 @@ module dca::dca {
         output: Coin<Output>,
     }
 
-    // === Events === 
+    // === Events ===
 
     public struct Start has copy, drop, store {
         input: TypeName,
@@ -122,7 +121,7 @@ module dca::dca {
         output: TypeName,
         input_amount: u64,
         dca: address,
-        owner: address
+        owner: address,
     }
 
     // === Public-Mutative Functions ===
@@ -130,7 +129,7 @@ module dca::dca {
     fun init(ctx: &mut TxContext) {
         let trade_policy = TradePolicy {
             id: object::new(ctx),
-            whitelist: vec_set::empty()
+            whitelist: vec_set::empty(),
         };
 
         transfer::share_object(trade_policy);
@@ -148,7 +147,7 @@ module dca::dca {
         max: u64,
         fee_percent: u64,
         delegatee: address,
-        ctx: &mut TxContext
+        ctx: &mut TxContext,
     ): DCA<Input, Output> {
         assert!(MAX_FEE > fee_percent, EInvalidFee);
         assert!(trade_policy.whitelist.contains(&type_name::get<Witness>()), EInvalidWitness);
@@ -176,20 +175,18 @@ module dca::dca {
             delegatee,
             total_owner_output: 0,
             total_delegatee_output: 0,
-            witness: type_name::get<Witness>()
+            witness: type_name::get<Witness>(),
         };
 
-        event::emit(
-            Start {
-                input: type_name::get<Input>(),
-                output: type_name::get<Output>(),
-                every,
-                time_scale,
-                input_amount: dca.input_balance.value(),
-                dca: object::id_address(&dca),
-                delegatee
-            }
-        );
+        event::emit(Start {
+            input: type_name::get<Input>(),
+            output: type_name::get<Output>(),
+            every,
+            time_scale,
+            input_amount: dca.input_balance.value(),
+            dca: object::id_address(&dca),
+            delegatee,
+        });
 
         dca
     }
@@ -205,12 +202,25 @@ module dca::dca {
     }
 
     public fun destroy<Input, Output>(self: DCA<Input, Output>, ctx: &mut TxContext) {
-        let DCA { 
+        let DCA {
             id,
             owner,
             input_balance,
             active,
-            ..
+            amount_per_trade: _,
+            cooldown: _,
+            delegatee: _,
+            every: _,
+            fee_percent: _,
+            last_trade_timestamp: _,
+            max: _,
+            min: _,
+            remaining_orders: _,
+            start_timestamp: _,
+            time_scale: _,
+            total_delegatee_output: _,
+            total_owner_output: _,
+            witness: _,
         } = self;
 
         assert!(!active, EMustBeInactive);
@@ -222,35 +232,37 @@ module dca::dca {
             output: type_name::get<Output>(),
             input_amount: input,
             dca: id.uid_to_address(),
-            owner
+            owner,
         });
 
-        if (input == 0)
-            input_balance.destroy_zero()
-        else 
-            transfer::public_transfer(input_balance.into_coin(ctx), owner);
-    
+        if (input == 0) input_balance.destroy_zero()
+        else transfer::public_transfer(input_balance.into_coin(ctx), owner);
+
         id.delete();
     }
 
     public fun request<Input, Output>(
         self: &mut DCA<Input, Output>,
-        ctx: &mut TxContext
+        ctx: &mut TxContext,
     ): (Request<Output>, Coin<Input>) {
         let request = Request {
             dca: self.id.to_address(),
             rule: option::none(),
             witness: self.witness,
             output: coin::zero(ctx),
-            owner: self.owner
+            owner: self.owner,
         };
 
         (request, self.take(ctx))
     }
 
-    public fun add<Witness: drop, Output>(request: &mut Request<Output>, _: Witness, output: Coin<Output>) {
+    public fun add<Witness: drop, Output>(
+        request: &mut Request<Output>,
+        _: Witness,
+        output: Coin<Output>,
+    ) {
         assert!(request.rule.is_none(), ERuleAlreadyAdded);
-    
+
         request.rule = option::some(type_name::get<Witness>());
         request.output.join(output);
     }
@@ -259,14 +271,14 @@ module dca::dca {
         self: &mut DCA<Input, Output>,
         clock: &Clock,
         request: Request<Output>,
-        ctx: &mut TxContext
+        ctx: &mut TxContext,
     ) {
         let Request {
-            dca:  dca_address,
+            dca: dca_address,
             rule,
             witness,
             output,
-            owner: _
+            owner: _,
         } = request;
 
         assert!(self.id.to_address() == dca_address, EInvalidDcaAddress);
@@ -276,7 +288,7 @@ module dca::dca {
         self.resolve(clock, output, ctx);
     }
 
-  // === Public-View Functions ===
+    // === Public-View Functions ===
 
     public fun owner<Input, Output>(self: &DCA<Input, Output>): address {
         self.owner
@@ -351,6 +363,7 @@ module dca::dca {
     }
 
     public use fun request_owner as Request.owner;
+
     public fun request_owner<Output>(request: &Request<Output>): address {
         request.owner
     }
@@ -370,27 +383,28 @@ module dca::dca {
     public fun assert_every(every: u64, time_scale: u8) {
         // Depending on the time_scale the restrictions on `every` are different
         let is_ok = {
-            if (time_scale == 0) { // 0 => seconds
-                // Lower bound --> 30 seconds
-                // Upper bound --> 59 seconds
-                every >= 30 && every <= 59
-            } else if (time_scale == 1) { // 1 => minutes
+            if (time_scale == 0) {
+                // 1 => minutes
                 // Lower bound --> 1 minute
                 // Upper bound --> 59 minutes
                 every >= 1 && every <= 59
-            } else if (time_scale == 2) { // 2 => hours
+            } else if (time_scale == 1) {
+                // 2 => hours
                 // Lower bound --> 1 hour
                 // Upper bound --> 24 hours
                 every >= 1 && every <= 24
-            } else if (time_scale == 3) { // 3 => days
+            } else if (time_scale == 2) {
+                // 3 => days
                 // Lower bound --> 1 day
                 // Upper bound --> 6 days
                 every >= 1 && every <= 6
-            } else if (time_scale == 4) { // 4 => weeks
+            } else if (time_scale == 3) {
+                // 4 => weeks
                 // Lower bound --> 1 week
                 // Upper bound --> 4 weeks
                 every >= 1 && every <= 4
-            } else if (time_scale == 5) { // 5 => months
+            } else if (time_scale == 4) {
+                // 5 => months
                 // Lower bound --> 1 month
                 // Upper bound --> 12 months
                 every >= 1 && every <= 12
@@ -409,16 +423,16 @@ module dca::dca {
     }
 
     public fun disapprove<Witness: drop>(trade_policy: &mut TradePolicy, _: &Admin) {
-       trade_policy.whitelist.remove(&type_name::get<Witness>());
+        trade_policy.whitelist.remove(&type_name::get<Witness>());
     }
 
     // === Private Functions ===
 
-   fun resolve<Input, Output>(
+    fun resolve<Input, Output>(
         self: &mut DCA<Input, Output>,
         clock: &Clock,
         coin_out: Coin<Output>,
-        ctx: &mut TxContext
+        ctx: &mut TxContext,
     ) {
         assert!(self.active, EInactive);
 
@@ -434,26 +448,25 @@ module dca::dca {
 
         self.remaining_orders = self.remaining_orders - 1;
 
-        if (self.remaining_orders == 0 || self.input_balance.value() == 0)
-            self.active = false;
+        if (self.remaining_orders == 0 || self.input_balance.value() == 0) self.active = false;
 
-        let mut balance_out = coin_out.into_balance();  
+        let mut balance_out = coin_out.into_balance();
 
-        let balance_fee = balance_out.split(math64::mul_div_up(output_value, self.fee_percent, PRECISION));
+        let balance_fee = balance_out.split(
+            math64::mul_div_up(output_value, self.fee_percent, PRECISION),
+        );
 
         self.total_owner_output = self.total_owner_output + balance_out.value();
         self.total_delegatee_output = self.total_delegatee_output + balance_fee.value();
 
-        event::emit(
-            Resolve {
-                input: type_name::get<Input>(),
-                output: type_name::get<Output>(),
-                fee: balance::value(&balance_fee),
-                input_amount: self.amount_per_trade,
-                output_amount: output_value,
-                dca: object::id_address(self)
-            }
-        );
+        event::emit(Resolve {
+            input: type_name::get<Input>(),
+            output: type_name::get<Output>(),
+            fee: balance::value(&balance_fee),
+            input_amount: self.amount_per_trade,
+            output_amount: output_value,
+            dca: object::id_address(self),
+        });
 
         transfer::public_transfer(balance_fee.into_coin(ctx), self.delegatee);
         transfer::public_transfer(balance_out.into_coin(ctx), self.owner);
@@ -465,17 +478,15 @@ module dca::dca {
     }
 
     fun convert_to_timestamp(time_scale: u8): u64 {
-        if (time_scale == 0) return 1;
+        if (time_scale == 0) return MINUTE;
 
-        if (time_scale == 1) return MINUTE;
+        if (time_scale == 1) return HOUR;
 
-        if (time_scale == 2) return HOUR;
+        if (time_scale == 2) return DAY;
 
-        if (time_scale == 3) return DAY;
+        if (time_scale == 3) return WEEK;
 
-        if (time_scale == 4) return WEEK;
-
-        if (time_scale == 5) return MONTH;
+        if (time_scale == 4) return MONTH;
 
         abort EInvalidTimestamp
     }
@@ -492,7 +503,10 @@ module dca::dca {
     }
 
     #[test_only]
-    public fun take_for_testing<Input, Output>(self: &mut DCA<Input, Output>, ctx: &mut TxContext): Coin<Input> {
+    public fun take_for_testing<Input, Output>(
+        self: &mut DCA<Input, Output>,
+        ctx: &mut TxContext,
+    ): Coin<Input> {
         take(self, ctx)
     }
 }
