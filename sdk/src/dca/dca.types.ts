@@ -1,7 +1,6 @@
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
 export enum TimeScale {
-  Seconds,
   Minutes,
   Hour,
   Day,

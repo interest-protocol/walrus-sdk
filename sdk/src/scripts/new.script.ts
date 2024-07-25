@@ -23,7 +23,7 @@ import { DCATestnet, executeTx, keypair, log } from './utils.script.ts';
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
       coinIn: coinUSDC,
-      timeScale: TimeScale.Seconds,
+      timeScale: TimeScale.Minutes,
       every: 30,
       numberOfOrders: 1000,
       delegatee: keypair.getPublicKey().toSuiAddress(),

@@ -8,11 +8,10 @@ import { DCA, TimeScale } from './dca.types';
 const getTimeScale = (x: number) => {
   invariant(TimeScale.Month >= x, 'Invalid time scale');
 
-  if (x === 0) return TimeScale.Seconds;
-  if (x === 1) return TimeScale.Minutes;
-  if (x === 2) return TimeScale.Hour;
-  if (x === 3) return TimeScale.Day;
-  if (x === 4) return TimeScale.Week;
+  if (x === 0) return TimeScale.Minutes;
+  if (x === 1) return TimeScale.Hour;
+  if (x === 2) return TimeScale.Day;
+  if (x === 3) return TimeScale.Week;
   return TimeScale.Month;
 };
 
