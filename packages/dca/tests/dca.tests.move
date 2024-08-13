@@ -12,7 +12,7 @@ module dca::dca_tests {
     use dca::dca::{Self, TradePolicy, Admin};
 
     // Time scale
-    const MIN: u8 = 0;
+    const MIN: u8 = 1;
 
     const MINUTE: u64 = 60;
     const MAX_FEE: u64 = 3000000; // 3%

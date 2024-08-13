@@ -29,9 +29,11 @@ module dca::dca {
     const EInvalidDcaAddress: u64 = 11;
     const EMustHaveARule: u64 = 12;
     const EInvalidRule: u64 = 13;
+    const EInvalidOrderConfiguration: u64 = 14;
 
     // === Constants ===
 
+    const SECOND: u64 = 1;
     const MINUTE: u64 = 60;
     const HOUR: u64 = 3600; // 60 * 60
     const DAY: u64 = 86400; // 3600 * 24
@@ -58,11 +60,12 @@ module dca::dca {
         /// How many orders remain to be executed
         remaining_orders: u64,
         /// Bit Flag representing the time scale
-        /// 0 => minutes
-        /// 1 => hour
-        /// 2 => day
-        /// 3 => week
-        /// 4 => month
+        /// 0 => seconds
+        /// 1 => minutes
+        /// 2 => hour
+        /// 3 => day
+        /// 4 => week
+        /// 5 => month
         time_scale: u8,
         cooldown: u64,
         /// Balance to be invested over time. This amount can increase or decrease
@@ -157,6 +160,8 @@ module dca::dca {
 
         let amount_per_trade = math64::div_down(coin_in.value(), number_of_orders);
 
+        assert!(number_of_orders != 0 && amount_per_trade != 0, EInvalidOrderConfiguration);
+
         let dca = DCA<Input, Output> {
             id: object::new(ctx),
             owner: ctx.sender(),
@@ -207,7 +212,7 @@ module dca::dca {
             owner,
             input_balance,
             active,
-            ..
+            ..,
         } = self;
 
         assert!(!active, EMustBeInactive);
@@ -371,26 +376,30 @@ module dca::dca {
         // Depending on the time_scale the restrictions on `every` are different
         let is_ok = {
             if (time_scale == 0) {
+                // Lower bound --> 30 seconds
+                // Upper bound --> 59 seconds
+                every >= 30 && every <= 59
+            } else if (time_scale == 1) {
                 // 1 => minutes
                 // Lower bound --> 1 minute
                 // Upper bound --> 59 minutes
                 every >= 1 && every <= 59
-            } else if (time_scale == 1) {
+            } else if (time_scale == 2) {
                 // 2 => hours
                 // Lower bound --> 1 hour
                 // Upper bound --> 24 hours
                 every >= 1 && every <= 24
-            } else if (time_scale == 2) {
+            } else if (time_scale == 3) {
                 // 3 => days
                 // Lower bound --> 1 day
                 // Upper bound --> 6 days
                 every >= 1 && every <= 6
-            } else if (time_scale == 3) {
+            } else if (time_scale == 4) {
                 // 4 => weeks
                 // Lower bound --> 1 week
                 // Upper bound --> 4 weeks
                 every >= 1 && every <= 4
-            } else if (time_scale == 4) {
+            } else if (time_scale == 5) {
                 // 5 => months
                 // Lower bound --> 1 month
                 // Upper bound --> 12 months
@@ -465,15 +474,17 @@ module dca::dca {
     }
 
     fun convert_to_timestamp(time_scale: u8): u64 {
-        if (time_scale == 0) return MINUTE;
+        if (time_scale == 0) return SECOND;
 
-        if (time_scale == 1) return HOUR;
+        if (time_scale == 1) return MINUTE;
 
-        if (time_scale == 2) return DAY;
+        if (time_scale == 2) return HOUR;
 
-        if (time_scale == 3) return WEEK;
+        if (time_scale == 3) return DAY;
 
-        if (time_scale == 4) return MONTH;
+        if (time_scale == 4) return WEEK;
+
+        if (time_scale == 5) return MONTH;
 
         abort EInvalidTimestamp
     }
