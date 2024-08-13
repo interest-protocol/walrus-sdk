@@ -1,4 +1,4 @@
-import { Inputs } from '@mysten/sui/dist/cjs/transactions';
+import { Inputs } from '@mysten/sui/transactions';
 
 export const PACKAGES = {
   mainnet: {
@@ -84,6 +84,6 @@ export const WITNESSES = {
     WHITELIST_ADAPTER: '',
   },
   testnet: {
-    WHITELIST_ADAPTER: `${PACKAGES['testnet']}::whitelist_adapter::Witness`,
+    WHITELIST_ADAPTER: `${PACKAGES['testnet'].ADAPTERS}::whitelist_adapter::Witness`,
   },
 } as const;

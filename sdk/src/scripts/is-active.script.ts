@@ -1,12 +1,12 @@
 import invariant from 'tiny-invariant';
 
-import { COINS } from './constants.script';
+import { COINS } from './coins.script';
 import { DCATestnet } from './utils.script';
 
 (async () => {
   try {
     const isActive = await DCATestnet.isActive({
-      dca: '0x18260caaa53dd5229d2344f02def6dd811b9ed0166ae99d2f05f39fa999389c5',
+      dca: '0x818a58304a87878395f2a1ac41bbcac8d30b436b03823bd471af80ac449923b0',
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
     });

@@ -15,7 +15,7 @@
       "types": "./dist/dca/index.d.ts"
     }
   },
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "",
   "publishConfig": {
     "access": "public"
@@ -25,9 +25,9 @@
     "is-active": "tsx ./src/scripts/is-active.script.ts",
     "get": "tsx ./src/scripts/get.script.ts",
     "stop-and-destroy": "tsx ./src/scripts/stop-and-destroy.script.ts",
-    "approve-hop": "tsx ./src/scripts/approve-hop.script.ts",
-    "swap-hop": "tsx ./src/scripts/swap-hop.script.ts",
-    "approve-hop-whitelist": "tsx ./src/scripts/approve-hop-whitelist.script.ts",
+    "approve-address": "tsx ./src/scripts/approve-address.script.ts",
+    "swap": "tsx ./src/scripts/swap.script.ts",
+    "approve-whitelist": "tsx ./src/scripts/approve-whitelist.script.ts",
     "lint": "npx eslint . --fix",
     "clean": "rimraf dist && rimraf tsconfig.prod.tsbuildinfo && rimraf tsconfig.tsbuildinfo",
     "build:tsup": "tsup './src/dca/index.ts' --format esm,cjs --sourcemap",

@@ -18,7 +18,7 @@ export const keypair = Ed25519Keypair.fromSecretKey(
 
 export const client = new SuiClient({ url: getFullnodeUrl('testnet') });
 
-export const DCATestnet = new DcaSDK(getFullnodeUrl('testnet'));
+export const DCATestnet = new DcaSDK();
 
 export const executeTx = async (tx: Transaction) => {
   const result = await client.signAndExecuteTransaction({

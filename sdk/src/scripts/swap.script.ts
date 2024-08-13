@@ -1,11 +1,7 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeSuiAddress } from '@mysten/sui/utils';
 
-import {
-  COINS,
-  OBJECT_IDS,
-  // WHITELIST_TESTNET_WITNESS,
-} from './constants.script';
+import { COINS } from './coins.script';
 import { DCATestnet, executeTx, log } from './utils.script';
 
 (async () => {
@@ -16,11 +12,11 @@ import { DCATestnet, executeTx, log } from './utils.script';
       tx: tx1,
       request,
       coinIn,
-    } = DCATestnet.swapHopStart({
+    } = DCATestnet.swapWhitelistStart({
       tx: initTx,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0x18260caaa53dd5229d2344f02def6dd811b9ed0166ae99d2f05f39fa999389c5',
+      dca: '0x818a58304a87878395f2a1ac41bbcac8d30b436b03823bd471af80ac449923b0',
     });
 
     tx1.transferObjects([coinIn], normalizeSuiAddress('0x0'));
@@ -32,13 +28,12 @@ import { DCATestnet, executeTx, log } from './utils.script';
       arguments: [initTx.object(COINS.eth.treasuryCap), initTx.pure.u64(100n)],
     });
 
-    const tx2 = DCATestnet.swapHopEnd({
+    const tx2 = DCATestnet.swapWhitelistEnd({
       tx: tx1,
       coinInType: COINS.usdc.coinType,
       coinOutType: COINS.eth.coinType,
-      dca: '0x18260caaa53dd5229d2344f02def6dd811b9ed0166ae99d2f05f39fa999389c5',
+      dca: '0x818a58304a87878395f2a1ac41bbcac8d30b436b03823bd471af80ac449923b0',
       request,
-      admin: OBJECT_IDS.testnet.adminCap,
       coinOut: coinETH,
     });
 

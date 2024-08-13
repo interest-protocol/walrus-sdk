@@ -1,7 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { TimeScale } from 'src/dca';
 
-import { COINS, WHITELIST_TESTNET_WITNESS } from './constants.script';
+import { WITNESSES } from '../dca/constants';
+import { COINS } from './coins.script.ts';
 import { DCATestnet, executeTx, keypair, log } from './utils.script.ts';
 
 (async () => {
@@ -27,7 +28,7 @@ import { DCATestnet, executeTx, keypair, log } from './utils.script.ts';
       every: 30,
       numberOfOrders: 1000,
       delegatee: keypair.getPublicKey().toSuiAddress(),
-      witnessType: WHITELIST_TESTNET_WITNESS,
+      witnessType: WITNESSES.testnet.WHITELIST_ADAPTER,
     });
 
     const result = await executeTx(tx);
