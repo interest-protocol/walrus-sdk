@@ -1,11 +1,6 @@
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
-import type {
-  OWNED_OBJECTS,
-  PACKAGES,
-  SHARED_OBJECTS,
-  WITNESSES,
-} from './constants';
+import type { PACKAGES, SHARED_OBJECTS, WITNESSES } from './constants';
 
 export enum TimeScale {
   Seconds,
@@ -27,7 +22,6 @@ export interface DCAConstructorArgs {
   network: Network;
   packages?: (typeof PACKAGES)[Network];
   sharedObjects?: (typeof SHARED_OBJECTS)[Network];
-  ownedObjects?: (typeof OWNED_OBJECTS)[Network];
 }
 
 interface DcaArgs {

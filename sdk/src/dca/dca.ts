@@ -9,7 +9,7 @@ import {
 import { devInspectAndGetResults } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
-import { OWNED_OBJECTS, PACKAGES, SHARED_OBJECTS } from './constants';
+import { PACKAGES, SHARED_OBJECTS } from './constants';
 import {
   DCA,
   DCAConstructorArgs,
@@ -25,7 +25,6 @@ import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
   #packages: (typeof PACKAGES)[Network];
-  #ownedObjects: (typeof OWNED_OBJECTS)[Network];
   #sharedObjects: (typeof SHARED_OBJECTS)[Network];
 
   MAX_U64 = 18446744073709551615n;
@@ -35,7 +34,6 @@ export class DcaSDK {
     const defaultData = {
       network: 'testnet',
       fullNodeUrl: getFullnodeUrl('testnet'),
-      ownedObjects: OWNED_OBJECTS['testnet'],
       packages: PACKAGES['testnet'],
       sharedObjects: SHARED_OBJECTS['testnet'],
     };
@@ -46,7 +44,6 @@ export class DcaSDK {
       url: data.fullNodeUrl || defaultData.fullNodeUrl,
     });
     this.#packages = data.packages || defaultData.packages;
-    this.#ownedObjects = data.ownedObjects || defaultData.ownedObjects;
     this.#sharedObjects = data.sharedObjects || defaultData.sharedObjects;
   }
 
@@ -121,8 +118,10 @@ export class DcaSDK {
       arguments: [tx.object(dca)],
     });
 
-    // @ts-expect-error The polymedia core is outdated but should work
-    const result = await devInspectAndGetResults(this.#client, tx);
+    const result = await devInspectAndGetResults(
+      this.#client as any,
+      tx as any
+    );
 
     const values = result[result.length - 1].returnValues;
 
