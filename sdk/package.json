@@ -56,8 +56,8 @@
     "typescript-eslint": "^7.16.0"
   },
   "dependencies": {
-    "@mysten/sui": "^1.2.1",
-    "@polymedia/suitcase-core": "^0.0.7",
+    "@mysten/sui": "^1.6.0",
+    "@polymedia/suitcase-core": "^0.0.16",
     "ramda": "^0.30.1",
     "tiny-invariant": "^1.3.3"
   }

@@ -1,6 +1,14 @@
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
+import type {
+  OWNED_OBJECTS,
+  PACKAGES,
+  SHARED_OBJECTS,
+  WITNESSES,
+} from './constants';
+
 export enum TimeScale {
+  Seconds,
   Minutes,
   Hour,
   Day,
@@ -12,11 +20,23 @@ interface MaybeTx {
   tx?: Transaction;
 }
 
+export type Network = 'mainnet' | 'testnet';
+
+export interface DCAConstructorArgs {
+  fullNodeUrl?: string;
+  network: Network;
+  packages?: (typeof PACKAGES)[Network];
+  sharedObjects?: (typeof SHARED_OBJECTS)[Network];
+  ownedObjects?: (typeof OWNED_OBJECTS)[Network];
+}
+
 interface DcaArgs {
   coinInType: string;
   coinOutType: string;
   dca: string;
 }
+
+type WitnessWithNetwork = (typeof WITNESSES)[Network];
 
 export interface NewArgs extends MaybeTx {
   coinInType: string;
@@ -29,7 +49,7 @@ export interface NewArgs extends MaybeTx {
   min?: bigint;
   fee?: number;
   delegatee: string;
-  witnessType: string;
+  witnessType: WitnessWithNetwork[keyof WitnessWithNetwork];
 }
 
 export interface NestedResult {}
@@ -40,12 +60,11 @@ export interface StopArgs extends DcaArgs {}
 
 export interface DestroyArgs extends DcaArgs {}
 
-export interface SwapHopStartArgs extends DcaArgs, MaybeTx {}
+export interface SwapWhitelistStartArgs extends DcaArgs, MaybeTx {}
 
-export interface SwapHopEndArgs extends DcaArgs, MaybeTx {
+export interface SwapWhitelistEndArgs extends DcaArgs, MaybeTx {
   coinOut: TransactionArgument;
   request: NestedResult;
-  admin?: string;
 }
 
 export interface DCA {

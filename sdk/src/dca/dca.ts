@@ -1,10 +1,6 @@
 import { bcs } from '@mysten/sui/bcs';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
-import {
-  Inputs,
-  Transaction,
-  TransactionArgument,
-} from '@mysten/sui/transactions';
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
   isValidSuiObjectId,
@@ -13,41 +9,45 @@ import {
 import { devInspectAndGetResults } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
+import { OWNED_OBJECTS, PACKAGES, SHARED_OBJECTS } from './constants';
 import {
   DCA,
+  DCAConstructorArgs,
   DestroyArgs,
   IsActiveArgs,
+  Network,
   NewArgs,
   StopArgs,
-  SwapHopEndArgs,
-  SwapHopStartArgs,
+  SwapWhitelistEndArgs,
+  SwapWhitelistStartArgs,
 } from './dca.types';
 import { parseDCAObject } from './utils';
 export class DcaSDK {
   #client: SuiClient;
-  #tradePolicy = Inputs.SharedObjectRef({
-    objectId:
-      '0x68fec6e6f2528821bcaba9f6fd1750e8eac7de75fc09dc68e03174c04c828539',
-    initialSharedVersion: '89042362',
-    mutable: false,
-  });
-  #dcaPackage =
-    '0x8cff310615dd198bb64af09efcf1bc54bd6a71bcc2fe2a1c8302b6f76f8ee427';
-  #adapters =
-    '0x5fee448eda1dd26b9fe1c8d72ee5228631c4b337c995d1e62dc8e61ef4aa30b9';
-  #adapterWhitelist = Inputs.SharedObjectRef({
-    objectId:
-      '0xb977fc79289fd51c932ec8de1ca460b4d1bc8875adc5d363ae5eb0920ed8152d',
-    initialSharedVersion: '89042363',
-    mutable: false,
-  });
-  #MAX_U64 = 18446744073709551615n;
-  #defaultFee = 500000n;
+  #packages: (typeof PACKAGES)[Network];
+  #ownedObjects: (typeof OWNED_OBJECTS)[Network];
+  #sharedObjects: (typeof SHARED_OBJECTS)[Network];
 
-  constructor(nodeUrl?: string) {
+  MAX_U64 = 18446744073709551615n;
+  defaultFee = 500000n;
+
+  constructor(args: DCAConstructorArgs | undefined | null = null) {
+    const defaultData = {
+      network: 'testnet',
+      fullNodeUrl: getFullnodeUrl('testnet'),
+      ownedObjects: OWNED_OBJECTS['testnet'],
+      packages: PACKAGES['testnet'],
+      sharedObjects: SHARED_OBJECTS['testnet'],
+    };
+
+    const data = args ? args : defaultData;
+
     this.#client = new SuiClient({
-      url: nodeUrl ? nodeUrl : getFullnodeUrl('mainnet'),
+      url: data.fullNodeUrl || defaultData.fullNodeUrl,
     });
+    this.#packages = data.packages || defaultData.packages;
+    this.#ownedObjects = data.ownedObjects || defaultData.ownedObjects;
+    this.#sharedObjects = data.sharedObjects || defaultData.sharedObjects;
   }
 
   async get(objectId: string): Promise<DCA> {
@@ -72,7 +72,7 @@ export class DcaSDK {
     timeScale,
     every,
     numberOfOrders,
-    max = this.#MAX_U64,
+    max = this.MAX_U64,
     min = 0n,
     fee,
     delegatee,
@@ -81,10 +81,10 @@ export class DcaSDK {
     invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
 
     const dca = tx.moveCall({
-      target: `${this.#dcaPackage}::dca::new`,
+      target: `${this.#packages.DCA}::dca::new`,
       typeArguments: [coinInType, coinOutType, witnessType],
       arguments: [
-        tx.object(this.#tradePolicy),
+        tx.object(this.#sharedObjects.TRADE_POLICY),
         tx.object(SUI_CLOCK_OBJECT_ID),
         tx.object(coinIn),
         tx.pure.u64(every),
@@ -92,13 +92,13 @@ export class DcaSDK {
         tx.pure.u8(timeScale),
         tx.pure.u64(min),
         tx.pure.u64(max),
-        tx.pure.u64(fee ? BigInt(fee * 1e7) : this.#defaultFee),
+        tx.pure.u64(fee ? BigInt(fee * 1e7) : this.defaultFee),
         tx.pure.address(delegatee),
       ],
     });
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::share`,
+      target: `${this.#packages.DCA}::dca::share`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -116,11 +116,12 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::active`,
+      target: `${this.#packages.DCA}::dca::active`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
 
+    // @ts-expect-error The polymedia core is outdated but should work
     const result = await devInspectAndGetResults(this.#client, tx);
 
     const values = result[result.length - 1].returnValues;
@@ -139,7 +140,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::stop`,
+      target: `${this.#packages.DCA}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -153,7 +154,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::destroy`,
+      target: `${this.#packages.DCA}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -167,13 +168,13 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::stop`,
+      target: `${this.#packages.DCA}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::destroy`,
+      target: `${this.#packages.DCA}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -181,16 +182,16 @@ export class DcaSDK {
     return tx;
   }
 
-  swapHopStart({
+  swapWhitelistStart({
     dca,
     coinInType,
     coinOutType,
     tx = new Transaction(),
-  }: SwapHopStartArgs) {
+  }: SwapWhitelistStartArgs) {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const [request, coinIn] = tx.moveCall({
-      target: `${this.#dcaPackage}::dca::request`,
+      target: `${this.#packages.DCA}::dca::request`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -202,28 +203,28 @@ export class DcaSDK {
     };
   }
 
-  swapHopEnd({
+  swapWhitelistEnd({
     dca,
     coinInType,
     coinOutType,
     tx = new Transaction(),
     request,
     coinOut,
-  }: SwapHopEndArgs) {
+  }: SwapWhitelistEndArgs) {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     tx.moveCall({
-      target: `${this.#adapters}::whitelist_adapter::swap`,
+      target: `${this.#packages.ADAPTERS}::whitelist_adapter::swap`,
       typeArguments: [coinOutType],
       arguments: [
-        tx.object(this.#adapterWhitelist),
+        tx.object(this.#sharedObjects.WHITELIST),
         request as TransactionArgument,
         coinOut,
       ],
     });
 
     tx.moveCall({
-      target: `${this.#dcaPackage}::dca::confirm`,
+      target: `${this.#packages.DCA}::dca::confirm`,
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(dca),
