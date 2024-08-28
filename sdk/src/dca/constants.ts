@@ -2,8 +2,9 @@ import { Inputs } from '@mysten/sui/transactions';
 
 export const PACKAGES = {
   mainnet: {
-    DCA: '',
-    ADAPTERS: '',
+    DCA: '0xf9af445f0e3fe9d247b6745d5912582ec2e5c918e0b5d4a953d6c2487e7bf0ed',
+    ADAPTERS:
+      '0xd5a6c9ea632c584c2bd48271e17f4705463b4d4af88e9c57350c0d6763af8f6c',
   },
   testnet: {
     DCA: '0xdc0d29408c946eacd2e175639957fe8a9095f2cbbf222d15f9a77fc44413120c',
@@ -14,9 +15,12 @@ export const PACKAGES = {
 
 export const OWNED_OBJECTS = {
   mainnet: {
-    ADAPTER_UPGRADE_CAP: '',
-    DCA_UPGRADE_CAP: '',
-    DCA_ADMIN: '',
+    ADAPTER_UPGRADE_CAP:
+      '0x28cf6850252ee10b79a4912ed3d85febdd22d54ce43d3cfee3a18134e3ab9852',
+    DCA_UPGRADE_CAP:
+      '0x553811db9324509567eb605b6bbe4d5d3686e6f542d6227522bc745580afdde7',
+    DCA_ADMIN:
+      '0xc88e6333064f1b005916b19fe9dff530a598846493a022b889a3eae22e849ce7',
   },
   testnet: {
     ADAPTER_UPGRADE_CAP:
@@ -31,23 +35,27 @@ export const OWNED_OBJECTS = {
 export const SHARED_OBJECTS = {
   mainnet: {
     TRADE_POLICY_MUT: Inputs.SharedObjectRef({
-      objectId: '',
-      initialSharedVersion: '',
+      objectId:
+        '0x3fd182fa793ff0dc06594dcc76d083a223fb4133e683da525c01e22523813db5',
+      initialSharedVersion: '325819083',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     TRADE_POLICY: Inputs.SharedObjectRef({
-      objectId: '',
-      initialSharedVersion: '',
+      objectId: '325819083',
+      initialSharedVersion:
+        '0x3fd182fa793ff0dc06594dcc76d083a223fb4133e683da525c01e22523813db5',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     WHITELIST_MUT: Inputs.SharedObjectRef({
-      objectId: '',
-      initialSharedVersion: '',
+      objectId:
+        '0x3f4856d9386174134ec8c48a3dc8b5128df890cec6a5125b279422e632cad32f',
+      initialSharedVersion: '325819084',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     WHITELIST: Inputs.SharedObjectRef({
-      objectId: '',
-      initialSharedVersion: '',
+      objectId:
+        '0x3f4856d9386174134ec8c48a3dc8b5128df890cec6a5125b279422e632cad32f',
+      initialSharedVersion: '325819084',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
   },
@@ -81,7 +89,7 @@ export const SHARED_OBJECTS = {
 
 export const WITNESSES = {
   mainnet: {
-    WHITELIST_ADAPTER: '',
+    WHITELIST_ADAPTER: `${PACKAGES['mainnet'].ADAPTERS}::whitelist_adapter::Witness`,
   },
   testnet: {
     WHITELIST_ADAPTER: `${PACKAGES['testnet'].ADAPTERS}::whitelist_adapter::Witness`,
