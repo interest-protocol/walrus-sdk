@@ -88,8 +88,6 @@ export class DcaSDK {
     invariant(isValidSuiAddress(delegatee), "Invalid delegatee address");
     invariant(numberOfOrders > 0, "Number of orders must be greater than 0");
 
-    console.log({ package: this.#packages.DCA });
-
     const dca = tx.moveCall({
       target: `${this.#packages.DCA}::dca::new`,
       typeArguments: [coinInType, coinOutType, witnessType],
