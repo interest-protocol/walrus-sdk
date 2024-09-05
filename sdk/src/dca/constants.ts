@@ -2,9 +2,9 @@ import { Inputs } from '@mysten/sui/transactions';
 
 export const PACKAGES = {
   mainnet: {
-    DCA: '0xf9af445f0e3fe9d247b6745d5912582ec2e5c918e0b5d4a953d6c2487e7bf0ed',
+    DCA: '0x33d51e66410b5d98fdd013d16194ab35b43d5b8fc76523876cd5f971c52084dd',
     ADAPTERS:
-      '0xd5a6c9ea632c584c2bd48271e17f4705463b4d4af88e9c57350c0d6763af8f6c',
+      '0x8ff90cb0c620d9e62eefbf1da08d62d229d0282de8858424314e230ecda5e6bc',
   },
   testnet: {
     DCA: '0xdc0d29408c946eacd2e175639957fe8a9095f2cbbf222d15f9a77fc44413120c',
@@ -16,11 +16,11 @@ export const PACKAGES = {
 export const OWNED_OBJECTS = {
   mainnet: {
     ADAPTER_UPGRADE_CAP:
-      '0x28cf6850252ee10b79a4912ed3d85febdd22d54ce43d3cfee3a18134e3ab9852',
+      '0x6cba08aeacf0f6ed79dd42d0b979164e6d74f7a948efe86c649da5a74f58284f',
     DCA_UPGRADE_CAP:
-      '0x553811db9324509567eb605b6bbe4d5d3686e6f542d6227522bc745580afdde7',
+      '0xae0a4a3d9376a037c7c17aa6cad9e8ef493c1346704319aab8610614aa229fff',
     DCA_ADMIN:
-      '0xc88e6333064f1b005916b19fe9dff530a598846493a022b889a3eae22e849ce7',
+      '0xd46d636ff76434b4ab51a346ed7cf5572534de2faf572c41057c99d1b6e03302',
   },
   testnet: {
     ADAPTER_UPGRADE_CAP:
@@ -36,27 +36,39 @@ export const SHARED_OBJECTS = {
   mainnet: {
     TRADE_POLICY_MUT: Inputs.SharedObjectRef({
       objectId:
-        '0x3fd182fa793ff0dc06594dcc76d083a223fb4133e683da525c01e22523813db5',
-      initialSharedVersion: '325819083',
+        '0x3bf87821085b4bf6a0574dcee1de533c4296bf1b624dab1984f3a92df4ea28fd',
+      initialSharedVersion: '330857975',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     TRADE_POLICY: Inputs.SharedObjectRef({
-      objectId: '325819083',
-      initialSharedVersion:
-        '0x3fd182fa793ff0dc06594dcc76d083a223fb4133e683da525c01e22523813db5',
+      objectId:
+        '0x3bf87821085b4bf6a0574dcee1de533c4296bf1b624dab1984f3a92df4ea28fd',
+      initialSharedVersion: '330857975',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     WHITELIST_MUT: Inputs.SharedObjectRef({
       objectId:
-        '0x3f4856d9386174134ec8c48a3dc8b5128df890cec6a5125b279422e632cad32f',
-      initialSharedVersion: '325819084',
+        '0xe8c8d4c8fd91962b77c8240bccaa2e69ab513ccce77611adaf872464abf453a4',
+      initialSharedVersion: '330857976',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     WHITELIST: Inputs.SharedObjectRef({
       objectId:
-        '0x3f4856d9386174134ec8c48a3dc8b5128df890cec6a5125b279422e632cad32f',
-      initialSharedVersion: '325819084',
+        '0xe8c8d4c8fd91962b77c8240bccaa2e69ab513ccce77611adaf872464abf453a4',
+      initialSharedVersion: '330857976',
       mutable: false,
+    }) as ReturnType<typeof Inputs.SharedObjectRef>,
+    SETTINGS: Inputs.SharedObjectRef({
+      objectId:
+        '0x01fac821aeece5c5203560fb6ba7c4f01401b774e54994afc5b11c4172190111',
+      initialSharedVersion: '330857975',
+      mutable: false,
+    }) as ReturnType<typeof Inputs.SharedObjectRef>,
+    SETTINGS_MUT: Inputs.SharedObjectRef({
+      objectId:
+        '0x01fac821aeece5c5203560fb6ba7c4f01401b774e54994afc5b11c4172190111',
+      initialSharedVersion: '330857975',
+      mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
   },
   testnet: {
@@ -82,6 +94,11 @@ export const SHARED_OBJECTS = {
       objectId:
         '0x391be588882816e3f3bf755d14ad7fad12062ad1c19c71020a9605ac662f9ea5',
       initialSharedVersion: '109319126',
+      mutable: false,
+    }) as ReturnType<typeof Inputs.SharedObjectRef>,
+    SETTINGS: Inputs.SharedObjectRef({
+      objectId: '',
+      initialSharedVersion: '',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
   },

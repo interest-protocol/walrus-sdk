@@ -49,7 +49,7 @@ module dca::dca {
         /// The original owner of the funds
         owner: address,
         /// Account that gets the fee
-        delegatee: address,
+        treasury: address,
         /// Start timestamp determined by the Clock time of when the init
         /// transaction took place
         start_timestamp: u64,
@@ -87,6 +87,11 @@ module dca::dca {
     public struct TradePolicy has key {
         id: UID,
         whitelist: VecSet<TypeName>,
+    }
+
+    public struct Settings has key {
+        id: UID,
+        treasury: address
     }
 
     #[allow(lint(coin_field))]
@@ -130,16 +135,23 @@ module dca::dca {
     // === Public-Mutative Functions ===
 
     fun init(ctx: &mut TxContext) {
+        let settings = Settings {
+            id: object::new(ctx),
+            treasury: @treasury,
+        };
+
         let trade_policy = TradePolicy {
             id: object::new(ctx),
             whitelist: vec_set::empty(),
         };
 
+        transfer::share_object(settings);
         transfer::share_object(trade_policy);
         transfer::public_transfer(Admin { id: object::new(ctx) }, ctx.sender());
     }
 
     public fun new<Input, Output, Witness: drop>(
+        settings: &Settings,
         trade_policy: &TradePolicy,
         clock: &Clock,
         coin_in: Coin<Input>,
@@ -177,7 +189,7 @@ module dca::dca {
             active: true,
             cooldown: convert_to_timestamp(time_scale) * every,
             fee_percent,
-            delegatee,
+            treasury: settings.treasury,
             total_owner_output: 0,
             total_delegatee_output: 0,
             witness: type_name::get<Witness>(),
@@ -286,8 +298,8 @@ module dca::dca {
         self.owner
     }
 
-    public fun delegatee<Input, Output>(self: &DCA<Input, Output>): address {
-        self.delegatee
+    public fun treasury<Input, Output>(self: &DCA<Input, Output>): address {
+        self.treasury
     }
 
     public fun start_timestamp<Input, Output>(self: &DCA<Input, Output>): u64 {
@@ -422,6 +434,10 @@ module dca::dca {
         trade_policy.whitelist.remove(&type_name::get<Witness>());
     }
 
+    public fun set_treasury(settings: &mut Settings, _: &Admin, new_treasury: address) {
+        settings.treasury = new_treasury;
+    }
+
     // === Private Functions ===
 
     fun resolve<Input, Output>(
@@ -464,7 +480,7 @@ module dca::dca {
             dca: object::id_address(self),
         });
 
-        transfer::public_transfer(balance_fee.into_coin(ctx), self.delegatee);
+        transfer::public_transfer(balance_fee.into_coin(ctx), self.treasury);
         transfer::public_transfer(balance_out.into_coin(ctx), self.owner);
     }
 

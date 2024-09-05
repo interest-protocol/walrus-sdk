@@ -9,7 +9,7 @@ module dca::dca_tests {
         test_scenario::{Self as ts, Scenario},
     };
 
-    use dca::dca::{Self, TradePolicy, Admin};
+    use dca::dca::{Self, TradePolicy, Settings, Admin};
 
     // Time scale
     const MIN: u8 = 1;
@@ -42,6 +42,7 @@ module dca::dca_tests {
         world.clock.increment_for_testing(15 * MILLISECONDS);
 
         let dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(coin_in_value, world.scenario.ctx()),
@@ -56,7 +57,7 @@ module dca::dca_tests {
         );
 
         assert_eq(dca.owner(), OWNER);
-        assert_eq(dca.delegatee(), DELEGATEE);
+        assert_eq(dca.treasury(), @treasury);
         assert_eq(dca.start_timestamp(), 15);
         assert_eq(dca.last_trade_timestamp(), 0);
         assert_eq(dca.time_scale(), MIN);
@@ -86,6 +87,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(coin_in_value, world.scenario.ctx()),
@@ -109,6 +111,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -173,6 +176,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -216,6 +220,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -254,6 +259,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -292,6 +298,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -329,6 +336,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -356,6 +364,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -408,13 +417,13 @@ module dca::dca_tests {
 
         owner_coin.join(second_owner_coin);
 
-        let mut delegatee_coin = world.scenario.take_from_address<Coin<USDC>>(DELEGATEE);
-        let second_delegatee_coin = world.scenario.take_from_address<Coin<USDC>>(DELEGATEE);
+        let mut treasury_coin = world.scenario.take_from_address<Coin<USDC>>(@treasury);
+        let second_treasury_coin = world.scenario.take_from_address<Coin<USDC>>(@treasury);
 
-        delegatee_coin.join(second_delegatee_coin);
+        treasury_coin.join(second_treasury_coin);
 
         assert_eq(owner_coin.burn_for_testing(), 4995);
-        assert_eq(delegatee_coin.burn_for_testing(), 5);
+        assert_eq(treasury_coin.burn_for_testing(), 5);
 
         world.end();
     }
@@ -427,6 +436,7 @@ module dca::dca_tests {
         world.scenario.next_tx(ALICE);
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -455,6 +465,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -479,6 +490,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let dca = dca::new<SUI, USDC, InvalidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing<SUI>(100, world.scenario.ctx()),
@@ -501,6 +513,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -541,6 +554,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -576,6 +590,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -606,6 +621,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -651,6 +667,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -686,6 +703,7 @@ module dca::dca_tests {
         let mut world = start_world();
 
         let mut dca = dca::new<SUI, USDC, ValidWitness>(
+            &world.settings,
             &world.trade_policy,
             &world.clock,
             mint_for_testing(1000, world.scenario.ctx()),
@@ -734,6 +752,7 @@ module dca::dca_tests {
 
     public struct World {
         scenario: Scenario,
+        settings: Settings,
         trade_policy: TradePolicy,
         clock: Clock,
         admin: Admin,
@@ -747,7 +766,8 @@ module dca::dca_tests {
         scenario.next_tx(OWNER);
 
         let clock = clock::create_for_testing(scenario.ctx());
-
+    
+        let settings = scenario.take_shared<Settings>();
         let mut trade_policy = scenario.take_shared<TradePolicy>();
         let admin = scenario.take_from_sender<Admin>();
 
@@ -755,6 +775,7 @@ module dca::dca_tests {
 
         World {
             scenario,
+            settings,
             clock,
             trade_policy,
             admin,

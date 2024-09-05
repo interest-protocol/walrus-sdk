@@ -81,6 +81,7 @@ export class DcaSDK {
       target: `${this.#packages.DCA}::dca::new`,
       typeArguments: [coinInType, coinOutType, witnessType],
       arguments: [
+        tx.object(this.#sharedObjects.SETTINGS),
         tx.object(this.#sharedObjects.TRADE_POLICY),
         tx.object(SUI_CLOCK_OBJECT_ID),
         tx.object(coinIn),
