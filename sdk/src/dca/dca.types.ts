@@ -1,6 +1,10 @@
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
+import {
+  CallArg,
+  Transaction,
+  TransactionArgument,
+} from "@mysten/sui/transactions";
 
-import type { PACKAGES, SHARED_OBJECTS, WITNESSES } from './constants';
+import type { WITNESSES } from "./constants";
 
 export enum TimeScale {
   Seconds,
@@ -15,13 +19,33 @@ interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Network = 'mainnet' | 'testnet';
+export type Network = "mainnet" | "testnet";
+
+export type Package = Record<Network, Record<"DCA" | "ADAPTERS", string>>;
+
+export type SharedObjects = Record<
+  Network,
+  Record<
+    | "TRADE_POLICY_MUT"
+    | "TRADE_POLICY"
+    | "WHITELIST_MUT"
+    | "WHITELIST"
+    | "SETTINGS_MUT"
+    | "SETTINGS",
+    Extract<
+      CallArg,
+      {
+        Object: unknown;
+      }
+    >
+  >
+>;
 
 export interface DCAConstructorArgs {
-  fullNodeUrl?: string;
   network: Network;
-  packages?: (typeof PACKAGES)[Network];
-  sharedObjects?: (typeof SHARED_OBJECTS)[Network];
+  fullNodeUrl?: string;
+  packages?: Package[Network];
+  sharedObjects?: SharedObjects[Network];
 }
 
 interface DcaArgs {
