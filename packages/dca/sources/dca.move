@@ -170,9 +170,9 @@ module dca::dca {
 
         let start_timestamp = timestamp_s(clock);
 
-        let amount_per_trade = math64::div_down(coin_in.value(), number_of_orders);
+        let amount_per_trade = math64::div_up(coin_in.value(), number_of_orders);
 
-        assert!(number_of_orders != 0 && amount_per_trade != 0, EInvalidOrderConfiguration);
+        assert!(number_of_orders != 0 && amount_per_trade != 0 && amount_per_trade * number_of_orders >= coin_in.value(), EInvalidOrderConfiguration);
 
         let dca = DCA<Input, Output> {
             id: object::new(ctx),
