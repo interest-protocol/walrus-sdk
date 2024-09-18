@@ -1,15 +1,14 @@
-import { bcs } from '@mysten/sui/bcs';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
+import { bcs } from "@mysten/sui/bcs";
+import { SuiClient } from "@mysten/sui/client";
+import { Transaction, TransactionArgument } from "@mysten/sui/transactions";
 import {
   isValidSuiAddress,
   isValidSuiObjectId,
   SUI_CLOCK_OBJECT_ID,
-} from '@mysten/sui/utils';
-import { devInspectAndGetResults } from '@polymedia/suitcase-core';
-import invariant from 'tiny-invariant';
+} from "@mysten/sui/utils";
+import { devInspectAndGetResults } from "@polymedia/suitcase-core";
+import invariant from "tiny-invariant";
 
-import { PACKAGES, SHARED_OBJECTS } from './constants';
 import {
   DCA,
   DCAConstructorArgs,
@@ -17,45 +16,57 @@ import {
   IsActiveArgs,
   Network,
   NewArgs,
+  Package,
+  SharedObjects,
   StopArgs,
   SwapWhitelistEndArgs,
   SwapWhitelistStartArgs,
-} from './dca.types';
-import { parseDCAObject } from './utils';
+} from "./dca.types";
+import { getDefaultArgs, parseDCAObject } from "./utils";
+
 export class DcaSDK {
   #client: SuiClient;
-  #packages: (typeof PACKAGES)[Network];
-  #sharedObjects: (typeof SHARED_OBJECTS)[Network];
+  #packages: Package[Network];
+  #sharedObjects: SharedObjects[Network];
 
+  DEFAULT_FEE = 500000n;
   MAX_U64 = 18446744073709551615n;
-  defaultFee = 500000n;
 
   constructor(args: DCAConstructorArgs | undefined | null = null) {
-    const defaultData = {
-      network: 'testnet',
-      fullNodeUrl: getFullnodeUrl('testnet'),
-      packages: PACKAGES['testnet'],
-      sharedObjects: SHARED_OBJECTS['testnet'],
+    const network = args?.network ?? "mainnet";
+
+    const data = {
+      ...getDefaultArgs(network),
+      ...args,
     };
 
-    const data = args ? args : defaultData;
+    invariant(
+      data.fullNodeUrl,
+      "You must provide fullNodeUrl for this specific network"
+    );
 
-    this.#client = new SuiClient({
-      url: data.fullNodeUrl || defaultData.fullNodeUrl,
-    });
-    this.#packages = data.packages || defaultData.packages;
-    this.#sharedObjects = data.sharedObjects || defaultData.sharedObjects;
+    invariant(
+      data.packages,
+      "You must provide packages for this specific network"
+    );
+
+    invariant(
+      data.sharedObjects,
+      "You must provide sharedObjects for this specific network"
+    );
+
+    this.#packages = data.packages;
+    this.#sharedObjects = data.sharedObjects;
+    this.#client = new SuiClient({ url: data.fullNodeUrl });
   }
 
   async get(objectId: string): Promise<DCA> {
-    invariant(isValidSuiObjectId(objectId), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(objectId), "Invalid DCA id");
 
     const obj = await this.#client.getObject({
       id: objectId,
       options: { showContent: true, showType: true },
     });
-
-    console.log(obj);
 
     return parseDCAObject(obj);
   }
@@ -74,8 +85,8 @@ export class DcaSDK {
     fee,
     delegatee,
   }: NewArgs): Transaction {
-    invariant(isValidSuiAddress(delegatee), 'Invalid delegatee address');
-    invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
+    invariant(isValidSuiAddress(delegatee), "Invalid delegatee address");
+    invariant(numberOfOrders > 0, "Number of orders must be greater than 0");
 
     const dca = tx.moveCall({
       target: `${this.#packages.DCA}::dca::new`,
@@ -90,7 +101,7 @@ export class DcaSDK {
         tx.pure.u8(timeScale),
         tx.pure.u64(min),
         tx.pure.u64(max),
-        tx.pure.u64(fee ? BigInt(fee * 1e7) : this.defaultFee),
+        tx.pure.u64(fee ? BigInt(fee * 1e7) : this.DEFAULT_FEE),
         tx.pure.address(delegatee),
       ],
     });
@@ -109,7 +120,7 @@ export class DcaSDK {
     coinInType,
     coinOutType,
   }: IsActiveArgs): Promise<boolean> {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     const tx = new Transaction();
 
@@ -126,7 +137,7 @@ export class DcaSDK {
 
     const values = result[result.length - 1].returnValues;
 
-    invariant(values && values.length, 'Failed to get values');
+    invariant(values && values.length, "Failed to get values");
 
     return values.map((elem) => {
       const [x] = elem;
@@ -135,7 +146,7 @@ export class DcaSDK {
   }
 
   stop({ dca, coinInType, coinOutType }: StopArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     const tx = new Transaction();
 
@@ -149,7 +160,7 @@ export class DcaSDK {
   }
 
   destroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     const tx = new Transaction();
 
@@ -163,7 +174,7 @@ export class DcaSDK {
   }
 
   stopAndDestroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     const tx = new Transaction();
 
@@ -188,7 +199,7 @@ export class DcaSDK {
     coinOutType,
     tx = new Transaction(),
   }: SwapWhitelistStartArgs) {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     const [request, coinIn] = tx.moveCall({
       target: `${this.#packages.DCA}::dca::request`,
@@ -211,7 +222,7 @@ export class DcaSDK {
     request,
     coinOut,
   }: SwapWhitelistEndArgs) {
-    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
+    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
 
     tx.moveCall({
       target: `${this.#packages.ADAPTERS}::whitelist_adapter::swap`,
