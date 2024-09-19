@@ -1,58 +1,55 @@
-import { bcs } from "@mysten/sui/bcs";
-import { SuiClient } from "@mysten/sui/client";
-import { Transaction, TransactionArgument } from "@mysten/sui/transactions";
+import { bcs } from '@mysten/sui/bcs';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
   isValidSuiObjectId,
   SUI_CLOCK_OBJECT_ID,
-} from "@mysten/sui/utils";
-import { devInspectAndGetResults } from "@polymedia/suitcase-core";
-import invariant from "tiny-invariant";
+} from '@mysten/sui/utils';
+import { devInspectAndGetResults } from '@polymedia/suitcase-core';
+import invariant from 'tiny-invariant';
 
 import {
   DCA,
   DCAConstructorArgs,
   DestroyArgs,
   IsActiveArgs,
-  Network,
   NewArgs,
   Package,
   SharedObjects,
   StopArgs,
   SwapWhitelistEndArgs,
   SwapWhitelistStartArgs,
-} from "./dca.types";
-import { getDefaultArgs, parseDCAObject } from "./utils";
+} from './dca.types';
+import { getDefaultArgs, parseDCAObject } from './utils';
 
 export class DcaSDK {
   #client: SuiClient;
-  #packages: Package[Network];
-  #sharedObjects: SharedObjects[Network];
+  #packages: Package;
+  #sharedObjects: SharedObjects;
 
   DEFAULT_FEE = 500000n;
   MAX_U64 = 18446744073709551615n;
 
   constructor(args: DCAConstructorArgs | undefined | null = null) {
-    const network = args?.network ?? "mainnet";
-
     const data = {
-      ...getDefaultArgs(network),
+      ...getDefaultArgs(),
       ...args,
     };
 
     invariant(
       data.fullNodeUrl,
-      "You must provide fullNodeUrl for this specific network"
+      'You must provide fullNodeUrl for this specific network'
     );
 
     invariant(
       data.packages,
-      "You must provide packages for this specific network"
+      'You must provide packages for this specific network'
     );
 
     invariant(
       data.sharedObjects,
-      "You must provide sharedObjects for this specific network"
+      'You must provide sharedObjects for this specific network'
     );
 
     this.#packages = data.packages;
@@ -61,7 +58,7 @@ export class DcaSDK {
   }
 
   async get(objectId: string): Promise<DCA> {
-    invariant(isValidSuiObjectId(objectId), "Invalid DCA id");
+    invariant(isValidSuiObjectId(objectId), 'Invalid DCA id');
 
     const obj = await this.#client.getObject({
       id: objectId,
@@ -85,11 +82,11 @@ export class DcaSDK {
     fee,
     delegatee,
   }: NewArgs): Transaction {
-    invariant(isValidSuiAddress(delegatee), "Invalid delegatee address");
-    invariant(numberOfOrders > 0, "Number of orders must be greater than 0");
+    invariant(isValidSuiAddress(delegatee), 'Invalid delegatee address');
+    invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
 
     const dca = tx.moveCall({
-      target: `${this.#packages.DCA}::dca::new`,
+      target: `${this.#packages.DCA_V2}::dca::new`,
       typeArguments: [coinInType, coinOutType, witnessType],
       arguments: [
         tx.object(this.#sharedObjects.SETTINGS),
@@ -107,7 +104,7 @@ export class DcaSDK {
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::share`,
+      target: `${this.#packages.DCA_V2}::dca::share`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -120,12 +117,12 @@ export class DcaSDK {
     coinInType,
     coinOutType,
   }: IsActiveArgs): Promise<boolean> {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::active`,
+      target: `${this.#packages.DCA_V2}::dca::active`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -137,7 +134,7 @@ export class DcaSDK {
 
     const values = result[result.length - 1].returnValues;
 
-    invariant(values && values.length, "Failed to get values");
+    invariant(values && values.length, 'Failed to get values');
 
     return values.map((elem) => {
       const [x] = elem;
@@ -146,12 +143,12 @@ export class DcaSDK {
   }
 
   stop({ dca, coinInType, coinOutType }: StopArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::stop`,
+      target: `${this.#packages.DCA_V2}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -160,12 +157,12 @@ export class DcaSDK {
   }
 
   destroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::destroy`,
+      target: `${this.#packages.DCA_V2}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -174,18 +171,18 @@ export class DcaSDK {
   }
 
   stopAndDestroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::stop`,
+      target: `${this.#packages.DCA_V2}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::destroy`,
+      target: `${this.#packages.DCA_V2}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -199,10 +196,10 @@ export class DcaSDK {
     coinOutType,
     tx = new Transaction(),
   }: SwapWhitelistStartArgs) {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const [request, coinIn] = tx.moveCall({
-      target: `${this.#packages.DCA}::dca::request`,
+      target: `${this.#packages.DCA_V2}::dca::request`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -222,10 +219,10 @@ export class DcaSDK {
     request,
     coinOut,
   }: SwapWhitelistEndArgs) {
-    invariant(isValidSuiObjectId(dca), "Invalid DCA id");
+    invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     tx.moveCall({
-      target: `${this.#packages.ADAPTERS}::whitelist_adapter::swap`,
+      target: `${this.#packages.ADAPTERS_V2}::whitelist_adapter::swap`,
       typeArguments: [coinOutType],
       arguments: [
         tx.object(this.#sharedObjects.WHITELIST),
@@ -235,7 +232,7 @@ export class DcaSDK {
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA}::dca::confirm`,
+      target: `${this.#packages.DCA_V2}::dca::confirm`,
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(dca),

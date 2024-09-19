@@ -2,9 +2,9 @@ import {
   CallArg,
   Transaction,
   TransactionArgument,
-} from "@mysten/sui/transactions";
+} from '@mysten/sui/transactions';
 
-import type { WITNESSES } from "./constants";
+import type { WITNESSES } from './constants';
 
 export enum TimeScale {
   Seconds,
@@ -19,33 +19,30 @@ interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Network = "mainnet" | "testnet";
-
-export type Package = Record<Network, Record<"DCA" | "ADAPTERS", string>>;
+export type Package = Record<
+  'DCA' | 'ADAPTERS' | 'DCA_V2' | 'ADAPTERS_V2',
+  string
+>;
 
 export type SharedObjects = Record<
-  Network,
-  Record<
-    | "TRADE_POLICY_MUT"
-    | "TRADE_POLICY"
-    | "WHITELIST_MUT"
-    | "WHITELIST"
-    | "SETTINGS_MUT"
-    | "SETTINGS",
-    Extract<
-      CallArg,
-      {
-        Object: unknown;
-      }
-    >
+  | 'TRADE_POLICY_MUT'
+  | 'TRADE_POLICY'
+  | 'WHITELIST_MUT'
+  | 'WHITELIST'
+  | 'SETTINGS_MUT'
+  | 'SETTINGS',
+  Extract<
+    CallArg,
+    {
+      Object: unknown;
+    }
   >
 >;
 
 export interface DCAConstructorArgs {
-  network: Network;
   fullNodeUrl?: string;
-  packages?: Package[Network];
-  sharedObjects?: SharedObjects[Network];
+  packages?: Package;
+  sharedObjects?: SharedObjects;
 }
 
 interface DcaArgs {
@@ -54,7 +51,7 @@ interface DcaArgs {
   dca: string;
 }
 
-type WitnessWithNetwork = (typeof WITNESSES)[Network];
+type WitnessWithVersion = typeof WITNESSES;
 
 export interface NewArgs extends MaybeTx {
   coinInType: string;
@@ -67,7 +64,7 @@ export interface NewArgs extends MaybeTx {
   min?: bigint;
   fee?: number;
   delegatee: string;
-  witnessType: WitnessWithNetwork[keyof WitnessWithNetwork];
+  witnessType: WitnessWithVersion[keyof WitnessWithVersion];
 }
 
 export interface NestedResult {}
