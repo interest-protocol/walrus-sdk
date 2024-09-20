@@ -2,6 +2,7 @@
 name = "Adapter"
 edition = "2024.beta"
 authors = ["Jose Cerqueira (jose@interestprotocol.com)"]
+published-at = "0x3223cf2259ad386fce4ec9dcb5df862ad338a6d00578abf3bbc0172d9850c590"
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet", override = true }
