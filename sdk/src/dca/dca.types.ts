@@ -70,9 +70,7 @@ export interface IsActiveArgs extends DcaArgs {}
 
 export interface StopArgs extends DcaArgs {}
 
-export interface DestroyArgs extends DcaArgs {
-  v1?: boolean;
-}
+export interface DestroyArgs extends DcaArgs {}
 
 export interface SwapWhitelistStartArgs extends DcaArgs, MaybeTx {}
 

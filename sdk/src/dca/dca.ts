@@ -156,13 +156,13 @@ export class DcaSDK {
     return tx;
   }
 
-  destroy({ dca, coinInType, coinOutType, v1 }: DestroyArgs): Transaction {
+  destroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages[v1 ? 'v1' : 'v2'].DCA}::dca::destroy`,
+      target: `${this.#packages.v2.DCA}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
