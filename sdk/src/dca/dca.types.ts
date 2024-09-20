@@ -2,9 +2,9 @@ import {
   CallArg,
   Transaction,
   TransactionArgument,
-} from '@mysten/sui/transactions';
+} from "@mysten/sui/transactions";
 
-import type { WITNESSES } from './constants';
+import type { WITNESSES } from "./constants";
 
 export enum TimeScale {
   Seconds,
@@ -19,18 +19,15 @@ interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Package = Record<
-  'DCA' | 'ADAPTERS' | 'DCA_V2' | 'ADAPTERS_V2',
-  string
->;
+export type Package = Record<"v1" | "v2", Record<"DCA" | "ADAPTERS", string>>;
 
 export type SharedObjects = Record<
-  | 'TRADE_POLICY_MUT'
-  | 'TRADE_POLICY'
-  | 'WHITELIST_MUT'
-  | 'WHITELIST'
-  | 'SETTINGS_MUT'
-  | 'SETTINGS',
+  | "TRADE_POLICY_MUT"
+  | "TRADE_POLICY"
+  | "WHITELIST_MUT"
+  | "WHITELIST"
+  | "SETTINGS_MUT"
+  | "SETTINGS",
   Extract<
     CallArg,
     {
@@ -73,7 +70,9 @@ export interface IsActiveArgs extends DcaArgs {}
 
 export interface StopArgs extends DcaArgs {}
 
-export interface DestroyArgs extends DcaArgs {}
+export interface DestroyArgs extends DcaArgs {
+  v1?: boolean;
+}
 
 export interface SwapWhitelistStartArgs extends DcaArgs, MaybeTx {}
 
@@ -86,6 +85,7 @@ export interface DCA {
   objectId: string;
   type: string;
   owner: string;
+  v1?: boolean;
   delegatee: string;
   start: bigint;
   lastTrade: bigint;

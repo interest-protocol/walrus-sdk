@@ -86,7 +86,7 @@ export class DcaSDK {
     invariant(numberOfOrders > 0, 'Number of orders must be greater than 0');
 
     const dca = tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::new`,
+      target: `${this.#packages.v2.DCA}::dca::new`,
       typeArguments: [coinInType, coinOutType, witnessType],
       arguments: [
         tx.object(this.#sharedObjects.SETTINGS),
@@ -104,7 +104,7 @@ export class DcaSDK {
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::share`,
+      target: `${this.#packages.v2.DCA}::dca::share`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -122,7 +122,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::active`,
+      target: `${this.#packages.v2.DCA}::dca::active`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -148,7 +148,7 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::stop`,
+      target: `${this.#packages.v2.DCA}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -156,13 +156,13 @@ export class DcaSDK {
     return tx;
   }
 
-  destroy({ dca, coinInType, coinOutType }: DestroyArgs): Transaction {
+  destroy({ dca, coinInType, coinOutType, v1 }: DestroyArgs): Transaction {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::destroy`,
+      target: `${this.#packages[v1 ? 'v1' : 'v2'].DCA}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -176,13 +176,13 @@ export class DcaSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::stop`,
+      target: `${this.#packages.v2.DCA}::dca::stop`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::destroy`,
+      target: `${this.#packages.v2.DCA}::dca::destroy`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -199,7 +199,7 @@ export class DcaSDK {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     const [request, coinIn] = tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::request`,
+      target: `${this.#packages.v2.DCA}::dca::request`,
       typeArguments: [coinInType, coinOutType],
       arguments: [tx.object(dca)],
     });
@@ -222,7 +222,7 @@ export class DcaSDK {
     invariant(isValidSuiObjectId(dca), 'Invalid DCA id');
 
     tx.moveCall({
-      target: `${this.#packages.ADAPTERS_V2}::whitelist_adapter::swap`,
+      target: `${this.#packages.v2.ADAPTERS}::whitelist_adapter::swap`,
       typeArguments: [coinOutType],
       arguments: [
         tx.object(this.#sharedObjects.WHITELIST),
@@ -232,7 +232,7 @@ export class DcaSDK {
     });
 
     tx.moveCall({
-      target: `${this.#packages.DCA_V2}::dca::confirm`,
+      target: `${this.#packages.v2.DCA}::dca::confirm`,
       typeArguments: [coinInType, coinOutType],
       arguments: [
         tx.object(dca),
