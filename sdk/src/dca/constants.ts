@@ -9,6 +9,7 @@ export const PACKAGES: Package = {
   DCA_V2: '0x2f2ac80533574e9c5c8df26ed407d8dde3bc9233cab633433a971d46a4d7fbd2',
   ADAPTERS_V2:
     '0x3223cf2259ad386fce4ec9dcb5df862ad338a6d00578abf3bbc0172d9850c590',
+  DCA_V3: '0x6a468317bc530d376e8e87347ba8a724384dd4512062f7b7fffda5c65c1e8f5e',
 } as const;
 
 export const OWNED_OBJECTS = {

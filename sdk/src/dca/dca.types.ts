@@ -20,7 +20,7 @@ interface MaybeTx {
 }
 
 export type Package = Record<
-  'DCA' | 'ADAPTERS' | 'DCA_V2' | 'ADAPTERS_V2',
+  'DCA' | 'ADAPTERS' | 'DCA_V2' | 'ADAPTERS_V2' | 'DCA_V3',
   string
 >;
 
