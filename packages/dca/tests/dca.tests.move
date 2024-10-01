@@ -143,9 +143,9 @@ module dca::dca_tests {
         );
 
         assert_eq(dca::active(&dca), true);
-        assert_eq(dca::total_owner_output(&dca), 1998);
+        assert_eq(dca::total_owner_output(&dca), 1999);
         assert_eq(dca::remaining_orders(&dca), 1);
-        assert_eq(dca::total_delegatee_output(&dca), 2);
+        assert_eq(dca::total_delegatee_output(&dca), 1);
 
         world.clock.increment_for_testing(2 * MINUTE * MILLISECONDS);
 
@@ -162,9 +162,9 @@ module dca::dca_tests {
         );
 
         assert_eq(dca::active(&dca), false);
-        assert_eq(dca::total_owner_output(&dca), 4995);
+        assert_eq(dca::total_owner_output(&dca), 4998);
         assert_eq(dca::remaining_orders(&dca), 0);
-        assert_eq(dca::total_delegatee_output(&dca), 5);
+        assert_eq(dca::total_delegatee_output(&dca), 2);
 
         dca.share();
         world.end();
@@ -422,8 +422,8 @@ module dca::dca_tests {
 
         treasury_coin.join(second_treasury_coin);
 
-        assert_eq(owner_coin.burn_for_testing(), 4995);
-        assert_eq(treasury_coin.burn_for_testing(), 5);
+        assert_eq(owner_coin.burn_for_testing(), 4998);
+        assert_eq(treasury_coin.burn_for_testing(), 2);
 
         world.end();
     }
@@ -651,9 +651,9 @@ module dca::dca_tests {
             world.scenario.ctx(),
         );
 
-        assert_eq(dca.total_owner_output(), 2997);
+        assert_eq(dca.total_owner_output(), 2999);
         assert_eq(dca.remaining_orders(), 1);
-        assert_eq(dca.total_delegatee_output(), 3);
+        assert_eq(dca.total_delegatee_output(), 1);
 
         destroy(input);
         destroy(dca);
