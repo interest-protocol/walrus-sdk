@@ -86,6 +86,7 @@ export interface DCA {
   objectId: string;
   type: string;
   owner: string;
+  v1?: boolean;
   delegatee: string;
   start: bigint;
   lastTrade: bigint;

@@ -8,10 +8,10 @@ import { executeTx, log } from './utils.script';
     const tx = new Transaction();
 
     tx.moveCall({
-      target: `${PACKAGES['mainnet'].ADAPTERS}::whitelist_adapter::add`,
+      target: `${PACKAGES.v2.ADAPTERS}::whitelist_adapter::add`,
       arguments: [
-        tx.object(SHARED_OBJECTS.mainnet.WHITELIST_MUT),
-        tx.object(OWNED_OBJECTS.mainnet.DCA_ADMIN),
+        tx.object(SHARED_OBJECTS.WHITELIST_MUT),
+        tx.object(OWNED_OBJECTS.DCA_ADMIN),
         tx.pure.address(
           '0xae67a84ffd814ac5005e2de892be9acb2372712b7ec9605360620e964deb09a4'
         ),

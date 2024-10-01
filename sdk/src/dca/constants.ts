@@ -61,5 +61,5 @@ export const SHARED_OBJECTS: SharedObjects = {
 } as const;
 
 export const WITNESSES = {
-  WHITELIST_ADAPTER: `${PACKAGES.DCA}::whitelist_adapter::Witness`,
+  WHITELIST_ADAPTER: `${PACKAGES.ADAPTERS}::whitelist_adapter::Witness`,
 } as const;
