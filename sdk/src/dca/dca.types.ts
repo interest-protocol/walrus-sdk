@@ -2,9 +2,9 @@ import {
   CallArg,
   Transaction,
   TransactionArgument,
-} from "@mysten/sui/transactions";
+} from '@mysten/sui/transactions';
 
-import type { WITNESSES } from "./constants";
+import type { WITNESSES } from './constants';
 
 export enum TimeScale {
   Seconds,
@@ -19,15 +19,18 @@ interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Package = Record<"v1" | "v2", Record<"DCA" | "ADAPTERS", string>>;
+export type Package = Record<
+  'DCA' | 'ADAPTERS' | 'DCA_V2' | 'ADAPTERS_V2' | 'DCA_V3',
+  string
+>;
 
 export type SharedObjects = Record<
-  | "TRADE_POLICY_MUT"
-  | "TRADE_POLICY"
-  | "WHITELIST_MUT"
-  | "WHITELIST"
-  | "SETTINGS_MUT"
-  | "SETTINGS",
+  | 'TRADE_POLICY_MUT'
+  | 'TRADE_POLICY'
+  | 'WHITELIST_MUT'
+  | 'WHITELIST'
+  | 'SETTINGS_MUT'
+  | 'SETTINGS',
   Extract<
     CallArg,
     {
