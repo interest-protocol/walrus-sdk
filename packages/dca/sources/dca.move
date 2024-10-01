@@ -257,7 +257,18 @@ module dca::dca {
             owner: self.owner,
         };
 
-        (request, self.take(ctx))
+        let mut coin_in = self.take(ctx);
+
+        let coin_in_value = coin_in.value();
+
+        let coin_fee = coin_in.split(
+            math64::mul_div_up(coin_in_value, self.fee_percent, PRECISION) / 2,
+            ctx
+        );
+
+        transfer::public_transfer(coin_fee, self.treasury);
+
+        (request, coin_in)
     }
 
     public fun add<Witness: drop, Output>(
@@ -465,7 +476,7 @@ module dca::dca {
         let mut balance_out = coin_out.into_balance();
 
         let balance_fee = balance_out.split(
-            math64::mul_div_up(output_value, self.fee_percent, PRECISION),
+            math64::mul_div_up(output_value, self.fee_percent, PRECISION) / 2,
         );
 
         self.total_owner_output = self.total_owner_output + balance_out.value();
