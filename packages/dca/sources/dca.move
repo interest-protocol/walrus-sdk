@@ -39,7 +39,7 @@ module dca::dca {
     const DAY: u64 = 86400; // 3600 * 24
     const WEEK: u64 = 604800; // 86400 * 7
     const MONTH: u64 = 2419200; // 86400 * 28 we take the lower bound
-    const MAX_FEE: u64 = 3000000; // 0.3%
+    const MAX_FEE: u64 = 30000000; // 3%
     const PRECISION: u64 = 1000000000;
 
     // === Structs ===
