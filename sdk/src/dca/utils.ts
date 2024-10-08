@@ -1,4 +1,5 @@
-import { getFullnodeUrl, SuiObjectResponse } from '@mysten/sui/client';
+import { getFullnodeUrl, SuiClient, SuiExecutionResult, SuiObjectResponse } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/dist/cjs/transactions';
 import { normalizeSuiAddress, normalizeSuiObjectId } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
@@ -54,3 +55,21 @@ export const getDefaultArgs = (): DCAConstructorArgs => ({
   fullNodeUrl: getFullnodeUrl('mainnet'),
   sharedObjects: SHARED_OBJECTS,
 });
+export async function devInspectAndGetExecutionResults(
+  suiClient: SuiClient,
+  tx: Transaction | Uint8Array | string,
+  sender = "0x7777777777777777777777777777777777777777777777777777777777777777",
+): Promise<SuiExecutionResult[]>
+{
+  const resp = await suiClient.devInspectTransactionBlock({
+      sender: sender,
+      transactionBlock: tx,
+  });
+  if (resp.error) {
+      throw new Error(`Response error: ${JSON.stringify(resp, null, 2)}`);
+  }
+  if (!resp.results?.length) {
+      throw new Error(`Response has no results: ${JSON.stringify(resp, null, 2)}`);
+  }
+  return resp.results;
+}

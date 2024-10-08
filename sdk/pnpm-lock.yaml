@@ -11,9 +11,6 @@ importers:
       '@mysten/sui':
         specifier: ^1.5.0
         version: 1.5.0(svelte@4.2.18)(typescript@5.5.3)
-      '@polymedia/suitcase-core':
-        specifier: ^0.0.16
-        version: 0.0.16(@mysten/sui@1.5.0(svelte@4.2.18)(typescript@5.5.3))
       ramda:
         specifier: ^0.30.1
         version: 0.30.1
@@ -349,11 +346,6 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
-
-  '@polymedia/suitcase-core@0.0.16':
-    resolution: {integrity: sha512-spGFgagbDh3K9AlSTImHzYII5jXpMxXH0OJu8WV1pYetO9YJeFcP50OJICO3KuQYSbx/P0Pd3/ipGeZVQKWoBA==}
-    peerDependencies:
-      '@mysten/sui': ^1.4.0
 
   '@rollup/rollup-android-arm-eabi@4.18.1':
     resolution: {integrity: sha512-lncuC4aHicncmbORnx+dUaAgzee9cm/PbIqgWz1PpXuwc+sa1Ct83tnqUDy/GFKleLiN7ZIeytM6KJ4cAn1SxA==}
@@ -2094,10 +2086,6 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
-
-  '@polymedia/suitcase-core@0.0.16(@mysten/sui@1.5.0(svelte@4.2.18)(typescript@5.5.3))':
-    dependencies:
-      '@mysten/sui': 1.5.0(svelte@4.2.18)(typescript@5.5.3)
 
   '@rollup/rollup-android-arm-eabi@4.18.1':
     optional: true
