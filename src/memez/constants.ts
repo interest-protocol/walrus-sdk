@@ -1,25 +1,19 @@
 import { Inputs } from '@mysten/sui/transactions';
 
-import { Package, SharedObjects } from './dca.types';
+import { Network, OwnedObjects, Package, SharedObjects } from './memez.types';
 
-export const PACKAGES: Package = {
-  DCA: '0x33d51e66410b5d98fdd013d16194ab35b43d5b8fc76523876cd5f971c52084dd',
-  ADAPTERS:
-    '0x8ff90cb0c620d9e62eefbf1da08d62d229d0282de8858424314e230ecda5e6bc',
-  DCA_V2: '0x2f2ac80533574e9c5c8df26ed407d8dde3bc9233cab633433a971d46a4d7fbd2',
-  ADAPTERS_V2:
-    '0x3223cf2259ad386fce4ec9dcb5df862ad338a6d00578abf3bbc0172d9850c590',
-  DCA_V3: '0x6a468317bc530d376e8e87347ba8a724384dd4512062f7b7fffda5c65c1e8f5e',
-  DCA_V4: '0x84fbfcb11c2eb86f719f8c87c678ee72e56dbd6e1880b3b69bb2bcdeb95d80a1',
+export const PACKAGES: Record<Network, Package> = {
+  [Network.Mainnet]: {
+    MEMEZ_FUN: '0x0',
+  },
+  [Network.Testnet]: {
+    MEMEZ_FUN: '0x0',
+  },
 } as const;
 
-export const OWNED_OBJECTS = {
-  ADAPTER_UPGRADE_CAP:
-    '0x6cba08aeacf0f6ed79dd42d0b979164e6d74f7a948efe86c649da5a74f58284f',
-  DCA_UPGRADE_CAP:
-    '0xae0a4a3d9376a037c7c17aa6cad9e8ef493c1346704319aab8610614aa229fff',
-  DCA_ADMIN:
-    '0xd46d636ff76434b4ab51a346ed7cf5572534de2faf572c41057c99d1b6e03302',
+export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
+  [Network.Mainnet]: {},
+  [Network.Testnet]: {},
 } as const;
 
 export const SHARED_OBJECTS: SharedObjects = {
@@ -59,8 +53,4 @@ export const SHARED_OBJECTS: SharedObjects = {
     initialSharedVersion: '330857975',
     mutable: true,
   }) as ReturnType<typeof Inputs.SharedObjectRef>,
-} as const;
-
-export const WITNESSES = {
-  WHITELIST_ADAPTER: `${PACKAGES.ADAPTERS}::whitelist_adapter::Witness`,
 } as const;

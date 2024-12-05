@@ -1,4 +1,4 @@
 export * from './constants';
 export * from './dca';
-export * from './dca.types';
+export * from './memez.types';
 export * from './utils';
