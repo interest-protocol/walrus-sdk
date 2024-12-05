@@ -9,15 +9,18 @@ export interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Package = Record<'MEMEZ_FUN', string>;
+export type Package = Record<'MEMEZ_FUN' | 'ACL' | 'VESTING', string>;
 
 export type SharedObjects = Record<
-  | 'TRADE_POLICY_MUT'
-  | 'TRADE_POLICY'
-  | 'WHITELIST_MUT'
-  | 'WHITELIST'
-  | 'SETTINGS_MUT'
-  | 'SETTINGS',
+  | 'ACL_MUT'
+  | 'ACL'
+  | 'MIGRATOR_LIST_MUT'
+  | 'MIGRATOR_LIST'
+  | 'VESTING'
+  | 'VERSION'
+  | 'VERSION_MUT'
+  | 'CONFIG'
+  | 'CONFIG_MUT',
   Extract<
     CallArg,
     {
@@ -26,7 +29,13 @@ export type SharedObjects = Record<
   >
 >;
 
-export type OwnedObjects = Record<string, string>;
+export type OwnedObjects = Record<
+  | 'SUPER_ADMIN'
+  | 'ACL_UPGRADE_CAP'
+  | 'VESTING_UPGRADE_CAP'
+  | 'MEMEZ_FUN_UPGRADE_CAP',
+  string
+>;
 
 export interface MemezFunConstructorArgs {
   fullNodeUrl?: string;
