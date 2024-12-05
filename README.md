@@ -1,1 +1,1 @@
-# sui-dca-bot
+# Memez Fun SDK
