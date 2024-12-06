@@ -6,7 +6,7 @@ import { Network } from './memez.types';
 
 export const getDefaultArgs = (): MemezFunConstructorArgs => ({
   packages: PACKAGES[Network.Testnet],
-  fullNodeUrl: getFullnodeUrl('mainnet'),
+  fullNodeUrl: getFullnodeUrl('testnet'),
   sharedObjects: SHARED_OBJECTS[Network.Testnet],
   network: Network.Testnet,
 });

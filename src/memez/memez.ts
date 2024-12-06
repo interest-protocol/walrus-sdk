@@ -1,6 +1,8 @@
 import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import invariant from 'tiny-invariant';
 
+import { Modules } from './constants';
 import {
   MemezFunConstructorArgs,
   Network,
@@ -14,6 +16,7 @@ export class MemezFunSDK {
   #packages: Package;
   #sharedObjects: SharedObjects;
   #network: Network;
+  #modules = Modules;
 
   constructor(args: MemezFunConstructorArgs | undefined | null = null) {
     const data = {
@@ -45,5 +48,14 @@ export class MemezFunSDK {
     this.#packages = data.packages;
     this.#sharedObjects = data.sharedObjects;
     this.#client = new SuiClient({ url: data.fullNodeUrl });
+  }
+
+  #getVersion(tx: Transaction) {
+    return tx.moveCall({
+      package: this.#packages.MEMEZ_FUN,
+      module: this.#modules.VERSION,
+      function: 'get_version',
+      arguments: [tx.object(this.#sharedObjects.VERSION)],
+    });
   }
 }

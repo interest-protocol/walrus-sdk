@@ -9,14 +9,16 @@ export interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Package = Record<'MEMEZ_FUN' | 'ACL' | 'VESTING', string>;
+export type Package = Record<
+  'MEMEZ_FUN' | 'MEMEZ_MIGRATOR' | 'ACL' | 'VESTING',
+  string
+>;
 
 export type SharedObjects = Record<
   | 'ACL_MUT'
   | 'ACL'
   | 'MIGRATOR_LIST_MUT'
   | 'MIGRATOR_LIST'
-  | 'VESTING'
   | 'VERSION'
   | 'VERSION_MUT'
   | 'CONFIG'
@@ -33,7 +35,8 @@ export type OwnedObjects = Record<
   | 'SUPER_ADMIN'
   | 'ACL_UPGRADE_CAP'
   | 'VESTING_UPGRADE_CAP'
-  | 'MEMEZ_FUN_UPGRADE_CAP',
+  | 'MEMEZ_FUN_UPGRADE_CAP'
+  | 'MEMEZ_MIGRATOR_UPGRADE_CAP',
   string
 >;
 
