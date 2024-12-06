@@ -65,11 +65,11 @@ export interface MemezFunConstructorArgs {
 
 export interface NewPumpPoolArgs extends MaybeTx {
   memeCoinTreasuryCap: ObjectInput;
-  creationSuiFee: ObjectInput;
-  totalSupply: U64;
-  useTokenStandard: boolean;
-  firstPurchase: ObjectInput;
-  metadata: Record<string, string>;
+  creationSuiFee?: ObjectInput;
+  totalSupply?: U64;
+  useTokenStandard?: boolean;
+  firstPurchase?: ObjectInput;
+  metadata?: Record<string, string>;
   developer: string;
   configurationKey: ConfigurationKeys;
   migrationWitness: MigrationWitnesses;
