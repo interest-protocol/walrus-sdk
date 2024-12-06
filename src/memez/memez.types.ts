@@ -1,4 +1,12 @@
-import { CallArg, Transaction } from '@mysten/sui/transactions';
+import {
+  CallArg,
+  Transaction,
+  TransactionObjectArgument,
+} from '@mysten/sui/transactions';
+
+type ObjectInput = TransactionObjectArgument | string;
+
+type U64 = string | bigint | number;
 
 export enum Network {
   Mainnet = 'mainnet',
@@ -7,6 +15,14 @@ export enum Network {
 
 export interface MaybeTx {
   tx?: Transaction;
+}
+
+export enum ConfigurationKeys {
+  RECRD = '',
+}
+
+export enum MigrationWitnesses {
+  CETUS = '',
 }
 
 export type Package = Record<
@@ -45,4 +61,17 @@ export interface MemezFunConstructorArgs {
   packages?: Package;
   sharedObjects?: SharedObjects;
   network?: Network;
+}
+
+export interface NewPumpPoolArgs extends MaybeTx {
+  memeCoinTreasuryCap: ObjectInput;
+  creationSuiFee: ObjectInput;
+  totalSupply: U64;
+  useTokenStandard: boolean;
+  firstPurchase: ObjectInput;
+  metadata: Record<string, string>;
+  developer: string;
+  configurationKey: ConfigurationKeys;
+  migrationWitness: MigrationWitnesses;
+  memeCoinType: string;
 }

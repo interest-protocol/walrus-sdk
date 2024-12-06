@@ -12,6 +12,14 @@ export enum Modules {
   VERSION = 'memez_version',
 }
 
+export enum ConfigurationKeys {
+  RECRD = '',
+}
+
+export enum MigrationWitnesses {
+  CETUS = '',
+}
+
 export const PACKAGES: Record<Network, Package> = {
   [Network.Mainnet]: {
     MEMEZ_FUN: normalizeSuiAddress('0x0'),
