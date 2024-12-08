@@ -21,7 +21,7 @@ export const PACKAGES: Record<Network, Package> = {
   },
   [Network.Testnet]: {
     MEMEZ_FUN: normalizeSuiAddress(
-      '0x4d87aa4ad32bfc16a91c23b0417c79e35cf7ee3a6edebdf76b2acc6a3d857ed4'
+      '0x3996f5555301c5431b04696aeb762d6e17ab067d1e81232c5eddc2cc3907d843'
     ),
     ACL: normalizeSuiAddress(
       '0xc201002dcf8e7b1e1850e2420980d5a7aae14bdfabc7b1e186c9a0ee749aa384'
@@ -54,7 +54,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
       '0xedb18a7b96717cc2f18bc6ff88db55cdd7321aebe83b8572578ae6c5f795b80c'
     ),
     MEMEZ_FUN_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x9eada63e557b32d6cc86095ddd217e3059d3fc43e52577cc92c204a7c6a85ac5'
+      '0xf4fbfa06eca18e45695cd02412d758c4990f38e22bcc9e6d23a6fa337cb5b603'
     ),
     MEMEZ_MIGRATOR_UPGRADE_CAP: normalizeSuiObjectId(
       '0x5a6d9c5aab751a9ae5e426776e26e1e597fe236a006e34211d0d77e5220a5823'
@@ -122,44 +122,44 @@ export const SHARED_OBJECTS: Record<Network, SharedObjects> = {
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     MIGRATOR_LIST_MUT: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x4c2db629d7047500f2afa87a7cfc7a84da136ac34d1cf2b96c90d66ac56a9fe2'
+        '0xff217d90604362cdd6db15d340222b5fd19751f77476a877a0e1c44a686cec03'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     MIGRATOR_LIST: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x4c2db629d7047500f2afa87a7cfc7a84da136ac34d1cf2b96c90d66ac56a9fe2'
+        '0xff217d90604362cdd6db15d340222b5fd19751f77476a877a0e1c44a686cec03'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     VERSION: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x3f54810369b5573d4d43ed5a1a84b5ff30a73a4316c661b752a60d4d000a4125'
+        '0x7b4207b87ed6dee6ee5dfc26dea4dcb4295618b7c2cb0258b3fdaf1b27406b6b'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     VERSION_MUT: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x3f54810369b5573d4d43ed5a1a84b5ff30a73a4316c661b752a60d4d000a4125'
+        '0x7b4207b87ed6dee6ee5dfc26dea4dcb4295618b7c2cb0258b3fdaf1b27406b6b'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     CONFIG: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x8cfdec79357ebe59638644e3503c8346f70fc396dc45b4b09407281b93cf003f'
+        '0xad9bffb261f1271a0430f74c3d4321d6db4e9f6a96df95e31398bb4fe5074567'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: false,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
     CONFIG_MUT: Inputs.SharedObjectRef({
       objectId: normalizeSuiObjectId(
-        '0x8cfdec79357ebe59638644e3503c8346f70fc396dc45b4b09407281b93cf003f'
+        '0xad9bffb261f1271a0430f74c3d4321d6db4e9f6a96df95e31398bb4fe5074567'
       ),
-      initialSharedVersion: '129657862',
+      initialSharedVersion: '129657868',
       mutable: true,
     }) as ReturnType<typeof Inputs.SharedObjectRef>,
   },
