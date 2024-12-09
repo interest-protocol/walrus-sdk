@@ -14,13 +14,14 @@ import {
   Network,
   NewPumpPoolArgs,
   Package,
-  SharedObjects,
+  ShareObjectValueMap,
+  SignInArgs,
 } from './memez.types';
-import { getDefaultArgs } from './utils';
+import { getMemezFunDefaultArgs } from './utils';
 
 export class MemezFunSDK {
   #packages: Package;
-  #sharedObjects: SharedObjects;
+  #sharedObjects: Record<string, ShareObjectValueMap>;
   #modules = Modules;
 
   #defaultSupply = 1_000_000_000_000_000_000n;
@@ -31,7 +32,7 @@ export class MemezFunSDK {
 
   constructor(args: MemezFunConstructorArgs | undefined | null = null) {
     const data = {
-      ...getDefaultArgs(),
+      ...getMemezFunDefaultArgs(),
       ...args,
     };
 
@@ -86,8 +87,8 @@ export class MemezFunSDK {
       module: this.#modules.PUMP,
       function: 'new',
       arguments: [
-        tx.object(this.#sharedObjects.CONFIG),
-        tx.object(this.#sharedObjects.MIGRATOR_LIST),
+        tx.object(this.#sharedObjects.CONFIG.IMMUT),
+        tx.object(this.#sharedObjects.MIGRATOR_LIST.IMMUT),
         tx.object(memeCoinTreasuryCap),
         tx.object(creationSuiFee),
         tx.pure.u64(totalSupply),
@@ -118,7 +119,7 @@ export class MemezFunSDK {
       package: this.#packages.MEMEZ_FUN,
       module: this.#modules.VERSION,
       function: 'get_version',
-      arguments: [tx.object(this.#sharedObjects.VERSION)],
+      arguments: [tx.object(this.#sharedObjects.VERSION.IMMUT)],
     });
   }
 
@@ -128,6 +129,15 @@ export class MemezFunSDK {
       module: 'coin',
       function: 'zero',
       typeArguments: [SUI_TYPE_ARG],
+    });
+  }
+
+  #signIn({ tx = new Transaction(), admin }: SignInArgs) {
+    return tx.moveCall({
+      package: this.#packages.ACL,
+      module: this.#modules.ACL,
+      function: 'sign_in',
+      arguments: [tx.object(this.#sharedObjects.ACL.IMMUT), tx.object(admin)],
     });
   }
 }

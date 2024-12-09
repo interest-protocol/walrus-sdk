@@ -23,34 +23,26 @@ export interface MaybeTx {
   tx?: Transaction;
 }
 
-export enum ConfigurationKeys {
-  RECRD = '',
-}
-
-export enum MigrationWitnesses {
-  CETUS = '',
-}
-
 export type Package = Record<
   'MEMEZ_FUN' | 'MEMEZ_MIGRATOR' | 'ACL' | 'VESTING',
   string
 >;
 
-export type SharedObjects = Record<
-  | 'ACL_MUT'
-  | 'ACL'
-  | 'MIGRATOR_LIST_MUT'
-  | 'MIGRATOR_LIST'
-  | 'VERSION'
-  | 'VERSION_MUT'
-  | 'CONFIG'
-  | 'CONFIG_MUT',
-  Extract<
-    CallArg,
-    {
-      Object: unknown;
-    }
-  >
+export type SharedObject = Extract<
+  CallArg,
+  {
+    Object: unknown;
+  }
+>;
+
+export interface ShareObjectValueMap {
+  IMMUT: SharedObject;
+  MUT: SharedObject;
+}
+
+export type MemezFunSharedObjects = Record<
+  'ACL' | 'MIGRATOR_LIST' | 'VERSION' | 'CONFIG',
+  ShareObjectValueMap
 >;
 
 export type OwnedObjects = Record<
@@ -58,7 +50,8 @@ export type OwnedObjects = Record<
   | 'ACL_UPGRADE_CAP'
   | 'VESTING_UPGRADE_CAP'
   | 'MEMEZ_FUN_UPGRADE_CAP'
-  | 'MEMEZ_MIGRATOR_UPGRADE_CAP',
+  | 'MEMEZ_MIGRATOR_UPGRADE_CAP'
+  | 'ADMIN',
   string
 >;
 
@@ -67,10 +60,21 @@ export interface Balance {
   amount: bigint;
 }
 
+export interface SignInArgs extends MaybeTx {
+  admin: ObjectInput;
+}
+
+export interface AclConstructorArgs {
+  fullNodeUrl?: string;
+  package: string;
+  aclSharedObjectMap: ShareObjectValueMap;
+  network?: Network;
+}
+
 export interface MemezFunConstructorArgs {
   fullNodeUrl?: string;
   packages?: Package;
-  sharedObjects?: SharedObjects;
+  sharedObjects?: MemezFunSharedObjects;
   network?: Network;
 }
 
@@ -82,8 +86,8 @@ export interface NewPumpPoolArgs extends MaybeTx {
   firstPurchase?: ObjectInput;
   metadata?: Record<string, string>;
   developer: string;
-  configurationKey: ConfigurationKeys;
-  migrationWitness: MigrationWitnesses;
+  configurationKey: string;
+  migrationWitness: string;
   memeCoinType: string;
 }
 
@@ -108,4 +112,39 @@ export interface MemezPumpPool extends MemezPool {
   memeBalance: Balance;
   burnTax: number;
   swapFee: number;
+}
+
+export interface NewAdminArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+}
+
+export interface NewAdminAndTransferArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+  recipient: string;
+}
+
+export interface RevokeAdminArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+  admin: string;
+}
+
+export interface DestroyAdminArgs extends MaybeTx {
+  admin: ObjectInput;
+}
+
+export interface DestroySuperAdminArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+}
+
+export interface StartSuperAdminTransferArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+  recipient: string;
+}
+
+export interface FinishSuperAdminTransferArgs extends MaybeTx {
+  superAdmin: ObjectInput;
+}
+
+export interface IsAdminArgs {
+  admin: string;
 }

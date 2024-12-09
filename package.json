@@ -26,7 +26,9 @@
     "build:tsup": "tsup './src/memez/index.ts' --format esm,cjs --sourcemap",
     "build:types": "tsc --project tsconfig.prod.json",
     "build": "pnpm run clean && pnpm run build:tsup && pnpm run build:types",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "new-admin": "tsx src/scripts/new-admin.ts",
+    "is-admin": "tsx src/scripts/is-admin.ts"
   },
   "keywords": [],
   "license": "ISC",
