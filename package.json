@@ -31,7 +31,9 @@
     "is-admin": "tsx src/scripts/is-admin.ts",
     "add-migration-witness": "tsx src/scripts/config/add-migration-witness.ts",
     "set-fees": "tsx src/scripts/config/set-fees.ts",
-    "set-pump": "tsx src/scripts/config/set-pump.ts"
+    "set-pump": "tsx src/scripts/config/set-pump.ts",
+    "new-pump": "tsx src/scripts/memez/new.ts",
+    "get-pump": "tsx src/scripts/memez/get.ts"
   },
   "keywords": [],
   "license": "ISC",

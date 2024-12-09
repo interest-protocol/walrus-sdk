@@ -19,12 +19,6 @@ export enum Network {
   Testnet = 'testnet',
 }
 
-export enum Progress {
-  BONDING = 'bonding',
-  MIGRATING = 'migrating',
-  MIGRATED = 'migrated',
-}
-
 export interface MaybeTx {
   tx?: Transaction;
 }
@@ -61,11 +55,6 @@ export type OwnedObjects = Record<
   string
 >;
 
-export interface Balance {
-  type: string;
-  amount: bigint;
-}
-
 export interface SignInArgs extends MaybeTx {
   admin: ObjectInput;
 }
@@ -99,28 +88,34 @@ export interface NewPumpPoolArgs extends MaybeTx {
   memeCoinType: string;
 }
 
-interface MemezPool {
+export interface MemezPool<T> {
   objectId: string;
   poolType: string;
+  curveType: string;
   memeCoinType: string;
   useTokenStandard: boolean;
   ipxMemeCoinTreasury: string;
   metadata: Record<string, string>;
   migrationWitness: string;
-  progress: Progress;
+  progress: string;
+  stateId: string;
+  dynamicFieldDataId: string;
+  curveState: T;
 }
 
-export interface MemezPumpPool extends MemezPool {
-  devPurchase: Balance;
-  liquidityProvision: Balance;
-  migrationFee: Balance;
+export interface PumpState {
+  devPurchase: bigint;
+  liquidityProvision: bigint;
+  migrationFee: bigint;
   virtualLiquidity: bigint;
   targetSuiLiquidity: bigint;
-  suiBalance: Balance;
-  memeBalance: Balance;
+  suiBalance: bigint;
+  memeBalance: bigint;
   burnTax: number;
   swapFee: number;
 }
+
+export type PumpPool = MemezPool<PumpState>;
 
 export interface NewAdminArgs extends MaybeTx {
   superAdmin: ObjectInput;

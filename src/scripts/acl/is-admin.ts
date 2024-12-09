@@ -1,5 +1,5 @@
-import { OWNED_OBJECTS } from '../memez';
-import { aclTestnet } from './utils.script';
+import { OWNED_OBJECTS } from '../../memez';
+import { aclTestnet } from '../utils.script';
 
 const ownedObjects = OWNED_OBJECTS.testnet;
 

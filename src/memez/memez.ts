@@ -9,6 +9,7 @@ import invariant from 'tiny-invariant';
 
 import { NewPumpPoolArgs, SdkConstructorArgs } from './memez.types';
 import { SDK } from './sdk';
+import { parseMemezPool } from './utils';
 
 export class MemezFunSDK extends SDK {
   #defaultSupply = 1_000_000_000_000_000_000n;
@@ -36,7 +37,7 @@ export class MemezFunSDK extends SDK {
       'developer must be a valid Sui address'
     );
 
-    return tx.moveCall({
+    const metadataCap = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
       module: this.modules.PUMP,
       function: 'new',
@@ -59,6 +60,20 @@ export class MemezFunSDK extends SDK {
         normalizeStructTag(migrationWitness),
       ],
     });
+
+    return {
+      metadataCap,
+      tx,
+    };
+  }
+
+  public async getPumpPool(pumpId: string) {
+    const suiObject = await this.client.getObject({
+      id: pumpId,
+      options: { showContent: true },
+    });
+
+    return parseMemezPool(this.client, suiObject);
   }
 
   #getVersion(tx: Transaction) {

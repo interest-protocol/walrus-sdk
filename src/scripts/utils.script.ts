@@ -8,6 +8,7 @@ import util from 'util';
 
 import { AclSDK } from '../memez/acl';
 import { ConfigSDK } from '../memez/config';
+import { MemezFunSDK } from '../memez/memez';
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 export const aclTestnet = new AclSDK();
 
 export const configTestnet = new ConfigSDK();
+
+export const memezTestnet = new MemezFunSDK();
 
 export const executeTx = async (tx: Transaction, client = testnetClient) => {
   const result = await client.signAndExecuteTransaction({
