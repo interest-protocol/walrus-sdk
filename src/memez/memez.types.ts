@@ -94,6 +94,18 @@ export interface PumpArgs extends MaybeTx {
   minAmountOut?: U64;
 }
 
+export interface PumpTokenArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+  suiCoin: ObjectInput;
+  minAmountOut?: U64;
+}
+
+export interface DumpTokenArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+  memeToken: ObjectInput;
+  minAmountOut?: U64;
+}
+
 export interface DumpArgs extends MaybeTx {
   pool: string | MemezPool<PumpState>;
   memeCoin: ObjectInput;
@@ -105,7 +117,7 @@ export interface MemezPool<T> {
   poolType: string;
   curveType: string;
   memeCoinType: string;
-  useTokenStandard: boolean;
+  usesTokenStandard: boolean;
   ipxMemeCoinTreasury: string;
   metadata: Record<string, string>;
   migrationWitness: string;
@@ -178,7 +190,7 @@ export interface SetFeesArgs extends MaybeTx {
   authWitness: ObjectInput;
   configurationKey: ConfigKey;
   values: U64[][];
-  recipient: string[][];
+  recipients: string[][];
 }
 
 export interface SetAuctionArgs extends MaybeTx {
@@ -203,4 +215,12 @@ export interface RemoveConfigurationArgs extends MaybeTx {
   configurationKey: ConfigKey;
   model: ConfigModel;
   authWitness: ObjectInput;
+}
+
+export interface DevClaimArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+}
+
+export interface MigrateArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
 }

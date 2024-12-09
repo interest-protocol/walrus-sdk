@@ -8,13 +8,16 @@ import {
 import invariant from 'tiny-invariant';
 
 import {
+  DevClaimArgs,
   DumpArgs,
+  DumpTokenArgs,
+  MigrateArgs,
   NewPumpPoolArgs,
   PumpArgs,
+  PumpTokenArgs,
   SdkConstructorArgs,
 } from './memez.types';
 import { SDK } from './sdk';
-import { parseMemezPool } from './utils';
 
 export class MemezFunSDK extends SDK {
   #defaultSupply = 1_000_000_000_000_000_000n;
@@ -57,7 +60,7 @@ export class MemezFunSDK extends SDK {
         tx.pure.vector('string', Object.keys(metadata)),
         tx.pure.vector('string', Object.values(metadata)),
         tx.pure.address(developer),
-        this.#getVersion(tx),
+        this.getVersion(tx),
       ],
       typeArguments: [
         memeCoinType,
@@ -86,6 +89,8 @@ export class MemezFunSDK extends SDK {
       pool = await this.getPumpPool(pool);
     }
 
+    invariant(!pool.usesTokenStandard, 'pool uses token standard');
+
     const memeCoin = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
       module: this.modules.PUMP,
@@ -94,13 +99,48 @@ export class MemezFunSDK extends SDK {
         tx.object(pool.objectId),
         this.object(tx, suiCoin),
         tx.pure.u64(minAmountOut),
-        this.#getVersion(tx),
+        this.getVersion(tx),
       ],
       typeArguments: [pool.memeCoinType],
     });
 
     return {
       memeCoin,
+      tx,
+    };
+  }
+
+  public async pumpToken({
+    tx = new Transaction(),
+    pool,
+    suiCoin,
+    minAmountOut = 0n,
+  }: PumpTokenArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    invariant(pool.usesTokenStandard, 'pool uses token standard');
+
+    const memeToken = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'pump_token',
+      arguments: [
+        tx.object(pool.objectId),
+        this.object(tx, suiCoin),
+        tx.pure.u64(minAmountOut),
+        this.getVersion(tx),
+      ],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    return {
+      memeToken,
       tx,
     };
   }
@@ -119,6 +159,8 @@ export class MemezFunSDK extends SDK {
       pool = await this.getPumpPool(pool);
     }
 
+    invariant(pool.usesTokenStandard, 'pool uses token standard');
+
     const suiCoin = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
       module: this.modules.PUMP,
@@ -128,7 +170,7 @@ export class MemezFunSDK extends SDK {
         tx.object(pool.ipxMemeCoinTreasury),
         this.object(tx, memeCoin),
         tx.pure.u64(minAmountOut),
-        this.#getVersion(tx),
+        this.getVersion(tx),
       ],
       typeArguments: [pool.memeCoinType],
     });
@@ -139,22 +181,85 @@ export class MemezFunSDK extends SDK {
     };
   }
 
-  public async getPumpPool(pumpId: string) {
-    const suiObject = await this.client.getObject({
-      id: pumpId,
-      options: { showContent: true },
+  public async dumpToken({
+    tx = new Transaction(),
+    pool,
+    memeToken,
+    minAmountOut = 0n,
+  }: DumpTokenArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+    invariant(pool.usesTokenStandard, 'pool uses token standard');
+
+    const suiCoin = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'dump_token',
+      arguments: [
+        tx.object(pool.objectId),
+        tx.object(pool.ipxMemeCoinTreasury),
+        this.object(tx, memeToken),
+        tx.pure.u64(minAmountOut),
+        this.getVersion(tx),
+      ],
+      typeArguments: [pool.memeCoinType],
     });
 
-    return parseMemezPool(this.client, suiObject);
+    return {
+      suiCoin,
+      tx,
+    };
   }
 
-  #getVersion(tx: Transaction) {
-    return tx.moveCall({
+  public async devClaim({ tx = new Transaction(), pool }: DevClaimArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    const memeCoin = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
-      module: this.modules.VERSION,
-      function: 'get_version',
-      arguments: [tx.object(this.sharedObjects.VERSION.IMMUT)],
+      module: this.modules.PUMP,
+      function: 'dev_claim',
+      arguments: [tx.object(pool.objectId), this.getVersion(tx)],
+      typeArguments: [pool.memeCoinType],
     });
+
+    return {
+      memeCoin,
+      tx,
+    };
+  }
+
+  public async migrate({ tx = new Transaction(), pool }: MigrateArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    const migrator = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'migrate',
+      arguments: [tx.object(pool.objectId), this.getVersion(tx)],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    return {
+      migrator,
+      tx,
+    };
   }
 
   #zeroSuiCoin(tx: Transaction) {

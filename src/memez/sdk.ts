@@ -11,7 +11,7 @@ import {
   SdkConstructorArgs,
   SignInArgs,
 } from './memez.types';
-import { getsSdkDefaultArgs } from './utils';
+import { getsSdkDefaultArgs, parseMemezPool } from './utils';
 
 export class SDK {
   packages: Package;
@@ -75,6 +75,24 @@ export class SDK {
       tx,
       authWitness,
     };
+  }
+
+  getVersion(tx: Transaction) {
+    return tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.VERSION,
+      function: 'get_version',
+      arguments: [tx.object(this.sharedObjects.VERSION.IMMUT)],
+    });
+  }
+
+  public async getPumpPool(pumpId: string) {
+    const suiObject = await this.client.getObject({
+      id: pumpId,
+      options: { showContent: true },
+    });
+
+    return parseMemezPool(this.client, suiObject);
   }
 
   object(tx: Transaction, obj: ObjectInput) {

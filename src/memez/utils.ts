@@ -193,7 +193,7 @@ export const parseMemezPool = async (
     poolType,
     memeCoinType,
     curveType,
-    useTokenStandard: pathOr(
+    usesTokenStandard: pathOr(
       false,
       ['data', 'content', 'fields', 'is_token'],
       objectResponse

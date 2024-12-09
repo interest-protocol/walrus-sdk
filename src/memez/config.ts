@@ -62,7 +62,7 @@ export class ConfigSDK extends SDK {
     authWitness,
     configurationKey,
     values,
-    recipient,
+    recipients,
   }: SetFeesArgs) {
     tx.moveCall({
       package: this.packages.MEMEZ_FUN,
@@ -73,7 +73,7 @@ export class ConfigSDK extends SDK {
         this.object(tx, authWitness),
         tx.pure(bcs.vector(bcs.vector(bcs.u64())).serialize(values).toBytes()),
         tx.pure(
-          bcs.vector(bcs.vector(bcs.Address)).serialize(recipient).toBytes()
+          bcs.vector(bcs.vector(bcs.Address)).serialize(recipients).toBytes()
         ),
       ],
       typeArguments: [normalizeStructTag(configurationKey)],
