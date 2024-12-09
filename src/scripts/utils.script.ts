@@ -7,6 +7,7 @@ import invariant from 'tiny-invariant';
 import util from 'util';
 
 import { AclSDK } from '../memez/acl';
+import { ConfigSDK } from '../memez/config';
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ export const keypair = Ed25519Keypair.fromSecretKey(
 export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
 export const aclTestnet = new AclSDK();
+
+export const configTestnet = new ConfigSDK();
 
 export const executeTx = async (tx: Transaction, client = testnetClient) => {
   const result = await client.signAndExecuteTransaction({

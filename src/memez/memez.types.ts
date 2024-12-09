@@ -4,7 +4,13 @@ import {
   TransactionObjectArgument,
 } from '@mysten/sui/transactions';
 
-type ObjectInput = TransactionObjectArgument | string;
+import type {
+  CONFIG_KEYS,
+  CONFIG_MODELS,
+  MIGRATOR_WITNESSES,
+} from './constants';
+
+export type ObjectInput = TransactionObjectArgument | string;
 
 type U64 = string | bigint | number;
 
@@ -64,19 +70,21 @@ export interface SignInArgs extends MaybeTx {
   admin: ObjectInput;
 }
 
-export interface AclConstructorArgs {
-  fullNodeUrl?: string;
-  package: string;
-  aclSharedObjectMap: ShareObjectValueMap;
-  network?: Network;
-}
-
-export interface MemezFunConstructorArgs {
+export interface SdkConstructorArgs {
   fullNodeUrl?: string;
   packages?: Package;
   sharedObjects?: MemezFunSharedObjects;
   network?: Network;
 }
+
+export type ConfigKey =
+  (typeof CONFIG_KEYS)[Network][keyof (typeof CONFIG_KEYS)[Network]];
+
+export type MigratorWitness =
+  (typeof MIGRATOR_WITNESSES)[Network][keyof (typeof MIGRATOR_WITNESSES)[Network]];
+
+export type ConfigModel =
+  (typeof CONFIG_MODELS)[Network][keyof (typeof CONFIG_MODELS)[Network]];
 
 export interface NewPumpPoolArgs extends MaybeTx {
   memeCoinTreasuryCap: ObjectInput;
@@ -86,8 +94,8 @@ export interface NewPumpPoolArgs extends MaybeTx {
   firstPurchase?: ObjectInput;
   metadata?: Record<string, string>;
   developer: string;
-  configurationKey: string;
-  migrationWitness: string;
+  configurationKey: ConfigKey;
+  migrationWitness: MigratorWitness;
   memeCoinType: string;
 }
 
@@ -147,4 +155,45 @@ export interface FinishSuperAdminTransferArgs extends MaybeTx {
 
 export interface IsAdminArgs {
   admin: string;
+}
+
+export interface AddMigrationWitnessArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  witness: MigratorWitness;
+}
+
+export interface RemoveMigrationWitnessArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  witness: MigratorWitness;
+}
+
+export interface SetFeesArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  configurationKey: ConfigKey;
+  values: U64[][];
+  recipient: string[][];
+}
+
+export interface SetAuctionArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  configurationKey: ConfigKey;
+  values: U64[];
+}
+
+export interface SetPumpArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  configurationKey: ConfigKey;
+  values: U64[];
+}
+
+export interface SetStableArgs extends MaybeTx {
+  authWitness: ObjectInput;
+  configurationKey: ConfigKey;
+  values: U64[];
+}
+
+export interface RemoveConfigurationArgs extends MaybeTx {
+  configurationKey: ConfigKey;
+  model: ConfigModel;
+  authWitness: ObjectInput;
 }

@@ -1,4 +1,3 @@
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
@@ -8,59 +7,14 @@ import {
 } from '@mysten/sui/utils';
 import invariant from 'tiny-invariant';
 
-import { Modules } from './constants';
-import {
-  MemezFunConstructorArgs,
-  Network,
-  NewPumpPoolArgs,
-  Package,
-  ShareObjectValueMap,
-  SignInArgs,
-} from './memez.types';
-import { getMemezFunDefaultArgs } from './utils';
+import { NewPumpPoolArgs, SdkConstructorArgs } from './memez.types';
+import { SDK } from './sdk';
 
-export class MemezFunSDK {
-  #packages: Package;
-  #sharedObjects: Record<string, ShareObjectValueMap>;
-  #modules = Modules;
-
+export class MemezFunSDK extends SDK {
   #defaultSupply = 1_000_000_000_000_000_000n;
 
-  #network: Network;
-  #rpcUrl: string;
-  #client: SuiClient;
-
-  constructor(args: MemezFunConstructorArgs | undefined | null = null) {
-    const data = {
-      ...getMemezFunDefaultArgs(),
-      ...args,
-    };
-
-    invariant(
-      data.fullNodeUrl,
-      'You must provide fullNodeUrl for this specific network'
-    );
-
-    invariant(
-      data.packages,
-      'You must provide packages for this specific network'
-    );
-
-    invariant(
-      data.sharedObjects,
-      'You must provide sharedObjects for this specific network'
-    );
-
-    invariant(
-      data.network,
-      'You must provide network for this specific network'
-    );
-
-    this.#network = data.network;
-    this.#rpcUrl = data.fullNodeUrl;
-    this.#packages = data.packages;
-    this.#sharedObjects = data.sharedObjects;
-    this.#client = new SuiClient({ url: data.fullNodeUrl });
+  constructor(args: SdkConstructorArgs | undefined | null = null) {
+    super(args);
   }
 
   public newPumpPool({
@@ -83,17 +37,17 @@ export class MemezFunSDK {
     );
 
     return tx.moveCall({
-      package: this.#packages.MEMEZ_FUN,
-      module: this.#modules.PUMP,
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
       function: 'new',
       arguments: [
-        tx.object(this.#sharedObjects.CONFIG.IMMUT),
-        tx.object(this.#sharedObjects.MIGRATOR_LIST.IMMUT),
-        tx.object(memeCoinTreasuryCap),
-        tx.object(creationSuiFee),
+        tx.object(this.sharedObjects.CONFIG.IMMUT),
+        tx.object(this.sharedObjects.MIGRATOR_LIST.IMMUT),
+        this.object(tx, memeCoinTreasuryCap),
+        this.object(tx, creationSuiFee),
         tx.pure.u64(totalSupply),
         tx.pure.bool(useTokenStandard),
-        tx.object(firstPurchase),
+        this.object(tx, firstPurchase),
         tx.pure.vector('string', Object.keys(metadata)),
         tx.pure.vector('string', Object.values(metadata)),
         tx.pure.address(developer),
@@ -107,19 +61,12 @@ export class MemezFunSDK {
     });
   }
 
-  public networkConfig() {
-    return {
-      rpcUrl: this.#rpcUrl,
-      network: this.#network,
-    };
-  }
-
   #getVersion(tx: Transaction) {
     return tx.moveCall({
-      package: this.#packages.MEMEZ_FUN,
-      module: this.#modules.VERSION,
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.VERSION,
       function: 'get_version',
-      arguments: [tx.object(this.#sharedObjects.VERSION.IMMUT)],
+      arguments: [tx.object(this.sharedObjects.VERSION.IMMUT)],
     });
   }
 
@@ -129,15 +76,6 @@ export class MemezFunSDK {
       module: 'coin',
       function: 'zero',
       typeArguments: [SUI_TYPE_ARG],
-    });
-  }
-
-  #signIn({ tx = new Transaction(), admin }: SignInArgs) {
-    return tx.moveCall({
-      package: this.#packages.ACL,
-      module: this.#modules.ACL,
-      function: 'sign_in',
-      arguments: [tx.object(this.#sharedObjects.ACL.IMMUT), tx.object(admin)],
     });
   }
 }

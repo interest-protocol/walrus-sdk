@@ -11,7 +11,7 @@ import {
 export enum Modules {
   FUN = 'memez_fun',
   ACL = 'acl',
-  MIGRATOR = 'memez_migrator',
+  MIGRATOR_LIST = 'memez_migrator_list',
   PUMP = 'memez_pump',
   CONFIG = 'memez_config',
   VERSION = 'memez_version',
@@ -200,8 +200,27 @@ export const MIGRATOR_WITNESSES = {
 } as const;
 
 export const CONFIG_KEYS = {
-  [Network.Mainnet]: {},
+  [Network.Mainnet]: {
+    DEFAULT: '',
+  },
   [Network.Testnet]: {
     DEFAULT: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_config::DefaultKey`,
   },
 } as const;
+
+export const CONFIG_MODELS = {
+  [Network.Mainnet]: {
+    FEE: '',
+    PUMP: '',
+    STABLE: '',
+    AUCTION: '',
+  },
+  [Network.Testnet]: {
+    FEE: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_fees::MemezFees`,
+    PUMP: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_pump_model::PumpModel`,
+    STABLE: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_stable_model::StableModel`,
+    AUCTION: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_auction_model::AuctionModel`,
+  },
+} as const;
+
+export const MAX_BPS = 10_000;

@@ -1,77 +1,33 @@
 import { bcs } from '@mysten/sui/bcs';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { isValidSuiAddress } from '@mysten/sui/utils';
 import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
-import { Modules } from './constants';
 import {
-  AclConstructorArgs,
   DestroyAdminArgs,
   DestroySuperAdminArgs,
   FinishSuperAdminTransferArgs,
   IsAdminArgs,
-  Network,
   NewAdminAndTransferArgs,
   NewAdminArgs,
   RevokeAdminArgs,
-  SharedObject,
+  SdkConstructorArgs,
   StartSuperAdminTransferArgs,
 } from './memez.types';
-import { getACLDefaultArgs } from './utils';
+import { SDK } from './sdk';
 
-export class AclSDK {
-  #package: string;
-  #modules = Modules;
-
-  #ACL_MUT: SharedObject;
-  #ACL_IMMUT: SharedObject;
-
-  #network: Network;
-  #rpcUrl: string;
-  #client: SuiClient;
-
-  constructor(args: AclConstructorArgs | undefined | null = null) {
-    const data = {
-      ...getACLDefaultArgs(),
-      ...args,
-    };
-
-    invariant(
-      data.fullNodeUrl,
-      'You must provide fullNodeUrl for this specific network'
-    );
-
-    invariant(
-      data.package,
-      'You must provide package for this specific network'
-    );
-
-    invariant(
-      data.aclSharedObjectMap,
-      'You must provide aclSharedObjectMap for this specific network'
-    );
-
-    invariant(
-      data.network,
-      'You must provide network for this specific network'
-    );
-
-    this.#network = data.network;
-    this.#rpcUrl = data.fullNodeUrl;
-    this.#package = data.package;
-    this.#ACL_MUT = data.aclSharedObjectMap.MUT;
-    this.#ACL_IMMUT = data.aclSharedObjectMap.IMMUT;
-    this.#client = new SuiClient({ url: data.fullNodeUrl });
+export class AclSDK extends SDK {
+  constructor(args: SdkConstructorArgs | undefined | null = null) {
+    super(args);
   }
 
   public newAdmin({ tx = new Transaction(), superAdmin }: NewAdminArgs) {
     const admin = tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'new',
-      arguments: [tx.object(this.#ACL_MUT), tx.object(superAdmin)],
+      arguments: [tx.object(this.sharedObjects.ACL.MUT), tx.object(superAdmin)],
     });
 
     return {
@@ -91,12 +47,12 @@ export class AclSDK {
     );
 
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'new_and_transfer',
       arguments: [
-        tx.object(this.#ACL_MUT),
-        tx.object(superAdmin),
+        tx.object(this.sharedObjects.ACL.MUT),
+        this.object(tx, superAdmin),
         tx.pure.address(recipient),
       ],
     });
@@ -110,12 +66,12 @@ export class AclSDK {
     admin,
   }: RevokeAdminArgs) {
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'revoke',
       arguments: [
-        tx.object(this.#ACL_MUT),
-        tx.object(superAdmin),
+        tx.object(this.sharedObjects.ACL.MUT),
+        this.object(tx, superAdmin),
         tx.pure.address(admin),
       ],
     });
@@ -125,10 +81,13 @@ export class AclSDK {
 
   public destroyAdmin({ tx = new Transaction(), admin }: DestroyAdminArgs) {
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'destroy_admin',
-      arguments: [tx.object(this.#ACL_MUT), tx.object(admin)],
+      arguments: [
+        tx.object(this.sharedObjects.ACL.MUT),
+        this.object(tx, admin),
+      ],
     });
 
     return tx;
@@ -139,10 +98,13 @@ export class AclSDK {
     superAdmin,
   }: DestroySuperAdminArgs) {
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'destroy',
-      arguments: [tx.object(this.#ACL_MUT), tx.object(superAdmin)],
+      arguments: [
+        tx.object(this.sharedObjects.ACL.MUT),
+        this.object(tx, superAdmin),
+      ],
     });
 
     return tx;
@@ -154,10 +116,10 @@ export class AclSDK {
     recipient,
   }: StartSuperAdminTransferArgs) {
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'start_transfer',
-      arguments: [tx.object(superAdmin), tx.pure.address(recipient)],
+      arguments: [this.object(tx, superAdmin), tx.pure.address(recipient)],
     });
 
     return tx;
@@ -168,10 +130,10 @@ export class AclSDK {
     superAdmin,
   }: FinishSuperAdminTransferArgs) {
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'finish_transfer',
-      arguments: [tx.object(superAdmin)],
+      arguments: [this.object(tx, superAdmin)],
     });
 
     return tx;
@@ -181,13 +143,16 @@ export class AclSDK {
     const tx = new Transaction();
 
     tx.moveCall({
-      package: this.#package,
-      module: this.#modules.ACL,
+      package: this.packages.ACL,
+      module: this.modules.ACL,
       function: 'is_admin',
-      arguments: [tx.object(this.#ACL_MUT), tx.pure.address(admin)],
+      arguments: [
+        tx.object(this.sharedObjects.ACL.IMMUT),
+        tx.pure.address(admin),
+      ],
     });
 
-    const result = await devInspectAndGetReturnValues(this.#client, tx, [
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
       [bcs.Bool],
     ]);
 
