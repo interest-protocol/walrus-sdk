@@ -35,7 +35,7 @@ export const PACKAGES: Record<Network, Package> = {
       '0x8f5393f347cdc7afb58bedec29853904c8e625fd5a23109563f851f127bce450'
     ),
     MEMEZ_MIGRATOR: normalizeSuiAddress(
-      '0xe402aaa807f8ef7468488a57128e5d612bce8d62c405b572c0b47f5567550c06'
+      '0xca0cd5448f4876f24d3e93c57637bd868ac6aec0d8bb69f658272d67a4ebf35f'
     ),
   },
 } as const;
@@ -63,7 +63,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
       '0xf4fbfa06eca18e45695cd02412d758c4990f38e22bcc9e6d23a6fa337cb5b603'
     ),
     MEMEZ_MIGRATOR_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x5a6d9c5aab751a9ae5e426776e26e1e597fe236a006e34211d0d77e5220a5823'
+      '0x0806f525f06e0fcf0f79baeabcf4c49de2be292b87f59c9fabf59fbf779fe2f4'
     ),
     ADMIN: normalizeSuiObjectId(
       '0x0586b3daa2a43ee9194254554ca52db26b0fd6bb09591a7edc3960ffa6198164'

@@ -1,8 +1,6 @@
 import { Transaction } from '@mysten/sui/transactions';
-import { isValidSuiAddress } from '@mysten/sui/utils';
-import invariant from 'tiny-invariant';
 
-import { MigrateArgs, SdkConstructorArgs } from './memez.types';
+import { MigratorMigrateArgs, SdkConstructorArgs } from './memez.types';
 import { SDK } from './sdk';
 
 export class MigratorSDK extends SDK {
@@ -10,24 +8,20 @@ export class MigratorSDK extends SDK {
     super(args);
   }
 
-  public async migrate({ tx = new Transaction(), pool }: MigrateArgs) {
-    if (typeof pool === 'string') {
-      invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
-      );
-      pool = await this.getPumpPool(pool);
-    }
-
-    const migrator = tx.moveCall({
+  public migrate({
+    tx = new Transaction(),
+    migrator,
+    memeCoinType,
+  }: MigratorMigrateArgs) {
+    tx.moveCall({
       package: this.packages.MEMEZ_MIGRATOR,
       module: 'test_migrator',
       function: 'migrate',
-      arguments: [tx.object(pool.objectId), this.getVersion(tx)],
+      arguments: [migrator],
+      typeArguments: [memeCoinType],
     });
 
     return {
-      migrator,
       tx,
     };
   }

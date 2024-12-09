@@ -2,6 +2,7 @@ import {
   CallArg,
   Transaction,
   TransactionObjectArgument,
+  TransactionResult,
 } from '@mysten/sui/transactions';
 
 import type {
@@ -223,4 +224,9 @@ export interface DevClaimArgs extends MaybeTx {
 
 export interface MigrateArgs extends MaybeTx {
   pool: string | MemezPool<PumpState>;
+}
+
+export interface MigratorMigrateArgs extends MaybeTx {
+  migrator: TransactionResult;
+  memeCoinType: string;
 }

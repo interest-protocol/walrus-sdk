@@ -35,7 +35,9 @@
     "new-pump": "tsx src/scripts/memez/new.ts",
     "get-pump": "tsx src/scripts/memez/get.ts",
     "pump": "tsx src/scripts/memez/pump.ts",
-    "dump": "tsx src/scripts/memez/dump.ts"
+    "dump": "tsx src/scripts/memez/dump.ts",
+    "dev-claim": "tsx src/scripts/memez/dev-claim.ts",
+    "migrate": "tsx src/scripts/memez/migrate.ts"
   },
   "keywords": [],
   "license": "ISC",

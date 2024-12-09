@@ -19,7 +19,9 @@ export const keypair = Ed25519Keypair.fromSecretKey(
 );
 
 export const TEST_POOL_ID =
-  '0x6b4aa00a0ad34709a6771291ea04d90b7729eb5aad610f3af99a7b9e1f32eed6';
+  '0x8cd7438722a4d59f4b3c9b1cbce368d09766b2b1de8eec9ceb48102c60d4c70e';
+
+export const POW_9 = 10n ** 9n;
 
 export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
