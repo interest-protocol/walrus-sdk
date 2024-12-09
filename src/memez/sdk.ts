@@ -86,6 +86,13 @@ export class SDK {
     });
   }
 
+  /**
+   * Retrieves the Memez pool object from Sui and parses it.
+   *
+   * @param pumpId - The objectId of the MemezPool.
+   *
+   * @returns A parsed MemezPool object.
+   */
   public async getPumpPool(pumpId: string) {
     const suiObject = await this.client.getObject({
       id: pumpId,

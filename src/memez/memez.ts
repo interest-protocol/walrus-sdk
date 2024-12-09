@@ -24,10 +24,37 @@ import { SDK } from './sdk';
 export class MemezFunSDK extends SDK {
   #defaultSupply = 1_000_000_000_000_000_000n;
 
+  /**
+   * Initiates the MemezFun SDK.
+   *
+   * @param args - An object containing the necessary arguments to initialize the SDK.
+   * @param args.fullNodeUrl - The full node URL to use for the SDK.
+   * @param args.packages - The package addresses to use for the SDK.
+   * @param args.sharedObjects - A record of shared objects to use for the SDK.
+   * @param args.network - The network to use for the SDK. Either `mainnet` or `testnet`.
+   */
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     super(args);
   }
 
+  /**
+   * Creates a new MemezPool using the Pump invariant.
+   *
+   * @param args - An object containing the necessary arguments to create a new MemezPool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.creationSuiFee - The Sui fee to use for the creation of the MemezPool.
+   * @param args.memeCoinTreasuryCap - The meme coin treasury cap.
+   * @param args.totalSupply - The total supply of the meme coin.
+   * @param args.useTokenStandard - Whether to use the token standard for the MemezPool.
+   * @param args.firstPurchase - The developer first purchase.
+   * @param args.metadata - A record of social metadata of the meme coin.
+   * @param args.developer - The address that can claim the first purchase coins.
+   * @param args.configurationKey - The configuration key to use for the MemezPool.
+   * @param args.migrationWitness - The migration witness to use for the MemezPool.
+   * @param args.memeCoinType - The meme coin type to use for the MemezPool.
+   *
+   * @returns An object containing the meme coin MetadataCap and the transaction.
+   */
   public newPumpPool({
     tx = new Transaction(),
     creationSuiFee = this.#zeroSuiCoin(tx),
@@ -77,6 +104,17 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Swaps Sui for the meme coin.
+   *
+   * @param args - An object containing the necessary arguments to pump the meme coin into the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.suiCoin - The Sui coin to sell for the meme coin.
+   * @param args.minAmountOut - The minimum amount meme coin expected to be received.
+   *
+   * @returns An object containing the meme coin and the transaction.
+   */
   public async pump({
     tx = new Transaction(),
     pool,
@@ -112,6 +150,17 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Swaps Sui for the meme token using the Token Standard. This is for pools that use the Token Standard.
+   *
+   * @param args - An object containing the necessary arguments to pump the meme token into the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.suiCoin - The Sui coin to sell for the meme token.
+   * @param args.minAmountOut - The minimum amount meme token expected to be received.
+   *
+   * @returns An object containing the meme token and the transaction.
+   */
   public async pumpToken({
     tx = new Transaction(),
     pool,
@@ -147,6 +196,17 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Swaps the meme coin for Sui.
+   *
+   * @param args - An object containing the necessary arguments to dump the meme coin into the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.memeCoin - The meme coin to sell for Sui.
+   * @param args.minAmountOut - The minimum amount Sui expected to be received.
+   *
+   * @returns An object containing the Sui coin and the transaction.
+   */
   public async dump({
     tx = new Transaction(),
     pool,
@@ -183,6 +243,17 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Swaps the meme token for Sui. This is for pools that use the Token Standard.
+   *
+   * @param args - An object containing the necessary arguments to dump the meme token into the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.memeToken - The meme token to sell for Sui.
+   * @param args.minAmountOut - The minimum amount Sui expected to be received.
+   *
+   * @returns An object containing the Sui coin and the transaction.
+   */
   public async dumpToken({
     tx = new Transaction(),
     pool,
@@ -218,6 +289,15 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Allows the developer to claim the first purchase coins. It can only be done after the pool migrates.
+   *
+   * @param args - An object containing the necessary arguments to claim the first purchase coins.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   *
+   * @returns An object containing the meme coin and the transaction.
+   */
   public async devClaim({ tx = new Transaction(), pool }: DevClaimArgs) {
     if (typeof pool === 'string') {
       invariant(
@@ -241,6 +321,16 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Utility function to return the Token to the sender.
+   *
+   * @param args - An object containing the necessary arguments to keep the meme token in the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.memeCoinType - The type of the meme coin.
+   * @param args.token - The meme token to return to the sender.
+   *
+   * @returns An object containing the transaction.
+   */
   public async keepToken({
     tx = new Transaction(),
     memeCoinType,
@@ -259,6 +349,16 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Converts a meme token to a meme coin. This is for pools that use the Token Standard. It can only be done after the pool migrates.
+   *
+   * @param args - An object containing the necessary arguments to convert a meme token to a meme coin.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.memeToken - The meme token to convert to a meme coin.
+   *
+   * @returns An object containing the meme coin and the transaction.
+   */
   public async toCoin({ tx = new Transaction(), memeToken, pool }: ToCoinArgs) {
     if (typeof pool === 'string') {
       invariant(
@@ -284,6 +384,15 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Migrates the pool to DEX based on the MigrationWitness.
+   *
+   * @param args - An object containing the necessary arguments to migrate the pool.
+   * @param args.tx - Sui client Transaction class to chain move calls.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   *
+   * @returns An object containing the migrator and the transaction.
+   */
   public async migrate({ tx = new Transaction(), pool }: MigrateArgs) {
     if (typeof pool === 'string') {
       invariant(
