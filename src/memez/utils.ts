@@ -200,7 +200,7 @@ export const parseMemezPool = async (
     ),
     ipxMemeCoinTreasury: pathOr(
       '0x0',
-      ['data', 'ipxMemeCoinTreasury'],
+      ['data', 'content', 'fields', 'ipx_meme_coin_treasury'],
       objectResponse
     ),
     metadata: pathOr(

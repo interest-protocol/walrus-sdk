@@ -88,6 +88,18 @@ export interface NewPumpPoolArgs extends MaybeTx {
   memeCoinType: string;
 }
 
+export interface PumpArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+  suiCoin: ObjectInput;
+  minAmountOut?: U64;
+}
+
+export interface DumpArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+  memeCoin: ObjectInput;
+  minAmountOut?: U64;
+}
+
 export interface MemezPool<T> {
   objectId: string;
   poolType: string;

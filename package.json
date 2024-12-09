@@ -33,7 +33,9 @@
     "set-fees": "tsx src/scripts/config/set-fees.ts",
     "set-pump": "tsx src/scripts/config/set-pump.ts",
     "new-pump": "tsx src/scripts/memez/new.ts",
-    "get-pump": "tsx src/scripts/memez/get.ts"
+    "get-pump": "tsx src/scripts/memez/get.ts",
+    "pump": "tsx src/scripts/memez/pump.ts",
+    "dump": "tsx src/scripts/memez/dump.ts"
   },
   "keywords": [],
   "license": "ISC",

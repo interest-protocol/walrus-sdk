@@ -18,6 +18,9 @@ export const keypair = Ed25519Keypair.fromSecretKey(
   Uint8Array.from(Buffer.from(process.env.KEY, 'base64')).slice(1)
 );
 
+export const TEST_POOL_ID =
+  '0x6b4aa00a0ad34709a6771291ea04d90b7729eb5aad610f3af99a7b9e1f32eed6';
+
 export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
 export const aclTestnet = new AclSDK();

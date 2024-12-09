@@ -7,7 +7,12 @@ import {
 } from '@mysten/sui/utils';
 import invariant from 'tiny-invariant';
 
-import { NewPumpPoolArgs, SdkConstructorArgs } from './memez.types';
+import {
+  DumpArgs,
+  NewPumpPoolArgs,
+  PumpArgs,
+  SdkConstructorArgs,
+} from './memez.types';
 import { SDK } from './sdk';
 import { parseMemezPool } from './utils';
 
@@ -63,6 +68,73 @@ export class MemezFunSDK extends SDK {
 
     return {
       metadataCap,
+      tx,
+    };
+  }
+
+  public async pump({
+    tx = new Transaction(),
+    pool,
+    suiCoin,
+    minAmountOut = 0n,
+  }: PumpArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    const memeCoin = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'pump',
+      arguments: [
+        tx.object(pool.objectId),
+        this.object(tx, suiCoin),
+        tx.pure.u64(minAmountOut),
+        this.#getVersion(tx),
+      ],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    return {
+      memeCoin,
+      tx,
+    };
+  }
+
+  public async dump({
+    tx = new Transaction(),
+    pool,
+    memeCoin,
+    minAmountOut = 0n,
+  }: DumpArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    const suiCoin = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'dump',
+      arguments: [
+        tx.object(pool.objectId),
+        tx.object(pool.ipxMemeCoinTreasury),
+        this.object(tx, memeCoin),
+        tx.pure.u64(minAmountOut),
+        this.#getVersion(tx),
+      ],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    return {
+      suiCoin,
       tx,
     };
   }
