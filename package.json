@@ -33,11 +33,15 @@
     "set-fees": "tsx src/scripts/config/set-fees.ts",
     "set-pump": "tsx src/scripts/config/set-pump.ts",
     "new-pump": "tsx src/scripts/memez/new.ts",
+    "new-token": "tsx src/scripts/memez/new-token.ts",
     "get-pump": "tsx src/scripts/memez/get.ts",
     "pump": "tsx src/scripts/memez/pump.ts",
     "dump": "tsx src/scripts/memez/dump.ts",
     "dev-claim": "tsx src/scripts/memez/dev-claim.ts",
-    "migrate": "tsx src/scripts/memez/migrate.ts"
+    "migrate": "tsx src/scripts/memez/migrate.ts",
+    "pump-token": "tsx src/scripts/memez/pump-token.ts",
+    "dump-token": "tsx src/scripts/memez/dump-token.ts",
+    "to-coin": "tsx src/scripts/memez/to-coin.ts"
   },
   "keywords": [],
   "license": "ISC",

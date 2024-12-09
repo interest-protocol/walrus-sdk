@@ -11,11 +11,13 @@ import {
   DevClaimArgs,
   DumpArgs,
   DumpTokenArgs,
+  KeepTokenArgs,
   MigrateArgs,
   NewPumpPoolArgs,
   PumpArgs,
   PumpTokenArgs,
   SdkConstructorArgs,
+  ToCoinArgs,
 } from './memez.types';
 import { SDK } from './sdk';
 
@@ -230,6 +232,49 @@ export class MemezFunSDK extends SDK {
       module: this.modules.PUMP,
       function: 'dev_claim',
       arguments: [tx.object(pool.objectId), this.getVersion(tx)],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    return {
+      memeCoin,
+      tx,
+    };
+  }
+
+  public async keepToken({
+    tx = new Transaction(),
+    memeCoinType,
+    token,
+  }: KeepTokenArgs) {
+    tx.moveCall({
+      package: SUI_FRAMEWORK_ADDRESS,
+      module: 'token',
+      function: 'keep',
+      arguments: [this.object(tx, token)],
+      typeArguments: [memeCoinType],
+    });
+
+    return {
+      tx,
+    };
+  }
+
+  public async toCoin({ tx = new Transaction(), memeToken, pool }: ToCoinArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    invariant(pool.usesTokenStandard, 'pool uses token standard');
+
+    const memeCoin = tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'to_coin',
+      arguments: [tx.object(pool.objectId), this.object(tx, memeToken)],
       typeArguments: [pool.memeCoinType],
     });
 

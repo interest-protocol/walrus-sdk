@@ -230,3 +230,13 @@ export interface MigratorMigrateArgs extends MaybeTx {
   migrator: TransactionResult;
   memeCoinType: string;
 }
+
+export interface KeepTokenArgs extends MaybeTx {
+  memeCoinType: string;
+  token: ObjectInput;
+}
+
+export interface ToCoinArgs extends MaybeTx {
+  pool: string | MemezPool<PumpState>;
+  memeToken: ObjectInput;
+}

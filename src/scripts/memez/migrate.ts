@@ -2,7 +2,7 @@ import { MigratorSDK } from '../../memez/migrator';
 import { executeTx, memezTestnet, TEST_POOL_ID } from '../utils.script';
 
 const MEME_COIN_TYPE =
-  '0x97bb63c347b46a4f96f52bdb99a72b1311dee2bd9535c27164c7d62113e40e21::aptos::APTOS';
+  '0xfafb7a9d33dd31fc9d6f37d625aa877d7982fe25eb16ba06f4a5861e541030f8::aptos::APTOS';
 
 (async () => {
   const { tx, migrator } = await memezTestnet.migrate({
