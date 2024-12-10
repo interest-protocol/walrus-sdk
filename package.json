@@ -41,7 +41,9 @@
     "migrate": "tsx src/scripts/memez/migrate.ts",
     "pump-token": "tsx src/scripts/memez/pump-token.ts",
     "dump-token": "tsx src/scripts/memez/dump-token.ts",
-    "to-coin": "tsx src/scripts/memez/to-coin.ts"
+    "to-coin": "tsx src/scripts/memez/to-coin.ts",
+    "quote-pump": "tsx src/scripts/memez/quote-pump.ts",
+    "quote-dump": "tsx src/scripts/memez/quote-dump.ts"
   },
   "keywords": [],
   "license": "ISC",

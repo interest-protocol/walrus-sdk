@@ -1,3 +1,4 @@
+import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
@@ -5,6 +6,7 @@ import {
   SUI_FRAMEWORK_ADDRESS,
   SUI_TYPE_ARG,
 } from '@mysten/sui/utils';
+import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
 import {
@@ -16,6 +18,7 @@ import {
   NewPumpPoolArgs,
   PumpArgs,
   PumpTokenArgs,
+  QuoteArgs,
   SdkConstructorArgs,
   ToCoinArgs,
 } from './memez.types';
@@ -414,6 +417,67 @@ export class MemezFunSDK extends SDK {
       migrator,
       tx,
     };
+  }
+
+  public async quotePump({ pool, amount }: QuoteArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    if (BigInt(amount) == 0n) return { amountOut: 0n, swapInFee: 0n };
+
+    const tx = new Transaction();
+
+    tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'pump_amount',
+      arguments: [tx.object(pool.objectId), tx.pure.u64(amount)],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.vector(bcs.u64())],
+    ]);
+
+    const [amountOut, swapInFee] = result[0][0];
+
+    return { amountOut, swapInFee };
+  }
+
+  public async quoteDump({ pool, amount }: QuoteArgs) {
+    if (typeof pool === 'string') {
+      invariant(
+        isValidSuiAddress(pool),
+        'pool must be a valid Sui address or MemezPool'
+      );
+      pool = await this.getPumpPool(pool);
+    }
+
+    if (BigInt(amount) == 0n)
+      return { amountOut: 0n, swapInFee: 0n, burnFee: 0n };
+
+    const tx = new Transaction();
+
+    tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.PUMP,
+      function: 'dump_amount',
+      arguments: [tx.object(pool.objectId), tx.pure.u64(amount)],
+      typeArguments: [pool.memeCoinType],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.vector(bcs.u64())],
+    ]);
+
+    const [amountOut, , swapInFee, burnFee] = result[0][0];
+
+    return { amountOut, swapInFee, burnFee };
   }
 
   #zeroSuiCoin(tx: Transaction) {

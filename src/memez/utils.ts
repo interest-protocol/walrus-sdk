@@ -3,7 +3,7 @@ import {
   SuiClient,
   SuiObjectResponse,
 } from '@mysten/sui/client';
-import { normalizeStructTag } from '@mysten/sui/utils';
+import { normalizeStructTag, normalizeSuiObjectId } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 
 import { PACKAGES, SHARED_OBJECTS } from './constants';
@@ -189,7 +189,9 @@ export const parseMemezPool = async (
   } as PumpState;
 
   return {
-    objectId: pathOr('0x0', ['data', 'objectId'], objectResponse),
+    objectId: normalizeSuiObjectId(
+      pathOr('0x0', ['data', 'objectId'], objectResponse)
+    ),
     poolType,
     memeCoinType,
     curveType,
@@ -198,10 +200,12 @@ export const parseMemezPool = async (
       ['data', 'content', 'fields', 'is_token'],
       objectResponse
     ),
-    ipxMemeCoinTreasury: pathOr(
-      '0x0',
-      ['data', 'content', 'fields', 'ipx_meme_coin_treasury'],
-      objectResponse
+    ipxMemeCoinTreasury: normalizeSuiObjectId(
+      pathOr(
+        '0x0',
+        ['data', 'content', 'fields', 'ipx_meme_coin_treasury'],
+        objectResponse
+      )
     ),
     metadata: pathOr(
       [],
@@ -218,10 +222,12 @@ export const parseMemezPool = async (
       },
       {} as Record<string, string>
     ),
-    migrationWitness: pathOr(
-      '0x0',
-      ['data', 'content', 'fields', 'migration_witness', 'fields', 'name'],
-      objectResponse
+    migrationWitness: normalizeStructTag(
+      pathOr(
+        '0x0',
+        ['data', 'content', 'fields', 'migration_witness', 'fields', 'name'],
+        objectResponse
+      )
     ),
     dynamicFieldDataId,
     progress: pathOr(

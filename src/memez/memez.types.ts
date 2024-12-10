@@ -240,3 +240,8 @@ export interface ToCoinArgs extends MaybeTx {
   pool: string | MemezPool<PumpState>;
   memeToken: ObjectInput;
 }
+
+export interface QuoteArgs {
+  pool: string | MemezPool<PumpState>;
+  amount: U64;
+}
