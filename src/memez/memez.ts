@@ -419,7 +419,17 @@ export class MemezFunSDK extends SDK {
     };
   }
 
+  /**
+   * Quotes the amount of meme coin received after selling Sui. The swap fee is from the coin in (Sui).
+   *
+   * @param args - An object containing the necessary arguments to quote the amount of meme coin received after selling Sui.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.amount - The amount of Sui to sell.
+   *
+   * @returns An object containing the amount of meme coin received and the swap in fee.
+   */
   public async quotePump({ pool, amount }: QuoteArgs) {
+    if (BigInt(amount) == 0n) return { amountOut: 0n, swapInFee: 0n };
     if (typeof pool === 'string') {
       invariant(
         isValidSuiAddress(pool),
@@ -427,8 +437,6 @@ export class MemezFunSDK extends SDK {
       );
       pool = await this.getPumpPool(pool);
     }
-
-    if (BigInt(amount) == 0n) return { amountOut: 0n, swapInFee: 0n };
 
     const tx = new Transaction();
 
@@ -449,7 +457,19 @@ export class MemezFunSDK extends SDK {
     return { amountOut, swapInFee };
   }
 
+  /**
+   * Quotes the amount of Sui received after selling meme coin. The swap fee is from the coin in (MemeCoin).
+   *
+   * @param args - An object containing the necessary arguments to quote the amount of Sui received after selling meme coin.
+   * @param args.pool - The objectId of the MemezPool or the full parsed pool.
+   * @param args.amount - The amount of meme coin to sell.
+   *
+   * @returns An object containing the amount of Sui received and the swap in fee.
+   */
   public async quoteDump({ pool, amount }: QuoteArgs) {
+    if (BigInt(amount) == 0n)
+      return { amountOut: 0n, swapInFee: 0n, burnFee: 0n };
+
     if (typeof pool === 'string') {
       invariant(
         isValidSuiAddress(pool),
@@ -457,9 +477,6 @@ export class MemezFunSDK extends SDK {
       );
       pool = await this.getPumpPool(pool);
     }
-
-    if (BigInt(amount) == 0n)
-      return { amountOut: 0n, swapInFee: 0n, burnFee: 0n };
 
     const tx = new Transaction();
 
