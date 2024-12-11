@@ -59,6 +59,8 @@ export class MemezFunSDK extends SDK {
    * @param args.memeCoinType - The meme coin type to use for the MemezPool.
    *
    * @returns An object containing the meme coin MetadataCap and the transaction.
+   * @returns values.metadataCap - The meme coin MetadataCap.
+   * @returns values.tx - The Transaction.
    */
   public newPumpPool({
     tx = new Transaction(),
@@ -119,6 +121,8 @@ export class MemezFunSDK extends SDK {
    * @param args.minAmountOut - The minimum amount meme coin expected to be received.
    *
    * @returns An object containing the meme coin and the transaction.
+   * @returns values.memeCoin - The meme coin.
+   * @returns values.tx - The Transaction.
    */
   public async pump({
     tx = new Transaction(),
@@ -165,6 +169,8 @@ export class MemezFunSDK extends SDK {
    * @param args.minAmountOut - The minimum amount meme token expected to be received.
    *
    * @returns An object containing the meme token and the transaction.
+   * @returns values.memeToken - The meme token.
+   * @returns values.tx - The Transaction.
    */
   public async pumpToken({
     tx = new Transaction(),
@@ -211,6 +217,8 @@ export class MemezFunSDK extends SDK {
    * @param args.minAmountOut - The minimum amount Sui expected to be received.
    *
    * @returns An object containing the Sui coin and the transaction.
+   * @returns values.suiCoin - The Sui coin.
+   * @returns values.tx - The Transaction.
    */
   public async dump({
     tx = new Transaction(),
@@ -258,6 +266,8 @@ export class MemezFunSDK extends SDK {
    * @param args.minAmountOut - The minimum amount Sui expected to be received.
    *
    * @returns An object containing the Sui coin and the transaction.
+   * @returns values.suiCoin - The Sui coin.
+   * @returns values.tx - The Transaction.
    */
   public async dumpToken({
     tx = new Transaction(),
@@ -302,6 +312,8 @@ export class MemezFunSDK extends SDK {
    * @param args.pool - The objectId of the MemezPool or the full parsed pool.
    *
    * @returns An object containing the meme coin and the transaction.
+   * @returns values.memeCoin - The meme coin.
+   * @returns values.tx - The Transaction.
    */
   public async devClaim({ tx = new Transaction(), pool }: DevClaimArgs) {
     if (typeof pool === 'string') {
@@ -335,6 +347,7 @@ export class MemezFunSDK extends SDK {
    * @param args.token - The meme token to return to the sender.
    *
    * @returns An object containing the transaction.
+   * @returns values.tx - The Transaction.
    */
   public async keepToken({
     tx = new Transaction(),
@@ -363,6 +376,8 @@ export class MemezFunSDK extends SDK {
    * @param args.memeToken - The meme token to convert to a meme coin.
    *
    * @returns An object containing the meme coin and the transaction.
+   * @returns values.memeCoin - The meme coin.
+   * @returns values.tx - The Transaction.
    */
   public async toCoin({ tx = new Transaction(), memeToken, pool }: ToCoinArgs) {
     if (typeof pool === 'string') {
@@ -397,6 +412,8 @@ export class MemezFunSDK extends SDK {
    * @param args.pool - The objectId of the MemezPool or the full parsed pool.
    *
    * @returns An object containing the migrator and the transaction.
+   * @returns values.migrator - The migrator.
+   * @returns values.tx - The Transaction.
    */
   public async migrate({ tx = new Transaction(), pool }: MigrateArgs) {
     if (typeof pool === 'string') {
@@ -429,6 +446,8 @@ export class MemezFunSDK extends SDK {
    * @param args.amount - The amount of Sui to sell.
    *
    * @returns An object containing the amount of meme coin received and the swap in fee.
+   * @returns values.amountOut - The amount of meme coin received.
+   * @returns values.swapFeeIn - The swap fee in paid in Sui.
    */
   public async quotePump({
     pool,
@@ -470,6 +489,9 @@ export class MemezFunSDK extends SDK {
    * @param args.amount - The amount of meme coin to sell.
    *
    * @returns An object containing the amount of Sui received and the swap in fee.
+   * @returns values.amountOut - The amount of Sui received.
+   * @returns values.swapFeeIn - The swap fee in paid in MemeCoin.
+   * @returns values.burnFee - The burn fee in MemeCoin.
    */
   public async quoteDump({
     pool,
