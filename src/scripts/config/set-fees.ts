@@ -20,7 +20,7 @@ const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
       [MAX_BPS, 0, 0],
       [MAX_BPS, 0, 1],
     ],
-    recipient: [[recipient], [recipient], [recipient]],
+    recipients: [[recipient], [recipient], [recipient]],
   });
 
   await executeTx(tx2);

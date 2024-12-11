@@ -256,3 +256,19 @@ export interface QuoteDumpReturnValues {
   swapFeeIn: bigint;
   burnFee: bigint;
 }
+
+export interface GetFeesArgs {
+  configurationKey: ConfigKey;
+}
+
+export interface GetCurveDataArgs {
+  configurationKey: ConfigKey;
+  totalSupply: U64;
+}
+
+export interface PumpData {
+  burnTax: bigint;
+  virtualLiquidity: bigint;
+  targetSuiLiquidity: bigint;
+  liquidityProvision: bigint;
+}

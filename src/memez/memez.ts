@@ -13,10 +13,13 @@ import {
   DevClaimArgs,
   DumpArgs,
   DumpTokenArgs,
+  GetCurveDataArgs,
+  GetFeesArgs,
   KeepTokenArgs,
   MigrateArgs,
   NewPumpPoolArgs,
   PumpArgs,
+  PumpData,
   PumpTokenArgs,
   QuoteArgs,
   QuoteDumpReturnValues,
@@ -25,6 +28,7 @@ import {
   ToCoinArgs,
 } from './memez.types';
 import { SDK } from './sdk';
+import { MemezFees } from './structs';
 
 export class MemezFunSDK extends SDK {
   #defaultSupply = 1_000_000_000_000_000_000n;
@@ -476,7 +480,9 @@ export class MemezFunSDK extends SDK {
       [bcs.vector(bcs.u64())],
     ]);
 
-    const [amountOut, swapFeeIn] = result[0][0];
+    const [amountOut, swapFeeIn] = result[0][0].map((value: string) =>
+      BigInt(value)
+    );
 
     return { amountOut, swapFeeIn };
   }
@@ -522,9 +528,80 @@ export class MemezFunSDK extends SDK {
       [bcs.vector(bcs.u64())],
     ]);
 
-    const [amountOut, , swapFeeIn, burnFee] = result[0][0];
+    const [amountOut, , swapFeeIn, burnFee] = result[0][0].map(
+      (value: string) => BigInt(value)
+    );
 
     return { amountOut, swapFeeIn, burnFee };
+  }
+
+  /**
+   * Gets an integrator.
+   *
+   * @param args - An object containing the necessary arguments to get the fees for the pool.
+   * @param args.configurationKey - The configuration key to find an integrator's fee configuration.
+   *
+   * @returns The fees for the pool.
+   */
+  public async getFees({
+    configurationKey,
+  }: GetFeesArgs): Promise<typeof MemezFees.$inferType> {
+    const tx = new Transaction();
+
+    tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.CONFIG,
+      function: 'fees',
+      arguments: [tx.object(this.sharedObjects.CONFIG.IMMUT)],
+      typeArguments: [normalizeStructTag(configurationKey)],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [MemezFees],
+    ]);
+
+    return result[0][0];
+  }
+
+  /**
+   * Gets the pump data for an integrator. The supply must coin the decimal houses. E.g. for Sui would be 1e9.
+   *
+   * @param args - An object containing the necessary arguments to get the pump data for an integrator.
+   * @param args.configurationKey - The configuration key to find an integrator's fee configuration.
+   * @param args.totalSupply - The total supply of the meme coin.
+   *
+   * @returns The pump data for the integrator.
+   */
+  public async getPumpData({
+    configurationKey,
+    totalSupply,
+  }: GetCurveDataArgs): Promise<PumpData> {
+    const tx = new Transaction();
+
+    tx.moveCall({
+      package: this.packages.MEMEZ_FUN,
+      module: this.modules.CONFIG,
+      function: 'get_pump',
+      arguments: [
+        tx.object(this.sharedObjects.CONFIG.IMMUT),
+        tx.pure.u64(totalSupply),
+      ],
+      typeArguments: [normalizeStructTag(configurationKey)],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.vector(bcs.u64())],
+    ]);
+
+    const [burnTax, virtualLiquidity, targetSuiLiquidity, liquidityProvision] =
+      result[0][0].map((value: string) => BigInt(value));
+
+    return {
+      burnTax,
+      virtualLiquidity,
+      targetSuiLiquidity,
+      liquidityProvision,
+    };
   }
 
   #zeroSuiCoin(tx: Transaction) {
