@@ -245,3 +245,14 @@ export interface QuoteArgs {
   pool: string | MemezPool<PumpState>;
   amount: U64;
 }
+
+export interface QuotePumpReturnValues {
+  amountOut: bigint;
+  swapFeeIn: bigint;
+}
+
+export interface QuoteDumpReturnValues {
+  amountOut: bigint;
+  swapFeeIn: bigint;
+  burnFee: bigint;
+}

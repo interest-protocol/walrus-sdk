@@ -19,6 +19,8 @@ import {
   PumpArgs,
   PumpTokenArgs,
   QuoteArgs,
+  QuoteDumpReturnValues,
+  QuotePumpReturnValues,
   SdkConstructorArgs,
   ToCoinArgs,
 } from './memez.types';
@@ -428,8 +430,11 @@ export class MemezFunSDK extends SDK {
    *
    * @returns An object containing the amount of meme coin received and the swap in fee.
    */
-  public async quotePump({ pool, amount }: QuoteArgs) {
-    if (BigInt(amount) == 0n) return { amountOut: 0n, swapInFee: 0n };
+  public async quotePump({
+    pool,
+    amount,
+  }: QuoteArgs): Promise<QuotePumpReturnValues> {
+    if (BigInt(amount) == 0n) return { amountOut: 0n, swapFeeIn: 0n };
     if (typeof pool === 'string') {
       invariant(
         isValidSuiAddress(pool),
@@ -452,9 +457,9 @@ export class MemezFunSDK extends SDK {
       [bcs.vector(bcs.u64())],
     ]);
 
-    const [amountOut, swapInFee] = result[0][0];
+    const [amountOut, swapFeeIn] = result[0][0];
 
-    return { amountOut, swapInFee };
+    return { amountOut, swapFeeIn };
   }
 
   /**
@@ -466,9 +471,12 @@ export class MemezFunSDK extends SDK {
    *
    * @returns An object containing the amount of Sui received and the swap in fee.
    */
-  public async quoteDump({ pool, amount }: QuoteArgs) {
+  public async quoteDump({
+    pool,
+    amount,
+  }: QuoteArgs): Promise<QuoteDumpReturnValues> {
     if (BigInt(amount) == 0n)
-      return { amountOut: 0n, swapInFee: 0n, burnFee: 0n };
+      return { amountOut: 0n, swapFeeIn: 0n, burnFee: 0n };
 
     if (typeof pool === 'string') {
       invariant(
@@ -492,9 +500,9 @@ export class MemezFunSDK extends SDK {
       [bcs.vector(bcs.u64())],
     ]);
 
-    const [amountOut, , swapInFee, burnFee] = result[0][0];
+    const [amountOut, , swapFeeIn, burnFee] = result[0][0];
 
-    return { amountOut, swapInFee, burnFee };
+    return { amountOut, swapFeeIn, burnFee };
   }
 
   #zeroSuiCoin(tx: Transaction) {
