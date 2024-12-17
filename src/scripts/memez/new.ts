@@ -6,10 +6,10 @@ import { executeTx, keypair, memezTestnet } from '../utils.script';
 const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
 
 const TREASURY_CAP =
-  '0x7e342b9fad97f61219bdaf1976851b270f4e325ea3571caf0472777eaea271d1';
+  '0xc86e4bf2f1886c509ab785b5b208344124fe57fa3b92bfc6479eb4cb083156bf';
 
 const MEME_COIN_TYPE =
-  '0x8705f5951f4313dfd99521a5567518bc488da2b71c50c54612f43a7d19ba035c::aptos::APTOS';
+  '0x2b9da441d0f56ea40cfb6a0b433aef9bbba2fe60ad82cf02e392e764799c0c9e::aptos::APTOS';
 
 const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
 

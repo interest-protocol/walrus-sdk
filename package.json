@@ -45,14 +45,18 @@
     "quote-pump": "tsx src/scripts/memez/quote-pump.ts",
     "quote-dump": "tsx src/scripts/memez/quote-dump.ts",
     "get-fees": "tsx src/scripts/config/get-fees.ts",
-    "get-pump-data": "tsx src/scripts/config/get-pump-data.ts"
+    "get-pump-data": "tsx src/scripts/config/get-pump-data.ts",
+    "cetus-price": "tsx src/scripts/memez/cetus-price.ts"
   },
   "keywords": [],
   "license": "ISC",
   "packageManager": "pnpm@9.1.0+sha512.67f5879916a9293e5cf059c23853d571beaf4f753c707f40cb22bed5fb1578c6aad3b6c4107ccb3ba0b35be003eb621a16471ac836c87beb53f9d54bb4612724",
   "devDependencies": {
+    "@types/bn.js": "^5.1.6",
     "@types/node": "^20.17.9",
     "@types/ramda": "^0.30.2",
+    "bn.js": "^5.2.1",
+    "decimal.js": "^10.4.3",
     "dotenv": "^16.4.7",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.31.0",
