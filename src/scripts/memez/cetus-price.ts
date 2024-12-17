@@ -28,6 +28,12 @@ const priceToSqrtPriceX64 = (
     .sqrt()
     .mul(new Decimal(2).pow(new Decimal(64)));
 
+/*
+  memePriceInUsd: 0.00006,
+  memePriceInSui: 0.000012,
+  priceInSqrtX64: 63901395939770060.40629260795585418174313090711434782392775384127
+*/
+
 console.log({
   memePriceInUsd,
   memePriceInSui,
