@@ -17,4 +17,6 @@ export const MemezFees = bcs.struct('MemezFees', {
   creatorFee: FeePayload,
   swapFee: FeePayload,
   migration: FeePayload,
+  allocation: FeePayload,
+  vestingPeriod: bcs.u64(),
 });
