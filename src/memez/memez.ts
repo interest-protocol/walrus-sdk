@@ -66,7 +66,7 @@ export class MemezFunSDK extends SDK {
    * @returns values.metadataCap - The meme coin MetadataCap.
    * @returns values.tx - The Transaction.
    */
-  public newPumpPool({
+  public async newPumpPool({
     tx = new Transaction(),
     creationSuiFee = this.#zeroSuiCoin(tx),
     memeCoinTreasuryCap,
@@ -77,13 +77,24 @@ export class MemezFunSDK extends SDK {
     developer,
     configurationKey,
     migrationWitness,
-    memeCoinType,
+    stakeHolders = [],
   }: NewPumpPoolArgs) {
     invariant(BigInt(totalSupply) > 0n, 'totalSupply must be greater than 0');
     invariant(
       isValidSuiAddress(developer),
       'developer must be a valid Sui address'
     );
+
+    const treasuryCap = await this.client.getObject({
+      id: memeCoinTreasuryCap,
+      options: {
+        showType: true,
+      },
+    });
+
+    const memeCoinType = treasuryCap.data?.type?.split('<')[1].slice(0, -1);
+
+    invariant(memeCoinType, 'memeCoinType not found');
 
     const metadataCap = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
@@ -92,18 +103,19 @@ export class MemezFunSDK extends SDK {
       arguments: [
         tx.object(this.sharedObjects.CONFIG.IMMUT),
         tx.object(this.sharedObjects.MIGRATOR_LIST.IMMUT),
-        this.object(tx, memeCoinTreasuryCap),
+        tx.object(memeCoinTreasuryCap),
         this.object(tx, creationSuiFee),
         tx.pure.u64(totalSupply),
         tx.pure.bool(useTokenStandard),
         this.object(tx, firstPurchase),
         tx.pure.vector('string', Object.keys(metadata)),
         tx.pure.vector('string', Object.values(metadata)),
+        tx.pure.vector('address', stakeHolders),
         tx.pure.address(developer),
         this.getVersion(tx),
       ],
       typeArguments: [
-        memeCoinType,
+        normalizeStructTag(memeCoinType),
         normalizeStructTag(configurationKey),
         normalizeStructTag(migrationWitness),
       ],
@@ -238,7 +250,7 @@ export class MemezFunSDK extends SDK {
       pool = await this.getPumpPool(pool);
     }
 
-    invariant(pool.usesTokenStandard, 'pool uses token standard');
+    invariant(!pool.usesTokenStandard, 'pool uses token standard');
 
     const suiCoin = tx.moveCall({
       package: this.packages.MEMEZ_FUN,

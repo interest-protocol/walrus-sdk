@@ -6,10 +6,7 @@ import { executeTx, keypair, memezTestnet } from '../utils.script';
 const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
 
 const TREASURY_CAP =
-  '0xc86e4bf2f1886c509ab785b5b208344124fe57fa3b92bfc6479eb4cb083156bf';
-
-const MEME_COIN_TYPE =
-  '0x2b9da441d0f56ea40cfb6a0b433aef9bbba2fe60ad82cf02e392e764799c0c9e::aptos::APTOS';
+  '0x440c07bcb1bfa631dafa3e3f75c547132d1e370c1c7c9e09c59c83a98993a184';
 
 const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
 
@@ -20,19 +17,18 @@ const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
 
   const creationSuiFee = tx.splitCoins(tx.gas, [tx.pure.u64(20)]);
 
-  const { tx: tx2, metadataCap } = memezTestnet.newPumpPool({
+  const { tx: tx2, metadataCap } = await memezTestnet.newPumpPool({
     tx,
     configurationKey,
     developer: recipient,
     metadata: {
-      X: 'https://x.com/Aptos',
-      Website: 'https://aptosfoundation.org/',
-      GitHub: 'https://github.com/aptos-foundation',
+      X: 'https://x.com/Meme',
+      Website: 'https://meme.xyz/',
+      GitHub: 'https://github.com/meme',
     },
     creationSuiFee,
     memeCoinTreasuryCap: TREASURY_CAP,
     migrationWitness: MIGRATOR_WITNESSES.testnet.TEST,
-    memeCoinType: MEME_COIN_TYPE,
     totalSupply: TOTAL_SUPPLY,
     useTokenStandard: false,
   });

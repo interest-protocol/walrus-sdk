@@ -77,7 +77,7 @@ export type ConfigModel =
   (typeof CONFIG_MODELS)[Network][keyof (typeof CONFIG_MODELS)[Network]];
 
 export interface NewPumpPoolArgs extends MaybeTx {
-  memeCoinTreasuryCap: ObjectInput;
+  memeCoinTreasuryCap: string;
   creationSuiFee?: ObjectInput;
   totalSupply?: U64;
   useTokenStandard?: boolean;
@@ -86,7 +86,7 @@ export interface NewPumpPoolArgs extends MaybeTx {
   developer: string;
   configurationKey: ConfigKey;
   migrationWitness: MigratorWitness;
-  memeCoinType: string;
+  stakeHolders?: string[];
 }
 
 export interface PumpArgs extends MaybeTx {

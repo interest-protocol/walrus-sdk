@@ -15,7 +15,7 @@ import {
   const memeCoin = await getCoinOfValue({
     tx,
     coinType: pool.memeCoinType,
-    coinValue: 990500n * 10n,
+    coinValue: 25_000_000_000n,
   });
 
   const { suiCoin, tx: tx2 } = await memezTestnet.dump({
