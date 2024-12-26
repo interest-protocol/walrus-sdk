@@ -66,7 +66,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
       '0x0806f525f06e0fcf0f79baeabcf4c49de2be292b87f59c9fabf59fbf779fe2f4'
     ),
     ADMIN: normalizeSuiObjectId(
-      '0x1fcf047e66932289929a0dc10f71627482bcf516fa8179fd086dd72ce9927d82'
+      '0xc6fd083dc011d0493600798ba92c789adae2e85e44889726b0c5b87ba3de146d'
     ),
   },
 } as const;
