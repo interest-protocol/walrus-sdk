@@ -10,7 +10,7 @@ import { PACKAGES, SHARED_OBJECTS } from './constants';
 import { MemezPool, PumpState, SdkConstructorArgs } from './memez.types';
 import { Network } from './memez.types';
 
-export const getsSdkDefaultArgs = (
+export const getSdkDefaultArgs = (
   network = Network.Testnet
 ): SdkConstructorArgs => ({
   packages: PACKAGES[network],

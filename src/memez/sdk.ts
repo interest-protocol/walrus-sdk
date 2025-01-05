@@ -11,7 +11,7 @@ import {
   SdkConstructorArgs,
   SignInArgs,
 } from './memez.types';
-import { getsSdkDefaultArgs, parseMemezPool } from './utils';
+import { getSdkDefaultArgs, parseMemezPool } from './utils';
 
 export class SDK {
   packages: Package;
@@ -25,7 +25,7 @@ export class SDK {
 
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     const data = {
-      ...getsSdkDefaultArgs(),
+      ...getSdkDefaultArgs(),
       ...args,
     };
 
