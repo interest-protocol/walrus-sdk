@@ -36,7 +36,7 @@ export class SDK {
 
     invariant(
       data.packages,
-      'You must provide packages for this specific network'
+      'You must provide package addresses for this specific network'
     );
 
     invariant(
