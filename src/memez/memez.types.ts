@@ -25,7 +25,7 @@ export interface MaybeTx {
 }
 
 export type Package = Record<
-  'MEMEZ_FUN' | 'MEMEZ_MIGRATOR' | 'ACL' | 'VESTING',
+  'MEMEZ_FUN' | 'MEMEZ_MIGRATOR' | 'ACL' | 'VESTING' | 'MEMEZ_WITNESS',
   string
 >;
 

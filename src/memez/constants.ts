@@ -17,12 +17,22 @@ export enum Modules {
   VERSION = 'memez_version',
 }
 
+// TODO: Need to be updated
+export enum Treasuries {
+  IPX = '0x1',
+  RECRD = '0x2',
+  FAN_TV = '0x3',
+  MEMEZ = '0x4',
+  WINX = '0x5',
+}
+
 export const PACKAGES: Record<Network, Package> = {
   [Network.Mainnet]: {
     MEMEZ_FUN: normalizeSuiAddress('0x0'),
     ACL: normalizeSuiAddress('0x0'),
     VESTING: normalizeSuiAddress('0x0'),
     MEMEZ_MIGRATOR: normalizeSuiAddress('0x0'),
+    MEMEZ_WITNESS: normalizeSuiAddress('0x0'),
   },
   [Network.Testnet]: {
     MEMEZ_FUN: normalizeSuiAddress(
@@ -36,6 +46,9 @@ export const PACKAGES: Record<Network, Package> = {
     ),
     MEMEZ_MIGRATOR: normalizeSuiAddress(
       '0xca0cd5448f4876f24d3e93c57637bd868ac6aec0d8bb69f658272d67a4ebf35f'
+    ),
+    MEMEZ_WITNESS: normalizeSuiAddress(
+      '0x06267071d0eecfb7d16418cb71da4c7b7941b28208a71086ff3e47731c2d263a'
     ),
   },
 } as const;
@@ -202,9 +215,17 @@ export const MIGRATOR_WITNESSES = {
 export const CONFIG_KEYS = {
   [Network.Mainnet]: {
     DEFAULT: '',
+    RECRD: '',
+    FAN_TV: '',
+    MEMEZ: '',
+    WINX: '',
   },
   [Network.Testnet]: {
     DEFAULT: `${PACKAGES[Network.Testnet].MEMEZ_FUN}::memez_config::DefaultKey`,
+    RECRD: `${PACKAGES[Network.Testnet].MEMEZ_WITNESS}::memez_witness::Recrd`,
+    FAN_TV: `${PACKAGES[Network.Testnet].MEMEZ_WITNESS}::memez_witness::FanTv`,
+    MEMEZ: `${PACKAGES[Network.Testnet].MEMEZ_WITNESS}::memez_witness::Memez`,
+    WINX: `${PACKAGES[Network.Testnet].MEMEZ_WITNESS}::memez_witness::Winx`,
   },
 } as const;
 
@@ -223,4 +244,4 @@ export const CONFIG_MODELS = {
   },
 } as const;
 
-export const MAX_BPS = 10_000;
+export const MAX_BPS = 10_000n;

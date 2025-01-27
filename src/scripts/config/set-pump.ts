@@ -2,7 +2,7 @@ import { CONFIG_KEYS, OWNED_OBJECTS } from '../../memez';
 import { configTestnet, executeTx } from '../utils.script';
 
 const ownedObjects = OWNED_OBJECTS.testnet;
-const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
+const configurationKey = CONFIG_KEYS.testnet.RECRD;
 
 (async () => {
   const { tx, authWitness } = configTestnet.signIn({
@@ -13,7 +13,11 @@ const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
     authWitness,
     tx,
     configurationKey,
-    values: [0, 100_000_000_000, 102_000_000_000, 500],
+    // Burn Tax
+    // Virtual liquidity
+    // Target liquidity
+    // liquidity provision
+    values: [0, 5_000_000_000, 10_000_000_000, 0],
   });
 
   await executeTx(tx2);
