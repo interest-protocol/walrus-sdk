@@ -272,3 +272,10 @@ export interface PumpData {
   targetSuiLiquidity: bigint;
   liquidityProvision: bigint;
 }
+
+export interface GetMemeCoinMarketCapArgs {
+  suiBalance: bigint;
+  virtualLiquidity: bigint;
+  memeBalance: bigint;
+  suiUSDCPrice: number;
+}

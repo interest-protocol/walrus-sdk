@@ -4,10 +4,16 @@ import {
   SuiObjectResponse,
 } from '@mysten/sui/client';
 import { normalizeStructTag, normalizeSuiObjectId } from '@mysten/sui/utils';
+import { Decimal } from 'decimal.js';
 import { pathOr } from 'ramda';
 
 import { PACKAGES, SHARED_OBJECTS } from './constants';
-import { MemezPool, PumpState, SdkConstructorArgs } from './memez.types';
+import {
+  GetMemeCoinMarketCapArgs,
+  MemezPool,
+  PumpState,
+  SdkConstructorArgs,
+} from './memez.types';
 import { Network } from './memez.types';
 
 export const getSdkDefaultArgs = (
@@ -20,6 +26,27 @@ export const getSdkDefaultArgs = (
   sharedObjects: SHARED_OBJECTS[network],
   network,
 });
+
+// USD Price
+export const getMemeCoinMarketCap = async ({
+  suiBalance,
+  virtualLiquidity,
+  memeBalance,
+  suiUSDCPrice,
+  memeCoinTotalSupply = 1_000_000_000n,
+}: GetMemeCoinMarketCapArgs) => {
+  const suiBalanceDecimal = new Decimal(suiBalance.toString());
+  const virtualLiquidityDecimal = new Decimal(virtualLiquidity.toString());
+  const memeBalanceDecimal = new Decimal(memeBalance.toString());
+  const suiUSDCPriceDecimal = new Decimal(suiUSDCPrice.toString());
+
+  const memeCoinPrice = suiBalanceDecimal
+    .plus(virtualLiquidityDecimal)
+    .times(suiUSDCPriceDecimal)
+    .div(memeBalanceDecimal);
+
+  return memeCoinPrice.times(memeCoinTotalSupply.toString()).toNumber();
+};
 
 export const parsePoolType = (x: string) => {
   return {
@@ -63,8 +90,6 @@ export const parseMemezPool = async (
         'data',
         'content',
         'fields',
-        'value',
-        'fields',
         'constant_product',
         'fields',
         'burner',
@@ -81,8 +106,6 @@ export const parseMemezPool = async (
           'data',
           'content',
           'fields',
-          'value',
-          'fields',
           'constant_product',
           'fields',
           'meme_balance',
@@ -97,8 +120,6 @@ export const parseMemezPool = async (
           'data',
           'content',
           'fields',
-          'value',
-          'fields',
           'constant_product',
           'fields',
           'sui_balance',
@@ -111,8 +132,6 @@ export const parseMemezPool = async (
       [
         'data',
         'content',
-        'fields',
-        'value',
         'fields',
         'constant_product',
         'fields',
@@ -134,16 +153,7 @@ export const parseMemezPool = async (
     migrationFee: BigInt(
       pathOr(
         0n,
-        [
-          'data',
-          'content',
-          'fields',
-          'value',
-          'fields',
-          'migration_fee',
-          'fields',
-          'pos0',
-        ],
+        ['data', 'content', 'fields', 'migration_fee', 'fields', 'pos0'],
         stateObject
       )
     ),
@@ -153,8 +163,6 @@ export const parseMemezPool = async (
         [
           'data',
           'content',
-          'fields',
-          'value',
           'fields',
           'constant_product',
           'fields',
@@ -170,8 +178,6 @@ export const parseMemezPool = async (
           'data',
           'content',
           'fields',
-          'value',
-          'fields',
           'constant_product',
           'fields',
           'target_sui_liquidity',
@@ -180,11 +186,7 @@ export const parseMemezPool = async (
       )
     ),
     devPurchase: BigInt(
-      pathOr(
-        0n,
-        ['data', 'content', 'fields', 'value', 'fields', 'dev_purchase'],
-        stateObject
-      )
+      pathOr(0n, ['data', 'content', 'fields', 'dev_purchase'], stateObject)
     ),
   } as PumpState;
 

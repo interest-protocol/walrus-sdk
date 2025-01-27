@@ -15,7 +15,7 @@
       "types": "./dist/memez/index.d.ts"
     }
   },
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "publishConfig": {
     "access": "public"
@@ -46,7 +46,8 @@
     "quote-dump": "tsx src/scripts/memez/quote-dump.ts",
     "get-fees": "tsx src/scripts/config/get-fees.ts",
     "get-pump-data": "tsx src/scripts/config/get-pump-data.ts",
-    "cetus-price": "tsx src/scripts/memez/cetus-price.ts"
+    "cetus-price": "tsx src/scripts/memez/cetus-price.ts",
+    "meme-coin-mcap": "tsx src/scripts/memez/meme-coin-mcap.ts"
   },
   "keywords": [],
   "license": "ISC",
