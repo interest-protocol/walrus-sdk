@@ -278,4 +278,5 @@ export interface GetMemeCoinMarketCapArgs {
   virtualLiquidity: bigint;
   memeBalance: bigint;
   suiUSDCPrice: number;
+  memeCoinTotalSupply?: bigint;
 }
