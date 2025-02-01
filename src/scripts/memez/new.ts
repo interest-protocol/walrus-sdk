@@ -3,10 +3,10 @@ import { Transaction } from '@mysten/sui/transactions';
 import { CONFIG_KEYS, MIGRATOR_WITNESSES } from '../../memez';
 import { executeTx, keypair, memezTestnet } from '../utils.script';
 
-const configurationKey = CONFIG_KEYS.testnet.DEFAULT;
+const configurationKey = CONFIG_KEYS.testnet.RECRD;
 
 const TREASURY_CAP =
-  '0xa762bfe43cd4aa4f122a270ab60a15118bc566c6b5c6944fe0ca6a7745812305';
+  '0x5b24108fddf14e0e8308efe7186c2c68893ce32934a7554516a011db5b89afe5';
 
 const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
 
@@ -15,7 +15,7 @@ const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
 
   const tx = new Transaction();
 
-  const creationSuiFee = tx.splitCoins(tx.gas, [tx.pure.u64(20)]);
+  const creationSuiFee = tx.splitCoins(tx.gas, [tx.pure.u64(30_000_000n)]);
 
   const { tx: tx2, metadataCap } = await memezTestnet.newPumpPool({
     tx,
@@ -25,12 +25,14 @@ const TOTAL_SUPPLY = 1_000_000_000_000_000_000n;
       X: 'https://x.com/Meme',
       Website: 'https://meme.xyz/',
       GitHub: 'https://github.com/meme',
+      videoUrl: 'https://www.recrd.com/id=123',
     },
     creationSuiFee,
     memeCoinTreasuryCap: TREASURY_CAP,
     migrationWitness: MIGRATOR_WITNESSES.testnet.TEST,
     totalSupply: TOTAL_SUPPLY,
     useTokenStandard: false,
+    stakeHolders: [recipient, recipient],
   });
 
   tx.transferObjects([metadataCap], tx.pure.address(recipient));

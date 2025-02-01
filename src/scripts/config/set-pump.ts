@@ -17,7 +17,7 @@ const configurationKey = CONFIG_KEYS.testnet.RECRD;
     // Virtual liquidity
     // Target liquidity
     // liquidity provision
-    values: [0, 5_000_000_000, 10_000_000_000, 0],
+    values: [0, 5_000_000_000, 3_000_000_000, 0],
   });
 
   await executeTx(tx2);
