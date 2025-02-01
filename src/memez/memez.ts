@@ -2,6 +2,7 @@ import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   isValidSuiAddress,
+  isValidSuiObjectId,
   normalizeStructTag,
   SUI_FRAMEWORK_ADDRESS,
   SUI_TYPE_ARG,
@@ -84,6 +85,14 @@ export class MemezFunSDK extends SDK {
       isValidSuiAddress(developer),
       'developer must be a valid Sui address'
     );
+    invariant(
+      isValidSuiObjectId(memeCoinTreasuryCap),
+      'memeCoinTreasuryCap must be a valid Sui objectId'
+    );
+    invariant(
+      stakeHolders.every((stakeHolder) => isValidSuiAddress(stakeHolder)),
+      'stakeHolders must be a valid Sui address'
+    );
 
     const treasuryCap = await this.client.getObject({
       id: memeCoinTreasuryCap,
@@ -94,7 +103,7 @@ export class MemezFunSDK extends SDK {
 
     const memeCoinType = treasuryCap.data?.type?.split('<')[1].slice(0, -1);
 
-    invariant(memeCoinType, 'memeCoinType not found');
+    invariant(memeCoinType, 'Invalid TreasuryCap: no memeCoinType found');
 
     const metadataCap = tx.moveCall({
       package: this.packages.MEMEZ_FUN,
@@ -148,8 +157,8 @@ export class MemezFunSDK extends SDK {
   }: PumpArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -196,8 +205,8 @@ export class MemezFunSDK extends SDK {
   }: PumpTokenArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -244,8 +253,8 @@ export class MemezFunSDK extends SDK {
   }: DumpArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -293,8 +302,8 @@ export class MemezFunSDK extends SDK {
   }: DumpTokenArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -334,8 +343,8 @@ export class MemezFunSDK extends SDK {
   public async devClaim({ tx = new Transaction(), pool }: DevClaimArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -398,8 +407,8 @@ export class MemezFunSDK extends SDK {
   public async toCoin({ tx = new Transaction(), memeToken, pool }: ToCoinArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -434,8 +443,8 @@ export class MemezFunSDK extends SDK {
   public async migrate({ tx = new Transaction(), pool }: MigrateArgs) {
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -472,8 +481,8 @@ export class MemezFunSDK extends SDK {
     if (BigInt(amount) == 0n) return { amountOut: 0n, swapFeeIn: 0n };
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
@@ -520,8 +529,8 @@ export class MemezFunSDK extends SDK {
 
     if (typeof pool === 'string') {
       invariant(
-        isValidSuiAddress(pool),
-        'pool must be a valid Sui address or MemezPool'
+        isValidSuiObjectId(pool),
+        'pool must be a valid Sui objectId or MemezPool'
       );
       pool = await this.getPumpPool(pool);
     }
