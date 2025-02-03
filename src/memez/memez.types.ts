@@ -83,7 +83,7 @@ export interface NewPumpPoolArgs extends MaybeTx {
   useTokenStandard?: boolean;
   firstPurchase?: ObjectInput;
   metadata?: Record<string, string>;
-  developer: string;
+  developer?: string;
   configurationKey: ConfigKey;
   migrationWitness: MigratorWitness;
   stakeHolders?: string[];

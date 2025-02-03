@@ -4,6 +4,7 @@ import {
   isValidSuiAddress,
   isValidSuiObjectId,
   normalizeStructTag,
+  normalizeSuiAddress,
   SUI_FRAMEWORK_ADDRESS,
   SUI_TYPE_ARG,
 } from '@mysten/sui/utils';
@@ -75,7 +76,7 @@ export class MemezFunSDK extends SDK {
     useTokenStandard = false,
     firstPurchase = this.#zeroSuiCoin(tx),
     metadata = {},
-    developer,
+    developer = normalizeSuiAddress('0x0'),
     configurationKey,
     migrationWitness,
     stakeHolders = [],
