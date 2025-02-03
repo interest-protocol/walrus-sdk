@@ -56,10 +56,9 @@ export class MemezFunSDK extends SDK {
    * @param args.creationSuiFee - The Sui fee to use for the creation of the MemezPool.
    * @param args.memeCoinTreasuryCap - The meme coin treasury cap.
    * @param args.totalSupply - The total supply of the meme coin.
+   * @param args.devPurchaseData - The developer purchase data object. It includes the developer address and the first purchase in Sui.
    * @param args.useTokenStandard - Whether to use the token standard for the MemezPool.
-   * @param args.firstPurchase - The developer first purchase.
    * @param args.metadata - A record of social metadata of the meme coin.
-   * @param args.developer - The address that can claim the first purchase coins.
    * @param args.configurationKey - The configuration key to use for the MemezPool.
    * @param args.migrationWitness - The migration witness to use for the MemezPool.
    * @param args.memeCoinType - The meme coin type to use for the MemezPool.
@@ -74,13 +73,17 @@ export class MemezFunSDK extends SDK {
     memeCoinTreasuryCap,
     totalSupply = this.#defaultSupply,
     useTokenStandard = false,
-    firstPurchase = this.#zeroSuiCoin(tx),
+    devPurchaseData = {
+      developer: normalizeSuiAddress('0x0'),
+      firstPurchase: this.#zeroSuiCoin(tx),
+    },
     metadata = {},
-    developer = normalizeSuiAddress('0x0'),
     configurationKey,
     migrationWitness,
     stakeHolders = [],
   }: NewPumpPoolArgs) {
+    const { developer, firstPurchase } = devPurchaseData;
+
     invariant(BigInt(totalSupply) > 0n, 'totalSupply must be greater than 0');
     invariant(
       isValidSuiAddress(developer),

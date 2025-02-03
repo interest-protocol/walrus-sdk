@@ -76,14 +76,18 @@ export type MigratorWitness =
 export type ConfigModel =
   (typeof CONFIG_MODELS)[Network][keyof (typeof CONFIG_MODELS)[Network]];
 
+export interface DevPurchaseData {
+  developer: string;
+  firstPurchase: ObjectInput;
+}
+
 export interface NewPumpPoolArgs extends MaybeTx {
   memeCoinTreasuryCap: string;
   creationSuiFee?: ObjectInput;
   totalSupply?: U64;
   useTokenStandard?: boolean;
-  firstPurchase?: ObjectInput;
+  devPurchaseData?: DevPurchaseData;
   metadata?: Record<string, string>;
-  developer?: string;
   configurationKey: ConfigKey;
   migrationWitness: MigratorWitness;
   stakeHolders?: string[];
