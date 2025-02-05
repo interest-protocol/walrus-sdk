@@ -27,7 +27,10 @@ export class AclSDK extends SDK {
       package: this.packages.ACL,
       module: this.modules.ACL,
       function: 'new',
-      arguments: [tx.object(this.sharedObjects.ACL.MUT), tx.object(superAdmin)],
+      arguments: [
+        tx.object(this.sharedObjects.ACL.MUT),
+        this.ownedObject(tx, superAdmin),
+      ],
     });
 
     return {
@@ -52,7 +55,7 @@ export class AclSDK extends SDK {
       function: 'new_and_transfer',
       arguments: [
         tx.object(this.sharedObjects.ACL.MUT),
-        this.object(tx, superAdmin),
+        this.ownedObject(tx, superAdmin),
         tx.pure.address(recipient),
       ],
     });
@@ -71,7 +74,7 @@ export class AclSDK extends SDK {
       function: 'revoke',
       arguments: [
         tx.object(this.sharedObjects.ACL.MUT),
-        this.object(tx, superAdmin),
+        this.ownedObject(tx, superAdmin),
         tx.pure.address(admin),
       ],
     });
@@ -86,7 +89,7 @@ export class AclSDK extends SDK {
       function: 'destroy_admin',
       arguments: [
         tx.object(this.sharedObjects.ACL.MUT),
-        this.object(tx, admin),
+        this.ownedObject(tx, admin),
       ],
     });
 
@@ -103,7 +106,7 @@ export class AclSDK extends SDK {
       function: 'destroy',
       arguments: [
         tx.object(this.sharedObjects.ACL.MUT),
-        this.object(tx, superAdmin),
+        this.ownedObject(tx, superAdmin),
       ],
     });
 
@@ -119,7 +122,7 @@ export class AclSDK extends SDK {
       package: this.packages.ACL,
       module: this.modules.ACL,
       function: 'start_transfer',
-      arguments: [this.object(tx, superAdmin), tx.pure.address(recipient)],
+      arguments: [this.ownedObject(tx, superAdmin), tx.pure.address(recipient)],
     });
 
     return tx;
@@ -133,7 +136,7 @@ export class AclSDK extends SDK {
       package: this.packages.ACL,
       module: this.modules.ACL,
       function: 'finish_transfer',
-      arguments: [this.object(tx, superAdmin)],
+      arguments: [this.ownedObject(tx, superAdmin)],
     });
 
     return tx;

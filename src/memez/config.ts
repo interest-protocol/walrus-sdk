@@ -30,7 +30,7 @@ export class ConfigSDK extends SDK {
       function: 'add',
       arguments: [
         tx.object(this.sharedObjects.MIGRATOR_LIST.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
       ],
       typeArguments: [normalizeStructTag(witness)],
     });
@@ -49,7 +49,7 @@ export class ConfigSDK extends SDK {
       function: 'remove',
       arguments: [
         tx.object(this.sharedObjects.MIGRATOR_LIST.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
       ],
       typeArguments: [normalizeStructTag(witness)],
     });
@@ -70,7 +70,7 @@ export class ConfigSDK extends SDK {
       function: 'set_fees',
       arguments: [
         tx.object(this.sharedObjects.CONFIG.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
         tx.pure(bcs.vector(bcs.vector(bcs.u64())).serialize(values).toBytes()),
         tx.pure(
           bcs.vector(bcs.vector(bcs.Address)).serialize(recipients).toBytes()
@@ -94,7 +94,7 @@ export class ConfigSDK extends SDK {
       function: 'set_auction',
       arguments: [
         tx.object(this.sharedObjects.CONFIG.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
         tx.pure(bcs.vector(bcs.u64()).serialize(values).toBytes()),
       ],
       typeArguments: [normalizeStructTag(configurationKey)],
@@ -115,7 +115,7 @@ export class ConfigSDK extends SDK {
       function: 'set_pump',
       arguments: [
         tx.object(this.sharedObjects.CONFIG.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
         tx.pure(bcs.vector(bcs.u64()).serialize(values).toBytes()),
       ],
       typeArguments: [normalizeStructTag(configurationKey)],
@@ -136,7 +136,7 @@ export class ConfigSDK extends SDK {
       function: 'set_stable',
       arguments: [
         tx.object(this.sharedObjects.CONFIG.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
         tx.pure(bcs.vector(bcs.u64()).serialize(values).toBytes()),
       ],
       typeArguments: [normalizeStructTag(configurationKey)],
@@ -157,7 +157,7 @@ export class ConfigSDK extends SDK {
       function: 'remove',
       arguments: [
         tx.object(this.sharedObjects.CONFIG.MUT),
-        this.object(tx, authWitness),
+        this.ownedObject(tx, authWitness),
       ],
       typeArguments: [
         normalizeStructTag(configurationKey),
