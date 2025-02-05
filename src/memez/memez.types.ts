@@ -1,5 +1,6 @@
 import {
   CallArg,
+  ObjectRef,
   Transaction,
   TransactionObjectArgument,
   TransactionResult,
@@ -11,7 +12,7 @@ import type {
   MIGRATOR_WITNESSES,
 } from './constants';
 
-export type ObjectInput = TransactionObjectArgument | string;
+export type ObjectInput = TransactionObjectArgument | string | ObjectRef;
 
 type U64 = string | bigint | number;
 
@@ -82,7 +83,7 @@ export interface DevPurchaseData {
 }
 
 export interface NewPumpPoolArgs extends MaybeTx {
-  memeCoinTreasuryCap: string;
+  memeCoinTreasuryCap: string | ObjectRef;
   creationSuiFee?: ObjectInput;
   totalSupply?: U64;
   useTokenStandard?: boolean;

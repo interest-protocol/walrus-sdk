@@ -1,5 +1,6 @@
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { has } from 'ramda';
 import invariant from 'tiny-invariant';
 
 import { Modules } from './constants';
@@ -68,7 +69,10 @@ export class SDK {
       package: this.packages.ACL,
       module: this.modules.ACL,
       function: 'sign_in',
-      arguments: [tx.object(this.sharedObjects.ACL.IMMUT), tx.object(admin)],
+      arguments: [
+        tx.object(this.sharedObjects.ACL.IMMUT),
+        this.ownedObject(tx, admin),
+      ],
     });
 
     return {
@@ -102,7 +106,11 @@ export class SDK {
     return parseMemezPool(this.client, suiObject);
   }
 
-  object(tx: Transaction, obj: ObjectInput) {
+  ownedObject(tx: Transaction, obj: ObjectInput) {
+    if (has('objectId', obj) && has('version', obj) && has('digest', obj)) {
+      return tx.objectRef(obj);
+    }
+
     return typeof obj === 'string' ? tx.object(obj) : obj;
   }
 }

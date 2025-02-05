@@ -89,17 +89,24 @@ export class MemezFunSDK extends SDK {
       isValidSuiAddress(developer),
       'developer must be a valid Sui address'
     );
-    invariant(
-      isValidSuiObjectId(memeCoinTreasuryCap),
-      'memeCoinTreasuryCap must be a valid Sui objectId'
-    );
+
     invariant(
       stakeHolders.every((stakeHolder) => isValidSuiAddress(stakeHolder)),
       'stakeHolders must be a valid Sui address'
     );
 
+    const memeCoinTreasuryCapId =
+      typeof memeCoinTreasuryCap === 'string'
+        ? memeCoinTreasuryCap
+        : memeCoinTreasuryCap.objectId;
+
+    invariant(
+      isValidSuiObjectId(memeCoinTreasuryCapId),
+      'memeCoinTreasuryCap must be a valid Sui objectId'
+    );
+
     const treasuryCap = await this.client.getObject({
-      id: memeCoinTreasuryCap,
+      id: memeCoinTreasuryCapId,
       options: {
         showType: true,
       },
@@ -116,11 +123,11 @@ export class MemezFunSDK extends SDK {
       arguments: [
         tx.object(this.sharedObjects.CONFIG.IMMUT),
         tx.object(this.sharedObjects.MIGRATOR_LIST.IMMUT),
-        tx.object(memeCoinTreasuryCap),
-        this.object(tx, creationSuiFee),
+        this.ownedObject(tx, memeCoinTreasuryCap),
+        this.ownedObject(tx, creationSuiFee),
         tx.pure.u64(totalSupply),
         tx.pure.bool(useTokenStandard),
-        this.object(tx, firstPurchase),
+        this.ownedObject(tx, firstPurchase),
         tx.pure.vector('string', Object.keys(metadata)),
         tx.pure.vector('string', Object.values(metadata)),
         tx.pure.vector('address', stakeHolders),
@@ -175,7 +182,7 @@ export class MemezFunSDK extends SDK {
       function: 'pump',
       arguments: [
         tx.object(pool.objectId),
-        this.object(tx, suiCoin),
+        this.ownedObject(tx, suiCoin),
         tx.pure.u64(minAmountOut),
         this.getVersion(tx),
       ],
@@ -223,7 +230,7 @@ export class MemezFunSDK extends SDK {
       function: 'pump_token',
       arguments: [
         tx.object(pool.objectId),
-        this.object(tx, suiCoin),
+        this.ownedObject(tx, suiCoin),
         tx.pure.u64(minAmountOut),
         this.getVersion(tx),
       ],
@@ -272,7 +279,7 @@ export class MemezFunSDK extends SDK {
       arguments: [
         tx.object(pool.objectId),
         tx.object(pool.ipxMemeCoinTreasury),
-        this.object(tx, memeCoin),
+        this.ownedObject(tx, memeCoin),
         tx.pure.u64(minAmountOut),
         this.getVersion(tx),
       ],
@@ -320,7 +327,7 @@ export class MemezFunSDK extends SDK {
       arguments: [
         tx.object(pool.objectId),
         tx.object(pool.ipxMemeCoinTreasury),
-        this.object(tx, memeToken),
+        this.ownedObject(tx, memeToken),
         tx.pure.u64(minAmountOut),
         this.getVersion(tx),
       ],
@@ -387,7 +394,7 @@ export class MemezFunSDK extends SDK {
       package: SUI_FRAMEWORK_ADDRESS,
       module: 'token',
       function: 'keep',
-      arguments: [this.object(tx, token)],
+      arguments: [this.ownedObject(tx, token)],
       typeArguments: [memeCoinType],
     });
 
@@ -423,7 +430,7 @@ export class MemezFunSDK extends SDK {
       package: this.packages.MEMEZ_FUN,
       module: this.modules.PUMP,
       function: 'to_coin',
-      arguments: [tx.object(pool.objectId), this.object(tx, memeToken)],
+      arguments: [tx.object(pool.objectId), this.ownedObject(tx, memeToken)],
       typeArguments: [pool.memeCoinType],
     });
 
