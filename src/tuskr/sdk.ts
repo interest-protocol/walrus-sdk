@@ -11,7 +11,7 @@ import {
   Package,
   SdkConstructorArgs,
   SignInArgs,
-} from './memez.types';
+} from './tuskr.types';
 import { getSdkDefaultArgs, parseMemezPool } from './utils';
 
 export class SDK {

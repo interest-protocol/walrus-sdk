@@ -13,8 +13,8 @@ import {
   MemezPool,
   PumpState,
   SdkConstructorArgs,
-} from './memez.types';
-import { Network } from './memez.types';
+} from './tuskr.types';
+import { Network } from './tuskr.types';
 
 export const getSdkDefaultArgs = (
   network = Network.Testnet

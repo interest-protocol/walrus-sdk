@@ -6,7 +6,7 @@ import {
   Network,
   OwnedObjects,
   Package,
-} from './memez.types';
+} from './tuskr.types';
 
 export enum Modules {
   FUN = 'memez_fun',
