@@ -19,7 +19,10 @@ export interface MaybeTx {
   tx?: Transaction;
 }
 
-export type Package = Record<'WW' | 'TUSKR' | 'TUSKR_HOOKS', string>;
+export type Package = Record<
+  'WW' | 'TUSKR' | 'TUSKR_HOOKS' | 'WAL' | 'WALRUS',
+  string
+>;
 
 export type SharedObject = Extract<
   CallArg,
@@ -34,7 +37,7 @@ export interface ShareObjectValueMap {
 }
 
 export type SharedObjects = Record<
-  'WW_COIN_METADATA' | 'TUSKR_AV' | 'TUSKR_ACL',
+  'WW_COIN_METADATA' | 'TUSKR_AV' | 'TUSKR_ACL' | 'WALRUS_STAKING',
   ShareObjectValueMap
 >;
 
@@ -94,4 +97,12 @@ export interface FinishSuperAdminTransferArgs extends MaybeTx {
 
 export interface IsAdminArgs {
   admin: string;
+}
+
+export interface NewLSTArgs extends MaybeTx {
+  treasuryCap: ObjectInput;
+  coinMetadata: ObjectInput;
+  admin: ObjectInput;
+  superAdminRecipient: string;
+  lstTypeArgument: string;
 }

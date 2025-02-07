@@ -10,5 +10,16 @@
 // } from '@mysten/sui/utils';
 
 import { SDK } from './sdk';
+import { SdkConstructorArgs } from './tuskr.types';
 
-export class TuskrSDK extends SDK {}
+export class TuskrSDK extends SDK {
+  tuskrStaking: string;
+
+  constructor(args: SdkConstructorArgs | undefined | null = null) {
+    super(args);
+  }
+
+  public setTuskrStaking(tuskrStaking: string) {
+    this.tuskrStaking = tuskrStaking;
+  }
+}

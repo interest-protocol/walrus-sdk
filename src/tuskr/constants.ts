@@ -3,13 +3,22 @@ import { normalizeSuiAddress, normalizeSuiObjectId } from '@mysten/sui/utils';
 
 import { Network, OwnedObjects, Package, SharedObjects } from './tuskr.types';
 
-export enum Modules {}
+export enum Modules {
+  AllowedVersions = 'tuskr_allowed_versions',
+  Protocol = 'tuskr_protocol',
+  StakeNFT = 'tuskr_stake_nft',
+  UnstakeNFT = 'tuskr_unstake_nft',
+  ACL = 'tuskr_acl',
+  WithdrawIX = 'tuskr_withdraw_ix',
+}
 
 export const PACKAGES: Record<Network, Package> = {
   [Network.Mainnet]: {
     WW: normalizeSuiAddress('0x0'),
     TUSKR: normalizeSuiAddress('0x0'),
     TUSKR_HOOKS: normalizeSuiAddress('0x0'),
+    WAL: normalizeSuiAddress('0x0'),
+    WALRUS: normalizeSuiAddress('0x0'),
   },
   [Network.Testnet]: {
     WW: normalizeSuiAddress(
@@ -20,6 +29,12 @@ export const PACKAGES: Record<Network, Package> = {
     ),
     TUSKR_HOOKS: normalizeSuiAddress(
       '0x25b5435569eae2c432cfd8fd71d547718664c051da206f51cb258a6aacc1ffe9'
+    ),
+    WAL: normalizeSuiAddress(
+      '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
+    ),
+    WALRUS: normalizeSuiAddress(
+      '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
     ),
   },
 } as const;
@@ -65,6 +80,18 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
 
 export const SHARED_OBJECTS: Record<Network, SharedObjects> = {
   [Network.Mainnet]: {
+    WALRUS_STAKING: {
+      IMMUT: Inputs.SharedObjectRef({
+        objectId: normalizeSuiObjectId('0x0'),
+        initialSharedVersion: '1',
+        mutable: false,
+      }) as ReturnType<typeof Inputs.SharedObjectRef>,
+      MUT: Inputs.SharedObjectRef({
+        objectId: normalizeSuiObjectId('0x0'),
+        initialSharedVersion: '1',
+        mutable: true,
+      }) as ReturnType<typeof Inputs.SharedObjectRef>,
+    },
     WW_COIN_METADATA: {
       IMMUT: Inputs.SharedObjectRef({
         objectId: normalizeSuiObjectId('0x0'),
@@ -103,6 +130,22 @@ export const SHARED_OBJECTS: Record<Network, SharedObjects> = {
     },
   } as const,
   [Network.Testnet]: {
+    WALRUS_STAKING: {
+      IMMUT: Inputs.SharedObjectRef({
+        objectId: normalizeSuiObjectId(
+          '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
+        ),
+        initialSharedVersion: '334023834',
+        mutable: false,
+      }) as ReturnType<typeof Inputs.SharedObjectRef>,
+      MUT: Inputs.SharedObjectRef({
+        objectId: normalizeSuiObjectId(
+          '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
+        ),
+        initialSharedVersion: '334023834',
+        mutable: true,
+      }) as ReturnType<typeof Inputs.SharedObjectRef>,
+    },
     WW_COIN_METADATA: {
       IMMUT: Inputs.SharedObjectRef({
         objectId: normalizeSuiObjectId(
@@ -154,12 +197,16 @@ export const SHARED_OBJECTS: Record<Network, SharedObjects> = {
   } as const,
 };
 
-export const COIN_TYPES = {
+export const TYPES = {
   [Network.Mainnet]: {
     WW: `${PACKAGES[Network.Mainnet].WW}::ww::WW`,
+    TUSKR: `${PACKAGES[Network.Mainnet].TUSKR}::tuskr::TUSKR`,
+    WAL: `${PACKAGES[Network.Mainnet].WAL}::wal::WAL`,
   },
   [Network.Testnet]: {
     WW: `${PACKAGES[Network.Testnet].WW}::ww::WW`,
+    TUSKR: `${PACKAGES[Network.Testnet].TUSKR}::tuskr::TUSKR`,
+    WAL: `${PACKAGES[Network.Testnet].WAL}::wal::WAL`,
   },
 } as const;
 
