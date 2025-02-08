@@ -1,12 +1,18 @@
 import {
-  CallArg,
   ObjectRef,
   Transaction,
   TransactionObjectArgument,
-  // TransactionResult,
 } from '@mysten/sui/transactions';
 
-export type ObjectInput = TransactionObjectArgument | string | ObjectRef;
+interface SharedObjectRef {
+  objectId: string;
+  mutable: boolean;
+  initialSharedVersion: number | string;
+}
+
+export type OwnedObject = TransactionObjectArgument | string | ObjectRef;
+
+export type SharedObject = string | SharedObjectRef;
 
 // type U64 = string | bigint | number;
 
@@ -22,13 +28,6 @@ export interface MaybeTx {
 export type Package = Record<
   'WW' | 'TUSKR' | 'TUSKR_HOOKS' | 'WAL' | 'WALRUS',
   string
->;
-
-export type SharedObject = Extract<
-  CallArg,
-  {
-    Object: unknown;
-  }
 >;
 
 export interface ShareObjectValueMap {
@@ -54,7 +53,7 @@ export type OwnedObjects = Record<
 >;
 
 export interface SignInArgs extends MaybeTx {
-  admin: ObjectInput;
+  admin: OwnedObject;
 }
 
 export interface SdkConstructorArgs {
@@ -65,34 +64,34 @@ export interface SdkConstructorArgs {
 }
 
 export interface NewAdminArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
 }
 
 export interface NewAdminAndTransferArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
   recipient: string;
 }
 
 export interface RevokeAdminArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
   admin: string;
 }
 
 export interface DestroyAdminArgs extends MaybeTx {
-  admin: ObjectInput;
+  admin: OwnedObject;
 }
 
 export interface DestroySuperAdminArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
 }
 
 export interface StartSuperAdminTransferArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
   recipient: string;
 }
 
 export interface FinishSuperAdminTransferArgs extends MaybeTx {
-  superAdmin: ObjectInput;
+  superAdmin: OwnedObject;
 }
 
 export interface IsAdminArgs {
@@ -100,9 +99,8 @@ export interface IsAdminArgs {
 }
 
 export interface NewLSTArgs extends MaybeTx {
-  treasuryCap: ObjectInput;
-  coinMetadata: ObjectInput;
-  admin: ObjectInput;
+  treasuryCap: string | ObjectRef;
+  coinMetadata: SharedObject;
+  tuskrAdmin?: OwnedObject;
   superAdminRecipient: string;
-  lstTypeArgument: string;
 }
