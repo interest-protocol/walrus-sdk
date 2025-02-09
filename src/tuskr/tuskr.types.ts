@@ -30,14 +30,9 @@ export type Package = Record<
   string
 >;
 
-export interface ShareObjectValueMap {
-  IMMUT: SharedObject;
-  MUT: SharedObject;
-}
-
 export type SharedObjects = Record<
   'WW_COIN_METADATA' | 'TUSKR_AV' | 'TUSKR_ACL' | 'WALRUS_STAKING',
-  ShareObjectValueMap
+  ({ mutable }: { mutable: boolean }) => SharedObjectRef
 >;
 
 export type OwnedObjects = Record<
@@ -100,7 +95,6 @@ export interface IsAdminArgs {
 
 export interface NewLSTArgs extends MaybeTx {
   treasuryCap: string | ObjectRef;
-  coinMetadata: SharedObject;
   tuskrAdmin?: OwnedObject;
   superAdminRecipient: string;
 }

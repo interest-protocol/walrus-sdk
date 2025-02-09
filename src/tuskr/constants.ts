@@ -79,120 +79,56 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
 
 export const SHARED_OBJECTS = {
   [Network.Mainnet]: {
-    WALRUS_STAKING: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: true,
-      },
-    },
-    WW_COIN_METADATA: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: true,
-      },
-    },
-    TUSKR_AV: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: true,
-      },
-    },
-    TUSKR_ACL: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId('0x0'),
-        initialSharedVersion: '1',
-        mutable: true,
-      },
-    },
-  } as const,
+    WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+    WW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+    TUSKR_AV: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+    TUSKR_ACL: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+  },
   [Network.Testnet]: {
-    WALRUS_STAKING: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId(
-          '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
-        ),
-        initialSharedVersion: '334023834',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId(
-          '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
-        ),
-        initialSharedVersion: '334023834',
-        mutable: true,
-      },
-    },
-    WW_COIN_METADATA: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId(
-          '0x316812095a96e06416c33e61b2d6f3575c0750bef54566e442a8ff00250fea8e'
-        ),
-        initialSharedVersion: '129657967',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId(
-          '0x316812095a96e06416c33e61b2d6f3575c0750bef54566e442a8ff00250fea8e'
-        ),
-        initialSharedVersion: '129657967',
-        mutable: true,
-      },
-    },
-    TUSKR_AV: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId(
-          '0x25f30670b642e499d46eee54338202e88508912a64f4bc8ebcafbaadfd2e87c6'
-        ),
-        initialSharedVersion: '129657969',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId(
-          '0x25f30670b642e499d46eee54338202e88508912a64f4bc8ebcafbaadfd2e87c6'
-        ),
-        initialSharedVersion: '129657969',
-        mutable: true,
-      },
-    },
-    TUSKR_ACL: {
-      IMMUT: {
-        objectId: normalizeSuiObjectId(
-          '0x35dd068d6b175744035139403abc313d88af941e0c1f9ac6e5b2ced4106bb3ad'
-        ),
-        initialSharedVersion: '129657969',
-        mutable: false,
-      },
-      MUT: {
-        objectId: normalizeSuiObjectId(
-          '0x35dd068d6b175744035139403abc313d88af941e0c1f9ac6e5b2ced4106bb3ad'
-        ),
-        initialSharedVersion: '129657969',
-        mutable: true,
-      },
-    },
+    WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
+      ),
+      initialSharedVersion: '334023834',
+      mutable,
+    }),
+    WW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0x316812095a96e06416c33e61b2d6f3575c0750bef54566e442a8ff00250fea8e'
+      ),
+      initialSharedVersion: '129657967',
+      mutable,
+    }),
+    TUSKR_AV: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0x25f30670b642e499d46eee54338202e88508912a64f4bc8ebcafbaadfd2e87c6'
+      ),
+      initialSharedVersion: '129657969',
+      mutable,
+    }),
+    TUSKR_ACL: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0x25f30670b642e499d46eee54338202e88508912a64f4bc8ebcafbaadfd2e87c6'
+      ),
+      initialSharedVersion: '129657969',
+      mutable,
+    }),
   } as const,
 };
 

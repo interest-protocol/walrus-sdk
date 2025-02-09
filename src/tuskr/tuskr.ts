@@ -25,12 +25,10 @@ export class TuskrSDK extends SDK {
   public async newLST({
     tx = new Transaction(),
     treasuryCap,
-    coinMetadata,
     tuskrAdmin = this.tuskrAdmin,
     superAdminRecipient,
   }: NewLSTArgs) {
     this.assertObjectId(treasuryCap);
-    this.assertObjectId(coinMetadata);
     this.assertObjectId(tuskrAdmin);
 
     invariant(
@@ -69,14 +67,31 @@ export class TuskrSDK extends SDK {
 
     invariant(lstTypeArgument, 'Invalid TreasuryCap: no memeCoinType found');
 
+    const coinMetadata = await this.client.getCoinMetadata({
+      coinType: normalizeStructTag(lstTypeArgument),
+    });
+
+    invariant(
+      coinMetadata && coinMetadata.id,
+      'Invalid Coin Metadata: no coin metadata ID found'
+    );
+
+    invariant(
+      coinMetadata.decimals === 9,
+      'Invalid Coin Metadata: decimals are not 9'
+    );
+
     tx.moveCall({
       package: this.packages.TUSKR,
       module: this.modules.Protocol,
       function: 'new',
       arguments: [
-        this.sharedObject(tx, this.sharedObjects.WALRUS_STAKING.IMMUT),
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
         this.ownedObject(tx, treasuryCap),
-        this.sharedObject(tx, coinMetadata),
+        this.sharedObject(tx, coinMetadata.id),
         this.ownedObject(tx, tuskrAdmin),
         tx.pure.address(superAdminRecipient),
         this.getAllowedVersions(tx),
