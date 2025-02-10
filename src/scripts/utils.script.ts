@@ -1,14 +1,12 @@
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
-import { OwnedObjectRef } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction, TransactionResult } from '@mysten/sui/transactions';
 import dotenv from 'dotenv';
 import invariant from 'tiny-invariant';
 import util from 'util';
 
-import { AclSDK } from '../memez/acl';
-import { ConfigSDK } from '../memez/config';
-import { MemezFunSDK } from '../memez/memez';
+import { TuskrSDK } from '../tuskr';
+import { TuskrAclSDK } from '../tuskr/acl';
 
 dotenv.config();
 
@@ -25,11 +23,9 @@ export const POW_9 = 10n ** 9n;
 
 export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
-export const aclTestnet = new AclSDK();
+export const aclTestnet = new TuskrAclSDK();
 
-export const configTestnet = new ConfigSDK();
-
-export const memezTestnet = new MemezFunSDK();
+export const tuskrTestnet = new TuskrSDK();
 
 export const executeTx = async (tx: Transaction, client = testnetClient) => {
   const result = await client.signAndExecuteTransaction({
@@ -41,24 +37,11 @@ export const executeTx = async (tx: Transaction, client = testnetClient) => {
 
   // return if the tx hasn't succeed
   if (result.effects?.status?.status !== 'success') {
-    console.log('\n\nCreating a new stable pool failed');
+    console.log('\n\nTX failed');
     return;
   }
 
   console.log('SUCCESS!');
-
-  // get all created objects IDs
-  const createdObjectIds = result.effects?.created?.map(
-    (item: OwnedObjectRef) => item.reference.objectId
-  );
-
-  if (createdObjectIds) {
-    // fetch objects data
-    return client.multiGetObjects({
-      ids: createdObjectIds,
-      options: { showContent: true, showType: true, showOwner: true },
-    });
-  }
 };
 
 export const log = (x: unknown) =>

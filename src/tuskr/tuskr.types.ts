@@ -42,8 +42,7 @@ export type OwnedObjects = Record<
   | 'TUSKR_PUBLISHER'
   | 'TUSKR_STAKE_NFT_PUBLISHER'
   | 'TUSKR_STAKE_NFT_DISPLAY'
-  | 'TUSKR_UNSTAKE_NFT_PUBLISHER'
-  | 'TUSKR_UNSTAKE_NFT_DISPLAY',
+  | 'HOOKS_UPGRADE_CAP',
   string
 >;
 
@@ -58,43 +57,60 @@ export interface SdkConstructorArgs {
   network?: Network;
 }
 
-export interface NewAdminArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-}
-
-export interface NewAdminAndTransferArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-  recipient: string;
-}
-
-export interface RevokeAdminArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-  admin: string;
-}
-
-export interface DestroyAdminArgs extends MaybeTx {
-  admin: OwnedObject;
-}
-
-export interface DestroySuperAdminArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-}
-
-export interface StartSuperAdminTransferArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-  recipient: string;
-}
-
-export interface FinishSuperAdminTransferArgs extends MaybeTx {
-  superAdmin: OwnedObject;
-}
-
-export interface IsAdminArgs {
-  admin: string;
-}
-
 export interface NewLSTArgs extends MaybeTx {
   treasuryCap: string | ObjectRef;
   tuskrAdmin?: OwnedObject;
   superAdminRecipient: string;
 }
+
+// === ACL Types Start ===
+
+export interface NewAdminArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  lstType?: string;
+}
+
+export interface NewAdminAndTransferArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  recipient: string;
+  lstType?: string;
+}
+
+export interface RevokeAdminArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  admin: string;
+  lstType?: string;
+}
+
+export interface SignInArgs extends MaybeTx {
+  admin: OwnedObject;
+  lstType?: string;
+}
+
+export interface DestroyAdminArgs extends MaybeTx {
+  admin: OwnedObject;
+  lstType?: string;
+}
+
+export interface DestroySuperAdminArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  lstType?: string;
+}
+
+export interface StartSuperAdminTransferArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  recipient: string;
+  lstType?: string;
+}
+
+export interface FinishSuperAdminTransferArgs extends MaybeTx {
+  superAdmin?: OwnedObject;
+  lstType?: string;
+}
+
+export interface IsAdminArgs {
+  admin: string;
+  lstType?: string;
+}
+
+// === ACL Types End ===

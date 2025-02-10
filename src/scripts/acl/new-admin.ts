@@ -1,14 +1,12 @@
-import { OWNED_OBJECTS } from '../../memez';
+import { OWNED_OBJECTS, TYPES } from '../../tuskr';
 import { aclTestnet, executeTx, keypair } from '../utils.script';
 
-const ownedObjects = OWNED_OBJECTS.testnet;
-
 (async () => {
-  const recipient = keypair.toSuiAddress();
+  aclTestnet.setSuperAdmin(OWNED_OBJECTS.testnet.TUSKR_SUPER_ADMIN);
+  aclTestnet.setLstType(TYPES.testnet.TUSKR);
 
-  const tx = aclTestnet.newAdminAndTransfer({
-    superAdmin: ownedObjects.SUPER_ADMIN,
-    recipient,
+  const { tx } = await aclTestnet.newAdminAndTransfer({
+    recipient: keypair.toSuiAddress(),
   });
 
   await executeTx(tx);
