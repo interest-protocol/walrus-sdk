@@ -1,6 +1,6 @@
 import { getFullnodeUrl } from '@mysten/sui/client';
 
-import { PACKAGES, SHARED_OBJECTS } from './constants';
+import { PACKAGES, SHARED_OBJECTS, TYPES } from './constants';
 import { SdkConstructorArgs } from './tuskr.types';
 import { Network } from './tuskr.types';
 
@@ -13,4 +13,5 @@ export const getSdkDefaultArgs = (
   ),
   sharedObjects: SHARED_OBJECTS[network],
   network,
+  types: TYPES[network],
 });

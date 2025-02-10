@@ -1,11 +1,7 @@
-import { OWNED_OBJECTS, TYPES } from '../../tuskr';
-import { aclTestnet, executeTx, keypair } from '../utils.script';
+import { executeTx, keypair, wwAclTestnet } from '../utils.script';
 
 (async () => {
-  aclTestnet.setSuperAdmin(OWNED_OBJECTS.testnet.TUSKR_SUPER_ADMIN);
-  aclTestnet.setLstType(TYPES.testnet.TUSKR);
-
-  const { tx } = await aclTestnet.newAdminAndTransfer({
+  const { tx } = await wwAclTestnet.newAdminAndTransfer({
     recipient: keypair.toSuiAddress(),
   });
 

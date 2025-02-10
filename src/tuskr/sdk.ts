@@ -4,7 +4,7 @@ import { isValidSuiObjectId, normalizeSuiAddress } from '@mysten/sui/utils';
 import { has } from 'ramda';
 import invariant from 'tiny-invariant';
 
-import { Modules } from './constants';
+import { Modules, TYPES } from './constants';
 import {
   Network,
   OwnedObject,
@@ -19,11 +19,14 @@ export class SDK {
   packages: Package;
   sharedObjects: SharedObjects;
   modules = Modules;
+  types: (typeof TYPES)[keyof typeof TYPES];
 
   #network: Network;
   #rpcUrl: string;
 
   client: SuiClient;
+
+  lstType: string;
 
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     const data = {
@@ -51,10 +54,13 @@ export class SDK {
       'You must provide network for this specific network'
     );
 
+    invariant(data.types, 'You must provide types for this specific network');
+
     this.#network = data.network;
     this.#rpcUrl = data.fullNodeUrl;
     this.packages = data.packages;
     this.sharedObjects = data.sharedObjects;
+    this.types = data.types;
     this.client = new SuiClient({ url: data.fullNodeUrl });
   }
 
@@ -70,6 +76,9 @@ export class SDK {
       package: this.packages.TUSKR,
       module: this.modules.AllowedVersions,
       function: 'get_allowed_versions',
+      arguments: [
+        this.sharedObject(tx, this.sharedObjects.TUSKR_AV({ mutable: false })),
+      ],
     });
   }
 

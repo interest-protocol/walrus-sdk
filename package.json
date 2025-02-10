@@ -28,7 +28,12 @@
     "build": "pnpm run clean && pnpm run build:tsup && pnpm run build:types",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "new-admin": "tsx src/scripts/acl/new-admin.ts",
-    "is-admin": "tsx src/scripts/acl/is-admin.ts"
+    "is-admin": "tsx src/scripts/acl/is-admin.ts",
+    "new-lst": "tsx src/scripts/new-lst.ts",
+    "add-node": "tsx src/scripts/add-node.ts",
+    "remove-node": "tsx src/scripts/remove-node.ts",
+    "mint-after-votes": "tsx src/scripts/mint-after-votes.ts",
+    "sync-exchange-rate": "tsx src/scripts/sync-exchange-rate.ts"
   },
   "keywords": [],
   "license": "ISC",

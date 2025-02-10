@@ -12,17 +12,26 @@ import {
   NewAdminAndTransferArgs,
   NewAdminArgs,
   RevokeAdminArgs,
-  SdkConstructorArgs,
+  SharedObject,
   SignInArgs,
   StartSuperAdminTransferArgs,
+  TuskrAclArgs,
 } from './tuskr.types';
 
 export class TuskrAclSDK extends SDK {
   superAdmin: string;
-  lstType: string;
+  acl: SharedObject;
 
-  constructor(args: SdkConstructorArgs | undefined | null = null) {
-    super(args);
+  constructor(args: TuskrAclArgs) {
+    invariant(args, 'You must provide an ACL object');
+
+    const { acl, ...rest } = args;
+
+    super(rest);
+
+    invariant(acl, 'You must provide an ACL object');
+
+    this.acl = acl;
   }
 
   public setSuperAdmin(superAdmin: string) {
@@ -50,10 +59,7 @@ export class TuskrAclSDK extends SDK {
         function: 'new_admin',
         typeArguments: [lstType],
         arguments: [
-          this.sharedObject(
-            tx,
-            this.sharedObjects.TUSKR_ACL({ mutable: true })
-          ),
+          this.sharedObject(tx, this.acl),
           this.ownedObject(tx, superAdmin),
         ],
       }),
@@ -77,7 +83,7 @@ export class TuskrAclSDK extends SDK {
       function: 'new_and_transfer',
       typeArguments: [lstType],
       arguments: [
-        this.sharedObject(tx, this.sharedObjects.TUSKR_ACL({ mutable: true })),
+        this.sharedObject(tx, this.acl),
         this.ownedObject(tx, superAdmin),
         tx.pure.address(recipient),
       ],
@@ -86,6 +92,29 @@ export class TuskrAclSDK extends SDK {
     return {
       tx,
       returnValues: null,
+    };
+  }
+
+  public signIn({
+    tx = new Transaction(),
+    admin,
+    lstType = this.lstType,
+  }: SignInArgs) {
+    this.assertObjectId(admin);
+    invariant(lstType, 'LST type is required');
+
+    return {
+      returnValues: tx.moveCall({
+        package: this.packages.TUSKR,
+        module: this.modules.ACL,
+        function: 'sign_in',
+        typeArguments: [lstType],
+        arguments: [
+          this.sharedObject(tx, this.acl),
+          this.ownedObject(tx, admin),
+        ],
+      }),
+      tx,
     };
   }
 
@@ -105,7 +134,7 @@ export class TuskrAclSDK extends SDK {
       function: 'revoke',
       typeArguments: [lstType],
       arguments: [
-        this.sharedObject(tx, this.sharedObjects.TUSKR_ACL({ mutable: true })),
+        this.sharedObject(tx, this.acl),
         this.ownedObject(tx, superAdmin),
         tx.pure.address(admin),
       ],
@@ -126,10 +155,7 @@ export class TuskrAclSDK extends SDK {
       module: this.modules.ACL,
       function: 'is_admin',
       typeArguments: [lstType],
-      arguments: [
-        this.sharedObject(tx, this.sharedObjects.TUSKR_ACL({ mutable: false })),
-        tx.pure.address(admin),
-      ],
+      arguments: [this.sharedObject(tx, this.acl), tx.pure.address(admin)],
     });
 
     const result = await devInspectAndGetReturnValues(this.client, tx, [
@@ -137,32 +163,6 @@ export class TuskrAclSDK extends SDK {
     ]);
 
     return result[0][0];
-  }
-
-  public signIn({
-    tx = new Transaction(),
-    admin,
-    lstType = this.lstType,
-  }: SignInArgs) {
-    this.assertObjectId(admin);
-    invariant(lstType, 'LST type is required');
-
-    return {
-      tx,
-      returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
-        module: this.modules.ACL,
-        function: 'sign_in',
-        typeArguments: [lstType],
-        arguments: [
-          this.sharedObject(
-            tx,
-            this.sharedObjects.TUSKR_ACL({ mutable: false })
-          ),
-          this.ownedObject(tx, admin),
-        ],
-      }),
-    };
   }
 
   public destroyAdmin({
@@ -178,10 +178,7 @@ export class TuskrAclSDK extends SDK {
       module: this.modules.ACL,
       function: 'destroy_admin',
       typeArguments: [lstType],
-      arguments: [
-        this.sharedObject(tx, this.sharedObjects.TUSKR_ACL({ mutable: true })),
-        this.ownedObject(tx, admin),
-      ],
+      arguments: [this.sharedObject(tx, this.acl), this.ownedObject(tx, admin)],
     });
 
     return {

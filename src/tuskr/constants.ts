@@ -6,7 +6,6 @@ export enum Modules {
   AllowedVersions = 'tuskr_allowed_versions',
   Protocol = 'tuskr_protocol',
   StakeNFT = 'tuskr_stake_nft',
-  UnstakeNFT = 'tuskr_unstake_nft',
   ACL = 'tuskr_acl',
   WithdrawIX = 'tuskr_withdraw_ix',
 }
@@ -47,10 +46,14 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
     TUSKR_PUBLISHER: normalizeSuiAddress('0x0'),
     TUSKR_STAKE_NFT_DISPLAY: normalizeSuiAddress('0x0'),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
+    WW_SUPER_ADMIN: normalizeSuiAddress('0x0'),
   },
   [Network.Testnet]: {
     WW_UPGRADE_CAP: normalizeSuiObjectId(
       '0xc1416d322f8324567b471c4f4b7ca30ec6c4c2ad8375fedced2266891355ea7e'
+    ),
+    WW_SUPER_ADMIN: normalizeSuiAddress(
+      '0x127e83b054df1ee5f466739a1deaecdf1bec7abe81f8044afb7abae4b49f9715'
     ),
     TUSKR_UPGRADE_CAP: normalizeSuiObjectId(
       '0xa88cf8888546fce869773ca721e6da325aaebbaed6c7e935126306eb82cc5eb8'
@@ -73,6 +76,17 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
   },
 } as const;
 
+export const TUSKR_STAKING = {
+  [Network.Mainnet]: {
+    WW: normalizeSuiAddress('0x0'),
+  },
+  [Network.Testnet]: {
+    WW: normalizeSuiAddress(
+      '0xfcf6466856a7d12ee60e31a33de4422d7e91d74b63ed46e2d685a02cad37a88a'
+    ),
+  },
+} as const;
+
 export const SHARED_OBJECTS = {
   [Network.Mainnet]: {
     WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
@@ -91,6 +105,16 @@ export const SHARED_OBJECTS = {
       mutable,
     }),
     TUSKR_ACL: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+    WW_ACL: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId('0x0'),
+      initialSharedVersion: '1',
+      mutable,
+    }),
+    WW_STAKING: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId('0x0'),
       initialSharedVersion: '1',
       mutable,
@@ -123,6 +147,20 @@ export const SHARED_OBJECTS = {
         '0x4ebee81e929484e123f61f1f10bebd4f7c4f0642e1c17f57829700879b65bdaa'
       ),
       initialSharedVersion: '129657971',
+      mutable,
+    }),
+    WW_ACL: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0x57e26fa5c145a0b4a60716ca9b3a2cc52323c3c2cbb02d944418e4522a38b77e'
+      ),
+      initialSharedVersion: '370268902',
+      mutable,
+    }),
+    WW_STAKING: ({ mutable }: { mutable: boolean }) => ({
+      objectId: normalizeSuiObjectId(
+        '0xfcf6466856a7d12ee60e31a33de4422d7e91d74b63ed46e2d685a02cad37a88a'
+      ),
+      initialSharedVersion: '370268902',
       mutable,
     }),
   } as const,
