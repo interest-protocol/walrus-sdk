@@ -20,13 +20,13 @@ export const PACKAGES: Record<Network, Package> = {
   },
   [Network.Testnet]: {
     WW: normalizeSuiAddress(
-      '0x6aca47cb9da32d5cec340624a4ea4141e1d707b8e0688d5a6444ec65f2717edb'
+      '0x76651fc50af2e28ee39394d25bcd917a121a6db5fdc1eb61abeaed290f1e32b1'
     ),
     TUSKR: normalizeSuiAddress(
-      '0x5dbabe2a32a0638e8ed8372a8f809040cc3899b53890e3624aeb8d5e07202837'
+      '0x5bb6d4d0436496f8e3ce8d80a8e6e7512cbdbf8285a99f9c5684b47e7c3e791d'
     ),
     TUSKR_HOOKS: normalizeSuiAddress(
-      '0x80c5499d52e68287f6d504859a375a2d3265db0b70590a3790d668174f009cb6'
+      '0x85c887c6ad7218b5f6aaceef57a431e123426b9c8395cb41081fd8f126382c6f'
     ),
     WAL: normalizeSuiAddress(
       '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
@@ -50,39 +50,28 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
   },
   [Network.Testnet]: {
     WW_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xc1416d322f8324567b471c4f4b7ca30ec6c4c2ad8375fedced2266891355ea7e'
+      '0xbdd005e28564366734a9b3250d19f1619ead778cd7da769162c00312948cbdb4'
     ),
     WW_SUPER_ADMIN: normalizeSuiAddress(
-      '0x127e83b054df1ee5f466739a1deaecdf1bec7abe81f8044afb7abae4b49f9715'
+      '0xad0b5733c7fc1fe1a185d11a872233620a320605182478094a6921b2f94cc3ff'
     ),
     TUSKR_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xa88cf8888546fce869773ca721e6da325aaebbaed6c7e935126306eb82cc5eb8'
+      '0x5c665bbb36129fa1eed596c067772770d8ac18238e25805d007f6e2cbd540e73'
     ),
     TUSKR_STAKE_NFT_PUBLISHER: normalizeSuiAddress(
-      '0xcb671592105e325448796f358929f79a31e6d50110f58ee6c8383258deda75ee'
+      '0xb7bc20e24c6b21128f25cf623938dd6a2cb71d7881bee6456f36d3fb16350152'
     ),
     TUSKR_SUPER_ADMIN: normalizeSuiAddress(
-      '0x977b8c5f3160380d950586c6533fb70d8cf34ce9cca255a1623f393c1543804b'
+      '0x00dc2d0d5eef7eed3cca372983e0e6bd2c7a1646b21653f03604fa6230216392'
     ),
     TUSKR_PUBLISHER: normalizeSuiAddress(
-      '0x41439077d6d4b8379b0236716627cd2cb573fb2b43efda6aba11ce6c5479aa0e'
+      '0x4bc86f831e9b44f3a4e31e0dde6b86d0c7e3ee7930a1223d32b821f33fe87660'
     ),
     TUSKR_STAKE_NFT_DISPLAY: normalizeSuiAddress(
-      '0xf3a2657b96d5688020b20ab44d1278814b1794d44c44852467b091a07be6ebee'
+      '0x0ab08fa9de5dcf4b1f7cc4b9bdc869da15d9d1c3f4766df1d4a716b4a6c7cc02'
     ),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x74d8c3149268e0e6f68b82ad20b792f87a5f8b497b5fb64efb67e1aa44408af0'
-    ),
-  },
-} as const;
-
-export const TUSKR_STAKING = {
-  [Network.Mainnet]: {
-    WW: normalizeSuiAddress('0x0'),
-  },
-  [Network.Testnet]: {
-    WW: normalizeSuiAddress(
-      '0xfcf6466856a7d12ee60e31a33de4422d7e91d74b63ed46e2d685a02cad37a88a'
+      '0xb97499543378a64a1c9f40e2dd64e486403d70804f2231974fb53795458b456b'
     ),
   },
 } as const;
@@ -130,37 +119,37 @@ export const SHARED_OBJECTS = {
     }),
     WW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x316812095a96e06416c33e61b2d6f3575c0750bef54566e442a8ff00250fea8e'
+        '0x3ea28372cb41f5376c22716a0dab893b96f0697980bf21622468af54cd9b1721'
       ),
       initialSharedVersion: '129657967',
       mutable,
     }),
     TUSKR_AV: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0xda9ce1a522af36f1677691852465f8ce0030f07f5422671509c6cefa8acfcdbc'
+        '0x3cf39d48669ff88b0734292b4e8e2f46cfda1456a2003c94d02759967a1f79bc'
       ),
-      initialSharedVersion: '129657971',
+      initialSharedVersion: '370268908',
       mutable,
     }),
     TUSKR_ACL: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x4ebee81e929484e123f61f1f10bebd4f7c4f0642e1c17f57829700879b65bdaa'
+        '0xed9392214b39d0c8a9d9aeec9a2d4754fad67154ebca3b56bf35c2c57ecfbfb0'
       ),
-      initialSharedVersion: '129657971',
+      initialSharedVersion: '370268908',
       mutable,
     }),
     WW_ACL: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x57e26fa5c145a0b4a60716ca9b3a2cc52323c3c2cbb02d944418e4522a38b77e'
+        '0xdc5fa5c6d0f9cfef099a29d8ff6f6150a60649925a3e53758abc5286edad89d4'
       ),
-      initialSharedVersion: '370268902',
+      initialSharedVersion: '370553211',
       mutable,
     }),
     WW_STAKING: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0xfcf6466856a7d12ee60e31a33de4422d7e91d74b63ed46e2d685a02cad37a88a'
+        '0x0c5b728b942d60936b301d7504ce7f4df0112ee5b0fcbac0c2b5660f0f8dad00'
       ),
-      initialSharedVersion: '370268902',
+      initialSharedVersion: '370553211',
       mutable,
     }),
   } as const,

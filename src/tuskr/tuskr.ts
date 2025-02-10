@@ -11,18 +11,19 @@ import {
   NewLSTArgs,
   RemoveNodeArgs,
   SdkConstructorArgs,
+  SharedObject,
   SyncExchangeRateArgs,
 } from './tuskr.types';
 
 export class TuskrSDK extends SDK {
-  tuskrStaking: string;
+  tuskrStaking: SharedObject;
   tuskrAdmin: string;
 
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     super(args);
   }
 
-  public setTuskrStaking(tuskrStaking: string) {
+  public setTuskrStaking(tuskrStaking: SharedObject) {
     this.tuskrStaking = tuskrStaking;
     return this;
   }

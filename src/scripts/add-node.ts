@@ -1,4 +1,4 @@
-import { TUSKR_STAKING, TYPES } from '../tuskr/constants';
+import { SHARED_OBJECTS, TYPES } from '../tuskr/constants';
 import {
   executeTx,
   MYSTEN_LABS_K8S,
@@ -14,7 +14,9 @@ import {
 
   await tuskrTestnet
     .setLstType(TYPES.testnet.WW)
-    .setTuskrStaking(TUSKR_STAKING.testnet.WW)
+    .setTuskrStaking(
+      SHARED_OBJECTS.testnet.WW_STAKING({ mutable: true }).objectId
+    )
     .addNode({
       tx,
       nodeId: MYSTEN_LABS_K8S,

@@ -7,7 +7,7 @@ import {
 } from './utils.script';
 
 const WW_TREASURY_CAP =
-  '0xd95ac8e96a7348dc3877c1eb20c63e6a2933519f656ab6e3e00675c3b91a4d5a';
+  '0xdb3a2575c034b9137700a1397213c70fd51f2c441713be96856ca7b196583696';
 
 (async () => {
   const superAdminRecipient = keypair.toSuiAddress();

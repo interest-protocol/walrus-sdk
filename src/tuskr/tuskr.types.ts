@@ -79,20 +79,20 @@ export interface NewLSTArgs extends MaybeTx {
 export interface MintAfterVotesFinishedArgs extends MaybeTx {
   walCoin: OwnedObject;
   nodeId: string;
-  tuskrStaking?: string;
+  tuskrStaking?: SharedObject;
   lstType?: string;
 }
 
 export interface AddNodeArgs extends MaybeTx {
   nodeId: string;
-  tuskrStaking?: string;
+  tuskrStaking?: SharedObject;
   adminWitness: TransactionResult;
   lstType?: string;
 }
 
 export interface RemoveNodeArgs extends MaybeTx {
   nodeId: string;
-  tuskrStaking?: string;
+  tuskrStaking?: SharedObject;
   adminWitness: TransactionResult;
   lstType?: string;
 }
@@ -103,7 +103,7 @@ export interface KeepStakeNftArgs extends MaybeTx {
 
 export interface SyncExchangeRateArgs extends MaybeTx {
   lstType: string;
-  tuskrStaking: string;
+  tuskrStaking: SharedObject;
 }
 
 // === TUSKR LST END ===
