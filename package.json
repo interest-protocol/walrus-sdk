@@ -30,10 +30,10 @@
     "new-admin": "tsx src/scripts/acl/new-admin.ts",
     "is-admin": "tsx src/scripts/acl/is-admin.ts",
     "new-lst": "tsx src/scripts/new-lst.ts",
-    "add-node": "tsx src/scripts/add-node.ts",
-    "remove-node": "tsx src/scripts/remove-node.ts",
-    "mint-after-votes": "tsx src/scripts/mint-after-votes.ts",
-    "sync-exchange-rate": "tsx src/scripts/sync-exchange-rate.ts"
+    "add-node": "tsx src/scripts/admin/add-node.ts",
+    "remove-node": "tsx src/scripts/admin/remove-node.ts",
+    "mint-after-votes": "tsx src/scripts/lst/mint-after-votes.ts",
+    "sync-exchange-rate": "tsx src/scripts/lst/sync-exchange-rate.ts"
   },
   "keywords": [],
   "license": "ISC",

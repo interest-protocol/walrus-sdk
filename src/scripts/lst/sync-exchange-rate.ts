@@ -1,5 +1,5 @@
-import { SHARED_OBJECTS, TYPES } from '../tuskr/constants';
-import { executeTx, tuskrTestnet } from './utils.script';
+import { SHARED_OBJECTS, TYPES } from '../../tuskr/constants';
+import { executeTx, tuskrTestnet } from '../utils.script';
 
 (async () => {
   const { tx } = tuskrTestnet.syncExchangeRate({
