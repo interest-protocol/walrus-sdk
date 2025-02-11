@@ -10,6 +10,7 @@ export enum Modules {
   WithdrawIX = 'tuskr_withdraw_ix',
   Utils = 'tuskr_utils',
   Hooks = 'tuskr_hooks',
+  WalrusStaking = 'staking',
 }
 
 export const INNER_WALRUS_STAKING_ID = {

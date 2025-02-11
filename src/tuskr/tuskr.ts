@@ -1,5 +1,8 @@
+import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import { isValidSuiAddress, normalizeStructTag } from '@mysten/sui/utils';
+import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
+import { Decimal } from 'decimal.js';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
 
@@ -11,6 +14,7 @@ import {
   BurnStakeNftArgs,
   FcfsArgs,
   KeepStakeNftArgs,
+  LastEpochAprArgs,
   MintAfterVotesFinishedArgs,
   MintArgs,
   NewLSTArgs,
@@ -20,7 +24,7 @@ import {
   SyncExchangeRateArgs,
   VectorTransferArgs,
 } from './tuskr.types';
-import { getEpochData } from './utils';
+import { getEpochData, msToDays } from './utils';
 
 export class TuskrSDK extends SDK {
   tuskrStaking: SharedObject;
@@ -436,6 +440,57 @@ export class TuskrSDK extends SDK {
     });
 
     return getEpochData(data);
+  }
+
+  /**
+   * Calculate the APR for the last epoch
+   * @param nodeId - The node ID to calculate the APR for the last epoch.
+   * @returns The APR for the last epoch in percentage format. E.g.: 1 === 1%
+   */
+  public async lastEpochApr({ nodeId }: LastEpochAprArgs) {
+    const tx = new Transaction();
+
+    const epochData = await this.getEpochData();
+
+    const principal = 1_000_000_000n;
+
+    tx.moveCall({
+      package: this.packages.WALRUS,
+      module: this.modules.WalrusStaking,
+      function: 'calculate_rewards',
+      arguments: [
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
+        tx.pure.id(nodeId),
+        tx.pure.u64(principal),
+        tx.pure.u32(epochData.currentEpoch - 1),
+        tx.pure.u32(epochData.currentEpoch),
+      ],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.U64],
+    ]);
+
+    invariant(
+      typeof result[0][0] === 'string',
+      'Invalid result: no rewards found'
+    );
+
+    const rewards = new Decimal(result[0][0]);
+
+    const epochDurationInDays = new Decimal(
+      msToDays(epochData.epochDurationMs)
+    );
+
+    const apr = rewards
+      .div(new Decimal(principal.toString()))
+      .mul(new Decimal(365).div(epochDurationInDays))
+      .mul(100);
+
+    return apr.toNumber();
   }
 
   public async typeFromTuskrStaking(tuskrStaking: SharedObject) {

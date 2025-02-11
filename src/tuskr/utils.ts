@@ -17,8 +17,12 @@ export const getSdkDefaultArgs = (
   types: TYPES[network],
 });
 
-const msToHours = (ms: number) => {
+export const msToHours = (ms: number) => {
   return Math.ceil(ms / (1000 * 60 * 60));
+};
+
+export const msToDays = (ms: number) => {
+  return Math.ceil(ms / (1000 * 60 * 60 * 24));
 };
 
 export const getEpochData = (response: SuiObjectResponse) => {
