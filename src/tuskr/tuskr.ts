@@ -280,7 +280,7 @@ export class TuskrSDK extends SDK {
   public async fcfs({
     tx = new Transaction(),
     tuskrStaking = this.tuskrStaking,
-    value = 0n,
+    value,
     lstType = this.lstType,
   }: FcfsArgs) {
     this.assertObjectId(tuskrStaking);

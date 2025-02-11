@@ -134,7 +134,7 @@ export interface SyncExchangeRateArgs extends MaybeTx {
   tuskrStaking?: SharedObject;
 }
 
-export interface EstimatedAPRArgs {
+export interface LastEpochAprArgs {
   nodeId: string;
 }
 
