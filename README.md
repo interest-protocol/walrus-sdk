@@ -1,8 +1,5 @@
-# Memez Fun SDK
+# Tuskr Protocol
 
-Curves:
-- Pump
-- Stable
-- Auction
+## Overview
 
-WIP+ 
+Tuskr is a protocol for creating and managing Liquid Staking Wal Tokens on Sui.
