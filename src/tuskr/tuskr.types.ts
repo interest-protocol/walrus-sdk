@@ -35,7 +35,7 @@ export interface MaybeTx {
 }
 
 export type Package = Record<
-  'WW' | 'TUSKR' | 'TUSKR_HOOKS' | 'WAL' | 'WALRUS',
+  'WW' | 'TUSKR' | 'TUSKR_HOOKS' | 'WAL' | 'WALRUS' | 'TUSKR_UTILS',
   string
 >;
 
@@ -57,7 +57,8 @@ export type OwnedObjects = Record<
   | 'TUSKR_PUBLISHER'
   | 'TUSKR_STAKE_NFT_PUBLISHER'
   | 'TUSKR_STAKE_NFT_DISPLAY'
-  | 'HOOKS_UPGRADE_CAP',
+  | 'HOOKS_UPGRADE_CAP'
+  | 'TUSKR_UTILS_UPGRADE_CAP',
   string
 >;
 
@@ -130,7 +131,23 @@ export interface KeepStakeNftArgs extends MaybeTx {
 
 export interface SyncExchangeRateArgs extends MaybeTx {
   lstType?: string;
-  tuskrStaking: SharedObject;
+  tuskrStaking?: SharedObject;
+}
+
+export interface EstimatedAPRArgs {
+  nodeId: string;
+}
+
+export interface FcfsArgs extends MaybeTx {
+  tuskrStaking?: SharedObject;
+  value: U64;
+  lstType?: string;
+}
+
+export interface VectorTransferArgs extends MaybeTx {
+  vector: TransactionResult;
+  to: string;
+  type: string;
 }
 
 // === TUSKR LST END ===

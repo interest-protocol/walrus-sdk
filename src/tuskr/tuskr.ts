@@ -9,6 +9,7 @@ import {
   AddNodeArgs,
   BurnLstArgs,
   BurnStakeNftArgs,
+  FcfsArgs,
   KeepStakeNftArgs,
   MintAfterVotesFinishedArgs,
   MintArgs,
@@ -17,6 +18,7 @@ import {
   SdkConstructorArgs,
   SharedObject,
   SyncExchangeRateArgs,
+  VectorTransferArgs,
 } from './tuskr.types';
 import { getEpochData } from './utils';
 
@@ -268,6 +270,59 @@ export class TuskrSDK extends SDK {
         ],
         typeArguments: [lstType],
       }),
+    };
+  }
+
+  public async fcfs({
+    tx = new Transaction(),
+    tuskrStaking = this.tuskrStaking,
+    value = 0n,
+    lstType = this.lstType,
+  }: FcfsArgs) {
+    this.assertObjectId(tuskrStaking);
+
+    invariant(BigInt(value.toString()) > 0n, 'Value must be greater than 0');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    return {
+      tx,
+      returnValues: tx.moveCall({
+        package: this.packages.TUSKR_HOOKS,
+        module: 'tuskr_hooks',
+        function: 'fcfs',
+        arguments: [
+          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(
+            tx,
+            this.sharedObjects.WALRUS_STAKING({ mutable: true })
+          ),
+          tx.pure.u64(value),
+        ],
+        typeArguments: [lstType],
+      }),
+    };
+  }
+
+  public vectorTransfer({
+    tx = new Transaction(),
+    vector,
+    to,
+    type,
+  }: VectorTransferArgs) {
+    this.assertNotZeroAddress(to);
+
+    tx.moveCall({
+      package: this.packages.TUSKR_UTILS,
+      module: this.modules.Utils,
+      function: 'vector_transfer',
+      arguments: [vector, tx.pure.address(to)],
+      typeArguments: [type],
+    });
+
+    return {
+      tx,
+      returnValues: null,
     };
   }
 

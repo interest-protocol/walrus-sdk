@@ -53,7 +53,6 @@ export const executeTx = async (tx: Transaction, client = testnetClient) => {
     signer: keypair,
     transaction: tx,
     options: { showEffects: true },
-    requestType: 'WaitForLocalExecution',
   });
 
   // return if the tx hasn't succeed

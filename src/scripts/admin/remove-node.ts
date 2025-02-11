@@ -7,7 +7,7 @@ import {
 } from '../utils.script';
 
 (async () => {
-  const { tx, returnValues } = wwAclTestnet.signIn({
+  const { tx, returnValues } = await wwAclTestnet.signIn({
     admin: WW_ADMIN_CAP,
   });
 

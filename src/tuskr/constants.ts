@@ -8,6 +8,8 @@ export enum Modules {
   StakeNFT = 'tuskr_stake_nft',
   ACL = 'tuskr_acl',
   WithdrawIX = 'tuskr_withdraw_ix',
+  Utils = 'tuskr_utils',
+  Hooks = 'tuskr_hooks',
 }
 
 export const INNER_WALRUS_STAKING_ID = {
@@ -24,6 +26,7 @@ export const PACKAGES: Record<Network, Package> = {
     TUSKR_HOOKS: normalizeSuiAddress('0x0'),
     WAL: normalizeSuiAddress('0x0'),
     WALRUS: normalizeSuiAddress('0x0'),
+    TUSKR_UTILS: normalizeSuiAddress('0x0'),
   },
   [Network.Testnet]: {
     WW: normalizeSuiAddress(
@@ -41,6 +44,9 @@ export const PACKAGES: Record<Network, Package> = {
     WALRUS: normalizeSuiAddress(
       '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
     ),
+    TUSKR_UTILS: normalizeSuiAddress(
+      '0x5dc3e0034144cb596aa37898c467179416619644ae275acdd58b343f5947af01'
+    ),
   },
 } as const;
 
@@ -54,6 +60,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
     TUSKR_STAKE_NFT_DISPLAY: normalizeSuiAddress('0x0'),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
     WW_SUPER_ADMIN: normalizeSuiAddress('0x0'),
+    TUSKR_UTILS_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
   },
   [Network.Testnet]: {
     WW_UPGRADE_CAP: normalizeSuiObjectId(
@@ -79,6 +86,9 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
     ),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
       '0xb97499543378a64a1c9f40e2dd64e486403d70804f2231974fb53795458b456b'
+    ),
+    TUSKR_UTILS_UPGRADE_CAP: normalizeSuiObjectId(
+      '0x404600c6fccd7f2daa936a2c3a050ec43a3a9f63b942f03a25d9094d7e29a0e6'
     ),
   },
 } as const;
@@ -167,11 +177,13 @@ export const TYPES = {
     WW: `${PACKAGES[Network.Mainnet].WW}::ww::WW`,
     TUSKR: `${PACKAGES[Network.Mainnet].TUSKR}::tuskr::TUSKR`,
     WAL: `${PACKAGES[Network.Mainnet].WAL}::wal::WAL`,
+    STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS}::staked_wal::StakedWal`,
   },
   [Network.Testnet]: {
     WW: `${PACKAGES[Network.Testnet].WW}::ww::WW`,
     TUSKR: `${PACKAGES[Network.Testnet].TUSKR}::tuskr::TUSKR`,
     WAL: `${PACKAGES[Network.Testnet].WAL}::wal::WAL`,
+    STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS}::staked_wal::StakedWal`,
   },
 } as const;
 
