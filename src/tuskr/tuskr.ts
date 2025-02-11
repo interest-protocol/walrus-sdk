@@ -3,6 +3,7 @@ import { isValidSuiAddress, normalizeStructTag } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
 
+import { INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
 import {
   AddNodeArgs,
@@ -17,6 +18,7 @@ import {
   SharedObject,
   SyncExchangeRateArgs,
 } from './tuskr.types';
+import { getEpochData } from './utils';
 
 export class TuskrSDK extends SDK {
   tuskrStaking: SharedObject;
@@ -367,6 +369,18 @@ export class TuskrSDK extends SDK {
       tx,
       returnValues: null,
     };
+  }
+
+  public async getEpochData() {
+    const data = await this.client.getObject({
+      id: INNER_WALRUS_STAKING_ID[this.network],
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    return getEpochData(data);
   }
 
   public async typeFromTuskrStaking(tuskrStaking: SharedObject) {

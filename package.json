@@ -35,7 +35,8 @@
     "mint-after-votes": "tsx src/scripts/lst/mint-after-votes.ts",
     "sync-exchange-rate": "tsx src/scripts/lst/sync-exchange-rate.ts",
     "type-from-tuskr-staking": "tsx src/scripts/lst/type-from-tuskr-staking.ts",
-    "type-from-tuskr-acl": "tsx src/scripts/acl/type-from-tusk-acl.ts"
+    "type-from-tuskr-acl": "tsx src/scripts/acl/type-from-tusk-acl.ts",
+    "get-epoch-data": "tsx src/scripts/lst/get-epoch-data.ts"
   },
   "keywords": [],
   "license": "ISC",

@@ -10,6 +10,13 @@ export enum Modules {
   WithdrawIX = 'tuskr_withdraw_ix',
 }
 
+export const INNER_WALRUS_STAKING_ID = {
+  [Network.Mainnet]: normalizeSuiObjectId('0x0'),
+  [Network.Testnet]: normalizeSuiObjectId(
+    '0x06e1418b6daf7a37787611bb3112d4d026d82076ad82e74ddf79c59c9426355a'
+  ),
+};
+
 export const PACKAGES: Record<Network, Package> = {
   [Network.Mainnet]: {
     WW: normalizeSuiAddress('0x0'),

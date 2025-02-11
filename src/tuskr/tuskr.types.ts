@@ -19,6 +19,12 @@ export type SharedObject = string | SharedObjectRef;
 
 type U64 = string | bigint | number;
 
+export interface GetMsUntilNextEpochArgs {
+  currentEpoch: number;
+  epochDurationMs: number;
+  firstEpochStartTimestamp: number;
+}
+
 export enum Network {
   Mainnet = 'mainnet',
   Testnet = 'testnet',
