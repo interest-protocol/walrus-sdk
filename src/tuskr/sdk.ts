@@ -26,7 +26,7 @@ export class SDK {
 
   client: SuiClient;
 
-  lstType: string;
+  lstType: string | undefined;
 
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     const data = {

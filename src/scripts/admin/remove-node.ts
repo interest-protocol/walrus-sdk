@@ -1,4 +1,4 @@
-import { SHARED_OBJECTS, TYPES } from '../../tuskr/constants';
+import { SHARED_OBJECTS } from '../../tuskr/constants';
 import {
   executeTx,
   tuskrTestnet,
@@ -12,7 +12,6 @@ import {
   });
 
   await tuskrTestnet
-    .setLstType(TYPES.testnet.WW)
     .setTuskrStaking(SHARED_OBJECTS.testnet.WW_STAKING({ mutable: true }))
     .removeNode({
       tx,

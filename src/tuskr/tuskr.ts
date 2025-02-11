@@ -6,8 +6,11 @@ import invariant from 'tiny-invariant';
 import { SDK } from './sdk';
 import {
   AddNodeArgs,
+  BurnLstArgs,
+  BurnStakeNftArgs,
   KeepStakeNftArgs,
   MintAfterVotesFinishedArgs,
+  MintArgs,
   NewLSTArgs,
   RemoveNodeArgs,
   SdkConstructorArgs,
@@ -30,11 +33,6 @@ export class TuskrSDK extends SDK {
 
   public setTuskrAdmin(tuskrAdmin: string) {
     this.tuskrAdmin = tuskrAdmin;
-    return this;
-  }
-
-  public setLstType(lstType: string) {
-    this.lstType = lstType;
     return this;
   }
 
@@ -113,7 +111,7 @@ export class TuskrSDK extends SDK {
         tx.pure.address(superAdminRecipient),
         this.getAllowedVersions(tx),
       ],
-      typeArguments: [normalizeStructTag(lstTypeArgument)],
+      typeArguments: [lstTypeArgument],
     });
 
     return {
@@ -122,12 +120,14 @@ export class TuskrSDK extends SDK {
     };
   }
 
-  public syncExchangeRate({
+  public async syncExchangeRate({
     tx = new Transaction(),
     lstType = this.lstType,
     tuskrStaking = this.tuskrStaking,
   }: SyncExchangeRateArgs) {
     this.assertObjectId(tuskrStaking);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -140,7 +140,7 @@ export class TuskrSDK extends SDK {
           this.sharedObjects.WALRUS_STAKING({ mutable: false })
         ),
       ],
-      typeArguments: [normalizeStructTag(lstType)],
+      typeArguments: [lstType],
     });
 
     return {
@@ -149,7 +149,44 @@ export class TuskrSDK extends SDK {
     };
   }
 
-  public mintAfterVotesFinished({
+  public async mint({
+    tx = new Transaction(),
+    walCoin,
+    nodeId,
+    tuskrStaking = this.tuskrStaking,
+    lstType = this.lstType,
+  }: MintArgs) {
+    this.assertObjectId(walCoin);
+
+    this.assertObjectId(nodeId);
+    this.assertObjectId(tuskrStaking);
+
+    this.assertNotZeroAddress(nodeId);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    return {
+      tx,
+      returnValues: tx.moveCall({
+        package: this.packages.TUSKR,
+        module: this.modules.Protocol,
+        function: 'mint',
+        arguments: [
+          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(
+            tx,
+            this.sharedObjects.WALRUS_STAKING({ mutable: true })
+          ),
+          this.ownedObject(tx, walCoin),
+          tx.pure.id(nodeId),
+          this.getAllowedVersions(tx),
+        ],
+        typeArguments: [lstType],
+      }),
+    };
+  }
+
+  public async mintAfterVotesFinished({
     tx = new Transaction(),
     walCoin,
     nodeId,
@@ -162,6 +199,8 @@ export class TuskrSDK extends SDK {
     this.assertObjectId(tuskrStaking);
 
     this.assertNotZeroAddress(nodeId);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     return {
       tx,
@@ -179,7 +218,7 @@ export class TuskrSDK extends SDK {
           tx.pure.id(nodeId),
           this.getAllowedVersions(tx),
         ],
-        typeArguments: [normalizeStructTag(lstType)],
+        typeArguments: [lstType],
       }),
     };
   }
@@ -198,7 +237,75 @@ export class TuskrSDK extends SDK {
     };
   }
 
-  public addNode({
+  public async burnStakeNft({
+    tx = new Transaction(),
+    nft,
+    tuskrStaking = this.tuskrStaking,
+    lstType = this.lstType,
+  }: BurnStakeNftArgs) {
+    this.assertObjectId(nft);
+
+    this.assertObjectId(tuskrStaking);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    return {
+      tx,
+      returnValues: tx.moveCall({
+        package: this.packages.TUSKR,
+        module: this.modules.Protocol,
+        function: 'burn_stake_nft',
+        arguments: [
+          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(
+            tx,
+            this.sharedObjects.WALRUS_STAKING({ mutable: false })
+          ),
+          this.ownedObject(tx, nft),
+          this.getAllowedVersions(tx),
+        ],
+        typeArguments: [lstType],
+      }),
+    };
+  }
+
+  public async burnLst({
+    tx = new Transaction(),
+    lstCoin,
+    withdrawIXs,
+    lstType = this.lstType,
+    tuskrStaking = this.tuskrStaking,
+    minWalValue = 0n,
+  }: BurnLstArgs) {
+    this.assertObjectId(lstCoin);
+
+    this.assertObjectId(withdrawIXs);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    return {
+      tx,
+      returnValues: tx.moveCall({
+        package: this.packages.TUSKR,
+        module: this.modules.Protocol,
+        function: 'burn_lst',
+        arguments: [
+          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(
+            tx,
+            this.sharedObjects.WALRUS_STAKING({ mutable: true })
+          ),
+          this.ownedObject(tx, lstCoin),
+          withdrawIXs,
+          tx.pure.u64(minWalValue),
+          this.getAllowedVersions(tx),
+        ],
+        typeArguments: [lstType],
+      }),
+    };
+  }
+
+  public async addNode({
     tx = new Transaction(),
     nodeId,
     tuskrStaking = this.tuskrStaking,
@@ -208,6 +315,8 @@ export class TuskrSDK extends SDK {
     this.assertObjectId(tuskrStaking);
 
     this.assertNotZeroAddress(nodeId);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -228,7 +337,7 @@ export class TuskrSDK extends SDK {
     };
   }
 
-  public removeNode({
+  public async removeNode({
     tx = new Transaction(),
     nodeId,
     tuskrStaking = this.tuskrStaking,
@@ -238,6 +347,8 @@ export class TuskrSDK extends SDK {
     this.assertObjectId(tuskrStaking);
 
     this.assertNotZeroAddress(nodeId);
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -256,5 +367,32 @@ export class TuskrSDK extends SDK {
       tx,
       returnValues: null,
     };
+  }
+
+  public async typeFromTuskrStaking(tuskrStaking: SharedObject) {
+    const tuskrStakingObject = await this.client.getObject({
+      id:
+        typeof tuskrStaking === 'string' ? tuskrStaking : tuskrStaking.objectId,
+      options: {
+        showType: true,
+      },
+    });
+
+    const type = tuskrStakingObject.data?.type?.split('<')[1].slice(0, -1);
+
+    invariant(type, 'Invalid Tuskr Staking: no type found');
+
+    return type;
+  }
+
+  async maybeFetchAndSaveLstType(lstType?: string) {
+    if (lstType) {
+      return Promise.resolve(normalizeStructTag(lstType));
+    }
+
+    this.lstType = normalizeStructTag(
+      await this.typeFromTuskrStaking(this.tuskrStaking)
+    );
+    return this.lstType;
   }
 }

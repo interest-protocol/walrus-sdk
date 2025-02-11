@@ -33,7 +33,9 @@
     "add-node": "tsx src/scripts/admin/add-node.ts",
     "remove-node": "tsx src/scripts/admin/remove-node.ts",
     "mint-after-votes": "tsx src/scripts/lst/mint-after-votes.ts",
-    "sync-exchange-rate": "tsx src/scripts/lst/sync-exchange-rate.ts"
+    "sync-exchange-rate": "tsx src/scripts/lst/sync-exchange-rate.ts",
+    "type-from-tuskr-staking": "tsx src/scripts/lst/type-from-tuskr-staking.ts",
+    "type-from-tuskr-acl": "tsx src/scripts/acl/type-from-tusk-acl.ts"
   },
   "keywords": [],
   "license": "ISC",

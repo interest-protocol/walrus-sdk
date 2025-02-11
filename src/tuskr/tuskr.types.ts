@@ -17,7 +17,7 @@ export type OwnedObject = TransactionObjectArgument | string | ObjectRef;
 
 export type SharedObject = string | SharedObjectRef;
 
-// type U64 = string | bigint | number;
+type U64 = string | bigint | number;
 
 export enum Network {
   Mainnet = 'mainnet',
@@ -76,11 +76,32 @@ export interface NewLSTArgs extends MaybeTx {
   adminWitness: TransactionResult;
 }
 
-export interface MintAfterVotesFinishedArgs extends MaybeTx {
+export interface MintArgs extends MaybeTx {
   walCoin: OwnedObject;
   nodeId: string;
   tuskrStaking?: SharedObject;
   lstType?: string;
+}
+
+export interface MintAfterVotesFinishedArgs extends MintArgs {
+  walCoin: OwnedObject;
+  nodeId: string;
+  tuskrStaking?: SharedObject;
+  lstType?: string;
+}
+
+export interface BurnStakeNftArgs extends MaybeTx {
+  nft: OwnedObject;
+  tuskrStaking?: SharedObject;
+  lstType?: string;
+}
+
+export interface BurnLstArgs extends MaybeTx {
+  lstCoin: OwnedObject;
+  withdrawIXs: TransactionResult;
+  lstType?: string;
+  minWalValue?: U64;
+  tuskrStaking?: SharedObject;
 }
 
 export interface AddNodeArgs extends MaybeTx {
@@ -102,7 +123,7 @@ export interface KeepStakeNftArgs extends MaybeTx {
 }
 
 export interface SyncExchangeRateArgs extends MaybeTx {
-  lstType: string;
+  lstType?: string;
   tuskrStaking: SharedObject;
 }
 

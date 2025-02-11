@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag } from '@mysten/sui/utils';
 import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
@@ -44,13 +45,14 @@ export class TuskrAclSDK extends SDK {
     return this;
   }
 
-  public newAdmin({
+  public async newAdmin({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     lstType = this.lstType,
   }: NewAdminArgs) {
     this.assertObjectId(superAdmin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     return {
       returnValues: tx.moveCall({
@@ -67,7 +69,7 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public newAdminAndTransfer({
+  public async newAdminAndTransfer({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     recipient,
@@ -75,7 +77,8 @@ export class TuskrAclSDK extends SDK {
   }: NewAdminAndTransferArgs) {
     this.assertObjectId(superAdmin);
     this.assertNotZeroAddress(recipient);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -95,13 +98,14 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public signIn({
+  public async signIn({
     tx = new Transaction(),
     admin,
     lstType = this.lstType,
   }: SignInArgs) {
     this.assertObjectId(admin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     return {
       returnValues: tx.moveCall({
@@ -118,7 +122,7 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public revokeAdmin({
+  public async revokeAdmin({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     admin,
@@ -126,7 +130,8 @@ export class TuskrAclSDK extends SDK {
   }: RevokeAdminArgs) {
     this.assertObjectId(superAdmin);
     this.assertNotZeroAddress(admin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -148,7 +153,8 @@ export class TuskrAclSDK extends SDK {
 
   public async isAdmin({ admin, lstType = this.lstType }: IsAdminArgs) {
     const tx = new Transaction();
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -165,13 +171,14 @@ export class TuskrAclSDK extends SDK {
     return result[0][0];
   }
 
-  public destroyAdmin({
+  public async destroyAdmin({
     tx = new Transaction(),
     admin,
     lstType = this.lstType,
   }: DestroyAdminArgs) {
     this.assertObjectId(admin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -187,7 +194,7 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public startSuperAdminTransfer({
+  public async startSuperAdminTransfer({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     recipient,
@@ -195,7 +202,8 @@ export class TuskrAclSDK extends SDK {
   }: StartSuperAdminTransferArgs) {
     this.assertObjectId(superAdmin);
     this.assertNotZeroAddress(recipient);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -211,13 +219,15 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public finishSuperAdminTransfer({
+  public async finishSuperAdminTransfer({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     lstType = this.lstType,
   }: FinishSuperAdminTransferArgs) {
     this.assertObjectId(superAdmin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
     tx.moveCall({
       package: this.packages.TUSKR,
       module: this.modules.ACL,
@@ -232,13 +242,14 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public destroySuperAdmin({
+  public async destroySuperAdmin({
     tx = new Transaction(),
     superAdmin = this.superAdmin,
     lstType = this.lstType,
   }: DestroySuperAdminArgs) {
     this.assertObjectId(superAdmin);
-    invariant(lstType, 'LST type is required');
+
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
       package: this.packages.TUSKR,
@@ -252,5 +263,29 @@ export class TuskrAclSDK extends SDK {
       tx,
       returnValues: null,
     };
+  }
+
+  public async typeFromTuskrAcl(tuskrAcl: SharedObject) {
+    const tuskrAclObject = await this.client.getObject({
+      id: typeof tuskrAcl === 'string' ? tuskrAcl : tuskrAcl.objectId,
+      options: {
+        showType: true,
+      },
+    });
+
+    const type = tuskrAclObject.data?.type?.split('<')[1].slice(0, -1);
+
+    invariant(type, 'Invalid Tuskr ACL: no type found');
+
+    return type;
+  }
+
+  async maybeFetchAndSaveLstType(lstType?: string) {
+    if (lstType) {
+      return Promise.resolve(normalizeStructTag(lstType));
+    }
+
+    this.lstType = normalizeStructTag(await this.typeFromTuskrAcl(this.acl));
+    return this.lstType;
   }
 }
