@@ -541,7 +541,7 @@ export class TuskrSDK extends SDK {
       [OptionU64],
     ]);
 
-    return result[0][0];
+    return result[0][0] ? BigInt(result[0][0]) : null;
   }
 
   public async toLstAtEpoch({
@@ -564,7 +564,7 @@ export class TuskrSDK extends SDK {
         this.sharedObject(tx, tuskrStaking),
         tx.pure.u32(epoch),
         tx.pure.u64(value),
-        tx.pure.bool(true),
+        tx.pure.bool(false),
       ],
       typeArguments: [lstType],
     });
@@ -573,7 +573,7 @@ export class TuskrSDK extends SDK {
       [OptionU64],
     ]);
 
-    return result[0][0];
+    return result[0][0] ? BigInt(result[0][0]) : null;
   }
 
   async maybeFetchAndSaveLstType(lstType?: string) {
