@@ -25,6 +25,22 @@ export const msToDays = (ms: number) => {
   return Math.ceil(ms / (1000 * 60 * 60 * 24));
 };
 
+export const getFees = (response: SuiObjectResponse) => {
+  const fields = pathOr(
+    {},
+    ['data', 'content', 'fields', 'fee_config', 'fields'],
+    response
+  );
+
+  const fieldPath = ['fields', 'pos0'];
+
+  return {
+    mint: pathOr(0, ['mint', ...fieldPath], fields),
+    burn: pathOr(0, ['burn', ...fieldPath], fields),
+    transmute: pathOr(0, ['transmute', ...fieldPath], fields),
+  };
+};
+
 export const getEpochData = (response: SuiObjectResponse) => {
   const fields = pathOr(
     {},

@@ -173,6 +173,19 @@ export const SHARED_OBJECTS = {
   } as const,
 };
 
+export const INNER_LST_STATE_ID = {
+  [Network.Mainnet]: {
+    [SHARED_OBJECTS.mainnet.WW_STAKING({ mutable: false }).objectId]:
+      normalizeSuiObjectId('0x0'),
+  },
+  [Network.Testnet]: {
+    [SHARED_OBJECTS.testnet.WW_STAKING({ mutable: false }).objectId]:
+      normalizeSuiObjectId(
+        '0xb6d2d0600d8e8565ea1ccc34a21ace4bb2e46b40cb7c07556ccab56a473dfc02'
+      ),
+  },
+};
+
 export const TYPES = {
   [Network.Mainnet]: {
     WW: `${PACKAGES[Network.Mainnet].WW}::ww::WW`,

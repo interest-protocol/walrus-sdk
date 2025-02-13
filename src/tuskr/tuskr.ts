@@ -6,7 +6,7 @@ import { Decimal } from 'decimal.js';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
 
-import { INNER_WALRUS_STAKING_ID } from './constants';
+import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
 import { OptionU64 } from './structs';
 import {
@@ -27,7 +27,7 @@ import {
   ToWalAtEpochArgs,
   VectorTransferArgs,
 } from './tuskr.types';
-import { getEpochData, msToDays } from './utils';
+import { getEpochData, getFees, msToDays } from './utils';
 
 export class TuskrSDK extends SDK {
   tuskrStaking: SharedObject;
@@ -443,6 +443,20 @@ export class TuskrSDK extends SDK {
     });
 
     return getEpochData(data);
+  }
+
+  public async getFees(tuskrStaking: SharedObject) {
+    const data = await this.client.getObject({
+      id: INNER_LST_STATE_ID[this.network][
+        typeof tuskrStaking === 'string' ? tuskrStaking : tuskrStaking.objectId
+      ],
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    return getFees(data);
   }
 
   /**
