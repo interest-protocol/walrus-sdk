@@ -39,7 +39,9 @@
     "get-epoch-data": "tsx src/scripts/lst/get-epoch-data.ts",
     "mint": "tsx src/scripts/lst/mint.ts",
     "burn": "tsx src/scripts/lst/burn.ts",
-    "last-epoch-apr": "tsx src/scripts/lst/last-epoch-apr.ts"
+    "last-epoch-apr": "tsx src/scripts/lst/last-epoch-apr.ts",
+    "to-wal-at-epoch": "tsx src/scripts/lst/to-wal-at-epoch.ts",
+    "to-lst-at-epoch": "tsx src/scripts/lst/to-lst-at-epoch.ts"
   },
   "keywords": [],
   "license": "ISC",

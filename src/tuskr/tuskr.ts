@@ -8,6 +8,7 @@ import invariant from 'tiny-invariant';
 
 import { INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
+import { OptionU64 } from './structs';
 import {
   AddNodeArgs,
   BurnLstArgs,
@@ -22,6 +23,8 @@ import {
   SdkConstructorArgs,
   SharedObject,
   SyncExchangeRateArgs,
+  ToLstAtEpochArgs,
+  ToWalAtEpochArgs,
   VectorTransferArgs,
 } from './tuskr.types';
 import { getEpochData, msToDays } from './utils';
@@ -507,6 +510,70 @@ export class TuskrSDK extends SDK {
     invariant(type, 'Invalid Tuskr Staking: no type found');
 
     return type;
+  }
+
+  public async toWalAtEpoch({
+    epoch,
+    value,
+    tuskrStaking = this.tuskrStaking,
+    lstType = this.lstType,
+  }: ToWalAtEpochArgs) {
+    this.assertObjectId(tuskrStaking);
+
+    this.tuskrStaking = tuskrStaking;
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    const tx = new Transaction();
+    tx.moveCall({
+      package: this.packages.TUSKR,
+      module: this.modules.Protocol,
+      function: 'to_wal_at_epoch',
+      arguments: [
+        this.sharedObject(tx, tuskrStaking),
+        tx.pure.u32(epoch),
+        tx.pure.u64(value),
+        tx.pure.bool(false),
+      ],
+      typeArguments: [lstType],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [OptionU64],
+    ]);
+
+    return result[0][0];
+  }
+
+  public async toLstAtEpoch({
+    epoch,
+    value,
+    tuskrStaking = this.tuskrStaking,
+    lstType = this.lstType,
+  }: ToLstAtEpochArgs) {
+    this.assertObjectId(tuskrStaking);
+
+    this.tuskrStaking = tuskrStaking;
+    lstType = await this.maybeFetchAndSaveLstType(lstType);
+
+    const tx = new Transaction();
+    tx.moveCall({
+      package: this.packages.TUSKR,
+      module: this.modules.Protocol,
+      function: 'to_lst_at_epoch',
+      arguments: [
+        this.sharedObject(tx, tuskrStaking),
+        tx.pure.u32(epoch),
+        tx.pure.u64(value),
+        tx.pure.bool(true),
+      ],
+      typeArguments: [lstType],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [OptionU64],
+    ]);
+
+    return result[0][0];
   }
 
   async maybeFetchAndSaveLstType(lstType?: string) {

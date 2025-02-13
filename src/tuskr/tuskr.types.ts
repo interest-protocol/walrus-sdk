@@ -150,6 +150,20 @@ export interface VectorTransferArgs extends MaybeTx {
   type: string;
 }
 
+export interface ToWalAtEpochArgs {
+  tuskrStaking?: SharedObject;
+  epoch: number;
+  lstType?: string;
+  value: U64;
+}
+
+export interface ToLstAtEpochArgs {
+  tuskrStaking?: SharedObject;
+  epoch: number;
+  lstType?: string;
+  value: U64;
+}
+
 // === TUSKR LST END ===
 
 // === ACL Types Start ===
