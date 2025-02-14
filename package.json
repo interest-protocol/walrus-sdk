@@ -1,29 +1,29 @@
 {
-  "name": "@interest-protocol/tuskr-sdk",
+  "name": "@interest-protocol/blizzard-sdk",
   "author": "jose cerqueira",
   "files": [
     "dist"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/tuskr/index.d.ts",
+  "types": "./dist/blizzard/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/tuskr/index.ts",
+      "source": "./src/blizzard/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
-      "types": "./dist/tuskr/index.d.ts"
+      "types": "./dist/blizzard/index.d.ts"
     }
   },
-  "version": "1.3.1",
-  "description": "",
+  "version": "0.0.1",
+  "description": "blizzard sdk",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "lint": "npx eslint . --fix",
     "clean": "rimraf dist && rimraf tsconfig.prod.tsbuildinfo && rimraf tsconfig.tsbuildinfo",
-    "build:tsup": "tsup './src/tuskr/index.ts' --format esm,cjs --sourcemap",
+    "build:tsup": "tsup './src/blizzard/index.ts' --format esm,cjs --sourcemap",
     "build:types": "tsc --project tsconfig.prod.json",
     "build": "pnpm run clean && pnpm run build:tsup && pnpm run build:types",
     "prepublishOnly": "pnpm run clean && pnpm run build",
@@ -34,8 +34,8 @@
     "remove-node": "tsx src/scripts/admin/remove-node.ts",
     "mint-after-votes": "tsx src/scripts/lst/mint-after-votes.ts",
     "sync-exchange-rate": "tsx src/scripts/lst/sync-exchange-rate.ts",
-    "type-from-tuskr-staking": "tsx src/scripts/lst/type-from-tuskr-staking.ts",
-    "type-from-tuskr-acl": "tsx src/scripts/acl/type-from-tusk-acl.ts",
+    "type-from-blizzard-staking": "tsx src/scripts/lst/type-from-blizzard-staking.ts",
+    "type-from-blizzard-acl": "tsx src/scripts/acl/type-from-tusk-acl.ts",
     "get-epoch-data": "tsx src/scripts/lst/get-epoch-data.ts",
     "mint": "tsx src/scripts/lst/mint.ts",
     "burn": "tsx src/scripts/lst/burn.ts",

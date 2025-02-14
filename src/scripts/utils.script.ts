@@ -5,8 +5,7 @@ import dotenv from 'dotenv';
 import invariant from 'tiny-invariant';
 import util from 'util';
 
-import { OWNED_OBJECTS, SHARED_OBJECTS, TuskrSDK, TYPES } from '../tuskr';
-import { TuskrAclSDK } from '../tuskr/acl';
+import { BlizzardAclSDK, BlizzardSDK, SHARED_OBJECTS } from '../blizzard';
 
 dotenv.config();
 
@@ -22,28 +21,22 @@ export const ADMIN_CAP =
 export const MYSTEN_LABS_K8S =
   '0x81dae13f34dfe76170901f9f24a920c3b361acee7136bbc2ef6a0a15bfa085c8';
 
-export const WW_ADMIN_CAP =
-  '0x05f8bc7b3a90c3e0fa269402d5817cafa14beb842e8e9146bf66155c7e95aa6f';
+export const SNOW_ADMIN_CAP =
+  '0x1b3aa6e42903519309271e439ff31b74f1482c25e3bcb1bd86cc8145801ce2fe';
 
 export const POW_9 = 10n ** 9n;
 
 export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
-export const tuskrAclTestnet = new TuskrAclSDK({
-  acl: SHARED_OBJECTS.testnet.TUSKR_ACL({ mutable: true }),
+export const blizzardAclTestnet = new BlizzardAclSDK({
+  acl: SHARED_OBJECTS.testnet.BLIZZARD_ACL({ mutable: true }),
 });
 
-tuskrAclTestnet.setLstType(TYPES.testnet.TUSKR);
-tuskrAclTestnet.setSuperAdmin(OWNED_OBJECTS.testnet.TUSKR_SUPER_ADMIN);
-
-export const wwAclTestnet = new TuskrAclSDK({
-  acl: SHARED_OBJECTS.testnet.WW_ACL({ mutable: true }),
+export const snowAclTestnet = new BlizzardAclSDK({
+  acl: SHARED_OBJECTS.testnet.SNOW_ACL({ mutable: true }),
 });
 
-wwAclTestnet.setLstType(TYPES.testnet.WW);
-wwAclTestnet.setSuperAdmin(OWNED_OBJECTS.testnet.WW_SUPER_ADMIN);
-
-export const tuskrTestnet = new TuskrSDK();
+export const blizzardTestnet = new BlizzardSDK();
 
 export const log = (x: unknown) =>
   console.log(util.inspect(x, false, null, true));

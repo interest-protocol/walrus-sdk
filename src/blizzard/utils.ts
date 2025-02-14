@@ -1,9 +1,9 @@
 import { getFullnodeUrl, SuiObjectResponse } from '@mysten/sui/client';
 import { pathOr } from 'ramda';
 
+import { GetMsUntilNextEpochArgs, SdkConstructorArgs } from './blizzard.types';
+import { Network } from './blizzard.types';
 import { PACKAGES, SHARED_OBJECTS, TYPES } from './constants';
-import { GetMsUntilNextEpochArgs, SdkConstructorArgs } from './tuskr.types';
-import { Network } from './tuskr.types';
 
 export const getSdkDefaultArgs = (
   network = Network.Testnet

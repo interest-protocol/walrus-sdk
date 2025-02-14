@@ -4,7 +4,6 @@ import { isValidSuiObjectId, normalizeSuiAddress } from '@mysten/sui/utils';
 import { has } from 'ramda';
 import invariant from 'tiny-invariant';
 
-import { Modules, TYPES } from './constants';
 import {
   Network,
   OwnedObject,
@@ -12,7 +11,8 @@ import {
   SdkConstructorArgs,
   SharedObject,
   SharedObjects,
-} from './tuskr.types';
+} from './blizzard.types';
+import { Modules, TYPES } from './constants';
 import { getSdkDefaultArgs } from './utils';
 
 export class SDK {
@@ -25,8 +25,6 @@ export class SDK {
   #rpcUrl: string;
 
   client: SuiClient;
-
-  lstType: string | undefined;
 
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     const data = {
@@ -73,11 +71,14 @@ export class SDK {
 
   public getAllowedVersions(tx: Transaction) {
     return tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.AllowedVersions,
       function: 'get_allowed_versions',
       arguments: [
-        this.sharedObject(tx, this.sharedObjects.TUSKR_AV({ mutable: false })),
+        this.sharedObject(
+          tx,
+          this.sharedObjects.BLIZZARD_AV({ mutable: false })
+        ),
       ],
     });
   }

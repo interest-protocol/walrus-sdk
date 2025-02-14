@@ -1,12 +1,12 @@
 import { Transaction } from '@mysten/sui/transactions';
 
-import { SHARED_OBJECTS, TYPES } from '../../tuskr/constants';
+import { SHARED_OBJECTS, TYPES } from '../../blizzard/constants';
 import {
+  blizzardTestnet,
   executeTx,
   getCoinOfValue,
   MYSTEN_LABS_K8S,
   POW_9,
-  tuskrTestnet,
 } from '../utils.script';
 
 (async () => {
@@ -18,17 +18,16 @@ import {
     coinValue: POW_9,
   });
 
-  const { returnValues: nft } = await tuskrTestnet
-    .setTuskrStaking(
-      SHARED_OBJECTS.testnet.WW_STAKING({ mutable: true }).objectId
-    )
-    .mintAfterVotesFinished({
-      tx,
-      nodeId: MYSTEN_LABS_K8S,
-      walCoin,
-    });
+  const { returnValues: nft } = await blizzardTestnet.mintAfterVotesFinished({
+    tx,
+    nodeId: MYSTEN_LABS_K8S,
+    walCoin,
+    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+      mutable: true,
+    }).objectId,
+  });
 
-  tuskrTestnet.keepStakeNft({
+  blizzardTestnet.keepStakeNft({
     tx,
     nft,
   });

@@ -6,9 +6,6 @@ import { Decimal } from 'decimal.js';
 import { pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
 
-import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
-import { SDK } from './sdk';
-import { OptionU64 } from './structs';
 import {
   AddNodeArgs,
   BurnLstArgs,
@@ -26,36 +23,28 @@ import {
   ToLstAtEpochArgs,
   ToWalAtEpochArgs,
   VectorTransferArgs,
-} from './tuskr.types';
+} from './blizzard.types';
+import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
+import { SDK } from './sdk';
+import { OptionU64 } from './structs';
 import { getEpochData, getFees, msToDays } from './utils';
 
-export class TuskrSDK extends SDK {
-  tuskrStaking: SharedObject;
-  tuskrAdmin: string;
+const lstTypeCache = new Map<string, string>();
 
+export class BlizzardSDK extends SDK {
   constructor(args: SdkConstructorArgs | undefined | null = null) {
     super(args);
-  }
-
-  public setTuskrStaking(tuskrStaking: SharedObject) {
-    this.tuskrStaking = tuskrStaking;
-    return this;
-  }
-
-  public setTuskrAdmin(tuskrAdmin: string) {
-    this.tuskrAdmin = tuskrAdmin;
-    return this;
   }
 
   public async newLST({
     tx = new Transaction(),
     treasuryCap,
-    tuskrAdmin = this.tuskrAdmin,
+    blizzardAdmin,
     superAdminRecipient,
     adminWitness,
   }: NewLSTArgs) {
     this.assertObjectId(treasuryCap);
-    this.assertObjectId(tuskrAdmin);
+    this.assertObjectId(blizzardAdmin);
 
     invariant(
       isValidSuiAddress(superAdminRecipient),
@@ -108,7 +97,7 @@ export class TuskrSDK extends SDK {
     );
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'new',
       arguments: [
@@ -133,19 +122,18 @@ export class TuskrSDK extends SDK {
 
   public async syncExchangeRate({
     tx = new Transaction(),
-    lstType = this.lstType,
-    tuskrStaking = this.tuskrStaking,
+    blizzardStaking,
   }: SyncExchangeRateArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'sync_exchange_rate',
       arguments: [
-        this.sharedObject(tx, tuskrStaking),
+        this.sharedObject(tx, blizzardStaking),
         this.sharedObject(
           tx,
           this.sharedObjects.WALRUS_STAKING({ mutable: false })
@@ -164,26 +152,25 @@ export class TuskrSDK extends SDK {
     tx = new Transaction(),
     walCoin,
     nodeId,
-    tuskrStaking = this.tuskrStaking,
-    lstType = this.lstType,
+    blizzardStaking,
   }: MintArgs) {
     this.assertObjectId(walCoin);
 
     this.assertObjectId(nodeId);
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
     this.assertNotZeroAddress(nodeId);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.Protocol,
         function: 'mint',
         arguments: [
-          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(tx, blizzardStaking),
           this.sharedObject(
             tx,
             this.sharedObjects.WALRUS_STAKING({ mutable: true })
@@ -201,26 +188,25 @@ export class TuskrSDK extends SDK {
     tx = new Transaction(),
     walCoin,
     nodeId,
-    tuskrStaking = this.tuskrStaking,
-    lstType = this.lstType,
+    blizzardStaking,
   }: MintAfterVotesFinishedArgs) {
     this.assertObjectId(walCoin);
 
     this.assertObjectId(nodeId);
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
     this.assertNotZeroAddress(nodeId);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.Protocol,
         function: 'mint_after_votes_finished',
         arguments: [
-          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(tx, blizzardStaking),
           this.sharedObject(
             tx,
             this.sharedObjects.WALRUS_STAKING({ mutable: true })
@@ -236,7 +222,7 @@ export class TuskrSDK extends SDK {
 
   public keepStakeNft({ tx = new Transaction(), nft }: KeepStakeNftArgs) {
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.StakeNFT,
       function: 'keep',
       arguments: [nft],
@@ -251,23 +237,22 @@ export class TuskrSDK extends SDK {
   public async burnStakeNft({
     tx = new Transaction(),
     nft,
-    tuskrStaking = this.tuskrStaking,
-    lstType = this.lstType,
+    blizzardStaking,
   }: BurnStakeNftArgs) {
     this.assertObjectId(nft);
 
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.Protocol,
         function: 'burn_stake_nft',
         arguments: [
-          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(tx, blizzardStaking),
           this.sharedObject(
             tx,
             this.sharedObjects.WALRUS_STAKING({ mutable: false })
@@ -282,24 +267,23 @@ export class TuskrSDK extends SDK {
 
   public async fcfs({
     tx = new Transaction(),
-    tuskrStaking = this.tuskrStaking,
+    blizzardStaking,
     value,
-    lstType = this.lstType,
   }: FcfsArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
     invariant(BigInt(value.toString()) > 0n, 'Value must be greater than 0');
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR_HOOKS,
-        module: 'tuskr_hooks',
+        package: this.packages.BLIZZARD_HOOKS,
+        module: this.modules.Hooks,
         function: 'fcfs',
         arguments: [
-          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(tx, blizzardStaking),
           this.sharedObject(
             tx,
             this.sharedObjects.WALRUS_STAKING({ mutable: true })
@@ -320,7 +304,7 @@ export class TuskrSDK extends SDK {
     this.assertNotZeroAddress(to);
 
     tx.moveCall({
-      package: this.packages.TUSKR_UTILS,
+      package: this.packages.BLIZZARD_UTILS,
       module: this.modules.Utils,
       function: 'vector_transfer',
       arguments: [vector, tx.pure.address(to)],
@@ -337,24 +321,23 @@ export class TuskrSDK extends SDK {
     tx = new Transaction(),
     lstCoin,
     withdrawIXs,
-    lstType = this.lstType,
-    tuskrStaking = this.tuskrStaking,
+    blizzardStaking,
     minWalValue = 0n,
   }: BurnLstArgs) {
     this.assertObjectId(lstCoin);
 
     this.assertObjectId(withdrawIXs);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.Protocol,
         function: 'burn_lst',
         arguments: [
-          this.sharedObject(tx, tuskrStaking),
+          this.sharedObject(tx, blizzardStaking),
           this.sharedObject(
             tx,
             this.sharedObjects.WALRUS_STAKING({ mutable: true })
@@ -372,22 +355,21 @@ export class TuskrSDK extends SDK {
   public async addNode({
     tx = new Transaction(),
     nodeId,
-    tuskrStaking = this.tuskrStaking,
+    blizzardStaking,
     adminWitness,
-    lstType = this.lstType,
   }: AddNodeArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
     this.assertNotZeroAddress(nodeId);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'add_node',
       arguments: [
-        this.sharedObject(tx, tuskrStaking),
+        this.sharedObject(tx, blizzardStaking),
         adminWitness,
         tx.pure.id(nodeId),
         this.getAllowedVersions(tx),
@@ -404,22 +386,21 @@ export class TuskrSDK extends SDK {
   public async removeNode({
     tx = new Transaction(),
     nodeId,
-    tuskrStaking = this.tuskrStaking,
+    blizzardStaking,
     adminWitness,
-    lstType = this.lstType,
   }: RemoveNodeArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
     this.assertNotZeroAddress(nodeId);
 
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'remove_node',
       arguments: [
-        this.sharedObject(tx, tuskrStaking),
+        this.sharedObject(tx, blizzardStaking),
         adminWitness,
         tx.pure.id(nodeId),
         this.getAllowedVersions(tx),
@@ -445,10 +426,12 @@ export class TuskrSDK extends SDK {
     return getEpochData(data);
   }
 
-  public async getFees(tuskrStaking: SharedObject) {
+  public async getFees(blizzardStaking: SharedObject) {
     const data = await this.client.getObject({
       id: INNER_LST_STATE_ID[this.network][
-        typeof tuskrStaking === 'string' ? tuskrStaking : tuskrStaking.objectId
+        typeof blizzardStaking === 'string'
+          ? blizzardStaking
+          : blizzardStaking.objectId
       ],
       options: {
         showType: true,
@@ -510,18 +493,20 @@ export class TuskrSDK extends SDK {
     return apr.toNumber();
   }
 
-  public async typeFromTuskrStaking(tuskrStaking: SharedObject) {
-    const tuskrStakingObject = await this.client.getObject({
+  public async typeFromBlizzardStaking(blizzardStaking: SharedObject) {
+    const blizzardStakingObject = await this.client.getObject({
       id:
-        typeof tuskrStaking === 'string' ? tuskrStaking : tuskrStaking.objectId,
+        typeof blizzardStaking === 'string'
+          ? blizzardStaking
+          : blizzardStaking.objectId,
       options: {
         showType: true,
       },
     });
 
-    const type = tuskrStakingObject.data?.type?.split('<')[1].slice(0, -1);
+    const type = blizzardStakingObject.data?.type?.split('<')[1].slice(0, -1);
 
-    invariant(type, 'Invalid Tuskr Staking: no type found');
+    invariant(type, 'Invalid Blizzard Staking: no type found');
 
     return type;
   }
@@ -529,21 +514,19 @@ export class TuskrSDK extends SDK {
   public async toWalAtEpoch({
     epoch,
     value,
-    tuskrStaking = this.tuskrStaking,
-    lstType = this.lstType,
+    blizzardStaking,
   }: ToWalAtEpochArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
-    this.tuskrStaking = tuskrStaking;
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     const tx = new Transaction();
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'to_wal_at_epoch',
       arguments: [
-        this.sharedObject(tx, tuskrStaking),
+        this.sharedObject(tx, blizzardStaking),
         tx.pure.u32(epoch),
         tx.pure.u64(value),
         tx.pure.bool(false),
@@ -561,21 +544,19 @@ export class TuskrSDK extends SDK {
   public async toLstAtEpoch({
     epoch,
     value,
-    tuskrStaking = this.tuskrStaking,
-    lstType = this.lstType,
+    blizzardStaking,
   }: ToLstAtEpochArgs) {
-    this.assertObjectId(tuskrStaking);
+    this.assertObjectId(blizzardStaking);
 
-    this.tuskrStaking = tuskrStaking;
-    lstType = await this.maybeFetchAndSaveLstType(lstType);
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     const tx = new Transaction();
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.Protocol,
       function: 'to_lst_at_epoch',
       arguments: [
-        this.sharedObject(tx, tuskrStaking),
+        this.sharedObject(tx, blizzardStaking),
         tx.pure.u32(epoch),
         tx.pure.u64(value),
         tx.pure.bool(false),
@@ -590,14 +571,20 @@ export class TuskrSDK extends SDK {
     return result[0][0] ? BigInt(result[0][0]) : null;
   }
 
-  async maybeFetchAndSaveLstType(lstType?: string) {
-    if (lstType) {
-      return Promise.resolve(normalizeStructTag(lstType));
+  async maybeFetchAndCacheLstType(blizzardStaking: SharedObject) {
+    const id =
+      typeof blizzardStaking === 'string'
+        ? blizzardStaking
+        : blizzardStaking.objectId;
+
+    if (lstTypeCache.has(id)) {
+      return Promise.resolve(lstTypeCache.get(id)!);
     }
 
-    this.lstType = normalizeStructTag(
-      await this.typeFromTuskrStaking(this.tuskrStaking)
-    );
-    return this.lstType;
+    const type = await this.typeFromBlizzardStaking(blizzardStaking);
+
+    lstTypeCache.set(id, type);
+
+    return type;
   }
 }

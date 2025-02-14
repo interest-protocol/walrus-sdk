@@ -1,9 +1,9 @@
-import { SHARED_OBJECTS } from '../../tuskr/constants';
-import { log, tuskrAclTestnet } from '../utils.script';
+import { SHARED_OBJECTS } from '../../blizzard/constants';
+import { log, snowAclTestnet } from '../utils.script';
 
 (async () => {
-  const type = await tuskrAclTestnet.typeFromTuskrAcl(
-    SHARED_OBJECTS.testnet.WW_ACL({ mutable: false }).objectId
+  const type = await snowAclTestnet.typeFromBlizzardAcl(
+    SHARED_OBJECTS.testnet.SNOW_ACL({ mutable: false }).objectId
   );
 
   log(type);

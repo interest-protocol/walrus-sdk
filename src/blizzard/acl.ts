@@ -4,8 +4,8 @@ import { normalizeStructTag } from '@mysten/sui/utils';
 import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import invariant from 'tiny-invariant';
 
-import { SDK } from './sdk';
 import {
+  BlizzardAclArgs,
   DestroyAdminArgs,
   DestroySuperAdminArgs,
   FinishSuperAdminTransferArgs,
@@ -16,14 +16,14 @@ import {
   SharedObject,
   SignInArgs,
   StartSuperAdminTransferArgs,
-  TuskrAclArgs,
-} from './tuskr.types';
+} from './blizzard.types';
+import { SDK } from './sdk';
 
-export class TuskrAclSDK extends SDK {
-  superAdmin: string;
+export class BlizzardAclSDK extends SDK {
   acl: SharedObject;
+  lstType: string | undefined;
 
-  constructor(args: TuskrAclArgs) {
+  constructor(args: BlizzardAclArgs) {
     invariant(args, 'You must provide an ACL object');
 
     const { acl, ...rest } = args;
@@ -35,19 +35,9 @@ export class TuskrAclSDK extends SDK {
     this.acl = acl;
   }
 
-  public setSuperAdmin(superAdmin: string) {
-    this.superAdmin = superAdmin;
-    return this;
-  }
-
-  public setLstType(lstType: string) {
-    this.lstType = lstType;
-    return this;
-  }
-
   public async newAdmin({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     lstType = this.lstType,
   }: NewAdminArgs) {
     this.assertObjectId(superAdmin);
@@ -56,7 +46,7 @@ export class TuskrAclSDK extends SDK {
 
     return {
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.ACL,
         function: 'new_admin',
         typeArguments: [lstType],
@@ -71,7 +61,7 @@ export class TuskrAclSDK extends SDK {
 
   public async newAdminAndTransfer({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     recipient,
     lstType = this.lstType,
   }: NewAdminAndTransferArgs) {
@@ -81,7 +71,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'new_and_transfer',
       typeArguments: [lstType],
@@ -109,7 +99,7 @@ export class TuskrAclSDK extends SDK {
 
     return {
       returnValues: tx.moveCall({
-        package: this.packages.TUSKR,
+        package: this.packages.BLIZZARD,
         module: this.modules.ACL,
         function: 'sign_in',
         typeArguments: [lstType],
@@ -124,7 +114,7 @@ export class TuskrAclSDK extends SDK {
 
   public async revokeAdmin({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     admin,
     lstType = this.lstType,
   }: RevokeAdminArgs) {
@@ -134,7 +124,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'revoke',
       typeArguments: [lstType],
@@ -157,7 +147,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'is_admin',
       typeArguments: [lstType],
@@ -181,7 +171,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'destroy_admin',
       typeArguments: [lstType],
@@ -196,7 +186,7 @@ export class TuskrAclSDK extends SDK {
 
   public async startSuperAdminTransfer({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     recipient,
     lstType = this.lstType,
   }: StartSuperAdminTransferArgs) {
@@ -206,7 +196,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'start_transfer',
       typeArguments: [lstType],
@@ -221,7 +211,7 @@ export class TuskrAclSDK extends SDK {
 
   public async finishSuperAdminTransfer({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     lstType = this.lstType,
   }: FinishSuperAdminTransferArgs) {
     this.assertObjectId(superAdmin);
@@ -229,7 +219,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'finish_transfer',
       typeArguments: [lstType],
@@ -244,7 +234,7 @@ export class TuskrAclSDK extends SDK {
 
   public async destroySuperAdmin({
     tx = new Transaction(),
-    superAdmin = this.superAdmin,
+    superAdmin,
     lstType = this.lstType,
   }: DestroySuperAdminArgs) {
     this.assertObjectId(superAdmin);
@@ -252,7 +242,7 @@ export class TuskrAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.TUSKR,
+      package: this.packages.BLIZZARD,
       module: this.modules.ACL,
       function: 'destroy',
       typeArguments: [lstType],
@@ -265,17 +255,17 @@ export class TuskrAclSDK extends SDK {
     };
   }
 
-  public async typeFromTuskrAcl(tuskrAcl: SharedObject) {
-    const tuskrAclObject = await this.client.getObject({
-      id: typeof tuskrAcl === 'string' ? tuskrAcl : tuskrAcl.objectId,
+  public async typeFromBlizzardAcl(blizzardAcl: SharedObject) {
+    const blizzardAclObject = await this.client.getObject({
+      id: typeof blizzardAcl === 'string' ? blizzardAcl : blizzardAcl.objectId,
       options: {
         showType: true,
       },
     });
 
-    const type = tuskrAclObject.data?.type?.split('<')[1].slice(0, -1);
+    const type = blizzardAclObject.data?.type?.split('<')[1].slice(0, -1);
 
-    invariant(type, 'Invalid Tuskr ACL: no type found');
+    invariant(type, 'Invalid Blizzard ACL: no type found');
 
     return type;
   }
@@ -285,7 +275,7 @@ export class TuskrAclSDK extends SDK {
       return Promise.resolve(normalizeStructTag(lstType));
     }
 
-    this.lstType = normalizeStructTag(await this.typeFromTuskrAcl(this.acl));
+    this.lstType = normalizeStructTag(await this.typeFromBlizzardAcl(this.acl));
     return this.lstType;
   }
 }

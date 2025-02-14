@@ -1,11 +1,11 @@
-import { SHARED_OBJECTS, TYPES } from '../../tuskr/constants';
-import { executeTx, tuskrTestnet } from '../utils.script';
+import { SHARED_OBJECTS } from '../../blizzard/constants';
+import { blizzardTestnet, executeTx } from '../utils.script';
 
 (async () => {
-  const { tx } = await tuskrTestnet.syncExchangeRate({
-    lstType: TYPES.testnet.WW,
-    tuskrStaking: SHARED_OBJECTS.testnet.WW_STAKING({ mutable: false })
-      .objectId,
+  const { tx } = await blizzardTestnet.syncExchangeRate({
+    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+      mutable: true,
+    }).objectId,
   });
 
   await executeTx(tx);

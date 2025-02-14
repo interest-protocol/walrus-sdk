@@ -22,9 +22,4 @@ export const IX = bcs.struct('IX', {
   epoch_values: bcs.vector(EpochValue),
 });
 
-export const TuskrWithdrawIXs = bcs.struct('TuskrWithdrawIXs', {
-  ixs: bcs.vector(IX),
-  hook_witness: bcs.option(bcs.TypeTag),
-});
-
 export const OptionU64 = bcs.option(bcs.u64());

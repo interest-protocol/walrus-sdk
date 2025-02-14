@@ -1,7 +1,7 @@
-import { tuskrTestnet } from '../utils.script';
+import { blizzardTestnet } from '../utils.script';
 
 (async () => {
-  const epochData = await tuskrTestnet.getEpochData();
+  const epochData = await blizzardTestnet.getEpochData();
 
   console.log(epochData);
 })();

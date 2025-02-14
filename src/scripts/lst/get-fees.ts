@@ -1,9 +1,9 @@
-import { SHARED_OBJECTS } from '../../tuskr/constants';
-import { tuskrTestnet } from '../utils.script';
+import { SHARED_OBJECTS } from '../../blizzard/constants';
+import { blizzardTestnet } from '../utils.script';
 
 (async () => {
-  const fees = await tuskrTestnet.getFees(
-    SHARED_OBJECTS.testnet.WW_STAKING({ mutable: false }).objectId
+  const fees = await blizzardTestnet.getFees(
+    SHARED_OBJECTS.testnet.SNOW_STAKING({ mutable: false }).objectId
   );
 
   console.log(fees);

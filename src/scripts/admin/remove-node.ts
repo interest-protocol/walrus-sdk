@@ -1,23 +1,25 @@
-import { SHARED_OBJECTS } from '../../tuskr/constants';
+import { SHARED_OBJECTS } from '../../blizzard/constants';
 import {
+  blizzardTestnet,
   executeTx,
-  tuskrTestnet,
-  WW_ADMIN_CAP,
-  wwAclTestnet,
+  MYSTEN_LABS_K8S,
+  SNOW_ADMIN_CAP,
+  snowAclTestnet,
 } from '../utils.script';
 
 (async () => {
-  const { tx, returnValues } = await wwAclTestnet.signIn({
-    admin: WW_ADMIN_CAP,
+  const { tx, returnValues } = await snowAclTestnet.signIn({
+    admin: SNOW_ADMIN_CAP,
   });
 
-  await tuskrTestnet
-    .setTuskrStaking(SHARED_OBJECTS.testnet.WW_STAKING({ mutable: true }))
-    .removeNode({
-      tx,
-      nodeId: '0x1',
-      adminWitness: returnValues,
-    });
+  await blizzardTestnet.removeNode({
+    tx,
+    nodeId: MYSTEN_LABS_K8S,
+    adminWitness: returnValues,
+    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+      mutable: true,
+    }).objectId,
+  });
 
   await executeTx(tx);
 })();

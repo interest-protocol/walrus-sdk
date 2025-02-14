@@ -35,30 +35,30 @@ export interface MaybeTx {
 }
 
 export type Package = Record<
-  'WW' | 'TUSKR' | 'TUSKR_HOOKS' | 'WAL' | 'WALRUS' | 'TUSKR_UTILS',
+  'SNOW' | 'BLIZZARD' | 'BLIZZARD_HOOKS' | 'WAL' | 'WALRUS' | 'BLIZZARD_UTILS',
   string
 >;
 
 export type SharedObjects = Record<
-  | 'WW_COIN_METADATA'
-  | 'TUSKR_AV'
-  | 'TUSKR_ACL'
+  | 'SNOW_COIN_METADATA'
+  | 'BLIZZARD_AV'
+  | 'BLIZZARD_ACL'
   | 'WALRUS_STAKING'
-  | 'WW_ACL'
-  | 'WW_STAKING',
+  | 'BLIZZARD_ACL'
+  | 'BLIZZARD_STAKING',
   ({ mutable }: { mutable: boolean }) => SharedObjectRef
 >;
 
 export type OwnedObjects = Record<
-  | 'WW_UPGRADE_CAP'
-  | 'WW_SUPER_ADMIN'
-  | 'TUSKR_UPGRADE_CAP'
-  | 'TUSKR_SUPER_ADMIN'
-  | 'TUSKR_PUBLISHER'
-  | 'TUSKR_STAKE_NFT_PUBLISHER'
-  | 'TUSKR_STAKE_NFT_DISPLAY'
+  | 'SNOW_UPGRADE_CAP'
+  | 'SNOW_SUPER_ADMIN'
+  | 'BLIZZARD_UPGRADE_CAP'
+  | 'BLIZZARD_SUPER_ADMIN'
+  | 'BLIZZARD_PUBLISHER'
+  | 'BLIZZARD_STAKE_NFT_PUBLISHER'
+  | 'BLIZZARD_STAKE_NFT_DISPLAY'
   | 'HOOKS_UPGRADE_CAP'
-  | 'TUSKR_UTILS_UPGRADE_CAP',
+  | 'BLIZZARD_UTILS_UPGRADE_CAP',
   string
 >;
 
@@ -74,11 +74,11 @@ export interface SdkConstructorArgs {
   types?: (typeof TYPES)[keyof typeof TYPES];
 }
 
-// === TUSKR LST START ===
+// === BLIZZARD LST START ===
 
 export interface NewLSTArgs extends MaybeTx {
   treasuryCap: string | ObjectRef;
-  tuskrAdmin?: OwnedObject;
+  blizzardAdmin: OwnedObject;
   superAdminRecipient: string;
   adminWitness: TransactionResult;
 }
@@ -86,43 +86,37 @@ export interface NewLSTArgs extends MaybeTx {
 export interface MintArgs extends MaybeTx {
   walCoin: OwnedObject;
   nodeId: string;
-  tuskrStaking?: SharedObject;
-  lstType?: string;
+  blizzardStaking: SharedObject;
 }
 
-export interface MintAfterVotesFinishedArgs extends MintArgs {
+export interface MintAfterVotesFinishedArgs extends MaybeTx {
   walCoin: OwnedObject;
   nodeId: string;
-  tuskrStaking?: SharedObject;
-  lstType?: string;
+  blizzardStaking: SharedObject;
 }
 
 export interface BurnStakeNftArgs extends MaybeTx {
   nft: OwnedObject;
-  tuskrStaking?: SharedObject;
-  lstType?: string;
+  blizzardStaking: SharedObject;
 }
 
 export interface BurnLstArgs extends MaybeTx {
   lstCoin: OwnedObject;
   withdrawIXs: TransactionResult;
-  lstType?: string;
   minWalValue?: U64;
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
 }
 
 export interface AddNodeArgs extends MaybeTx {
   nodeId: string;
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
   adminWitness: TransactionResult;
-  lstType?: string;
 }
 
 export interface RemoveNodeArgs extends MaybeTx {
   nodeId: string;
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
   adminWitness: TransactionResult;
-  lstType?: string;
 }
 
 export interface KeepStakeNftArgs extends MaybeTx {
@@ -130,8 +124,7 @@ export interface KeepStakeNftArgs extends MaybeTx {
 }
 
 export interface SyncExchangeRateArgs extends MaybeTx {
-  lstType?: string;
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
 }
 
 export interface LastEpochAprArgs {
@@ -139,9 +132,8 @@ export interface LastEpochAprArgs {
 }
 
 export interface FcfsArgs extends MaybeTx {
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
   value: U64;
-  lstType?: string;
 }
 
 export interface VectorTransferArgs extends MaybeTx {
@@ -151,40 +143,38 @@ export interface VectorTransferArgs extends MaybeTx {
 }
 
 export interface ToWalAtEpochArgs {
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
   epoch: number;
-  lstType?: string;
   value: U64;
 }
 
 export interface ToLstAtEpochArgs {
-  tuskrStaking?: SharedObject;
+  blizzardStaking: SharedObject;
   epoch: number;
-  lstType?: string;
   value: U64;
 }
 
-// === TUSKR LST END ===
+// === BLIZZARD LST END ===
 
 // === ACL Types Start ===
 
-export type TuskrAclArgs = (SdkConstructorArgs | null | undefined) & {
+export type BlizzardAclArgs = (SdkConstructorArgs | null | undefined) & {
   acl: SharedObject;
 };
 
 export interface NewAdminArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   lstType?: string;
 }
 
 export interface NewAdminAndTransferArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   recipient: string;
   lstType?: string;
 }
 
 export interface RevokeAdminArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   admin: string;
   lstType?: string;
 }
@@ -200,18 +190,18 @@ export interface DestroyAdminArgs extends MaybeTx {
 }
 
 export interface DestroySuperAdminArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   lstType?: string;
 }
 
 export interface StartSuperAdminTransferArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   recipient: string;
   lstType?: string;
 }
 
 export interface FinishSuperAdminTransferArgs extends MaybeTx {
-  superAdmin?: OwnedObject;
+  superAdmin: OwnedObject;
   lstType?: string;
 }
 
