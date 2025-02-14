@@ -39,12 +39,10 @@ export class BlizzardSDK extends SDK {
   public async newLST({
     tx = new Transaction(),
     treasuryCap,
-    blizzardAdmin,
     superAdminRecipient,
     adminWitness,
   }: NewLSTArgs) {
     this.assertObjectId(treasuryCap);
-    this.assertObjectId(blizzardAdmin);
 
     invariant(
       isValidSuiAddress(superAdminRecipient),

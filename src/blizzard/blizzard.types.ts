@@ -44,8 +44,7 @@ export type SharedObjects = Record<
   | 'BLIZZARD_AV'
   | 'BLIZZARD_ACL'
   | 'WALRUS_STAKING'
-  | 'BLIZZARD_ACL'
-  | 'BLIZZARD_STAKING',
+  | 'BLIZZARD_ACL',
   ({ mutable }: { mutable: boolean }) => SharedObjectRef
 >;
 
@@ -78,7 +77,6 @@ export interface SdkConstructorArgs {
 
 export interface NewLSTArgs extends MaybeTx {
   treasuryCap: string | ObjectRef;
-  blizzardAdmin: OwnedObject;
   superAdminRecipient: string;
   adminWitness: TransactionResult;
 }

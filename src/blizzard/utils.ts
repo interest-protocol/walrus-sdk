@@ -63,8 +63,6 @@ export const getEpochData = (response: SuiObjectResponse) => {
     epochDurationMs,
     firstEpochStartTimestamp,
     msUntilNextEpoch,
-    hoursUntilNextEpoch: msToHours(msUntilNextEpoch),
-    epochDurationInHours: msToHours(epochDurationMs),
   };
 };
 

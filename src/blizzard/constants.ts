@@ -77,7 +77,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
       '0x6ac62637f465051f451e03d44a3c65cf98cf9d249599cd5125eb64b0e76e78cc'
     ),
     SNOW_SUPER_ADMIN: normalizeSuiAddress(
-      '0x00dc2d0d5eef7eed3cca372983e0e6bd2c7a1646b21653f03604fa6230216392'
+      '0x1f7ea08843ece04349d121649eca925a8dfe01b0f5b8f7f49eec6d7afb7a1a05'
     ),
     BLIZZARD_PUBLISHER: normalizeSuiAddress(
       '0xef03dd353d28a9ea42f3d5901d4240a225ac7009ed5e3ad3a148f3febd11c375'
@@ -158,16 +158,16 @@ export const SHARED_OBJECTS = {
     }),
     SNOW_ACL: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0xdc5fa5c6d0f9cfef099a29d8ff6f6150a60649925a3e53758abc5286edad89d4'
+        '0x7f10caa269e5fa60063180d8ccbd89d9ba594d3f35aac5d0ebd7623bc19f6eef'
       ),
-      initialSharedVersion: '370553211',
+      initialSharedVersion: '374324183',
       mutable,
     }),
     SNOW_STAKING: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x0c5b728b942d60936b301d7504ce7f4df0112ee5b0fcbac0c2b5660f0f8dad00'
+        '0x816143d7561b92f26e86cb55d143e7e8196d1cbb12163a96cbc8846c5ac0667f'
       ),
-      initialSharedVersion: '370553211',
+      initialSharedVersion: '374324183',
       mutable,
     }),
   } as const,
@@ -179,9 +179,9 @@ export const INNER_LST_STATE_ID = {
       normalizeSuiObjectId('0x0'),
   },
   [Network.Testnet]: {
-    [SHARED_OBJECTS.testnet.WALRUS_STAKING({ mutable: false }).objectId]:
+    [SHARED_OBJECTS.testnet.SNOW_STAKING({ mutable: false }).objectId]:
       normalizeSuiObjectId(
-        '0xb6d2d0600d8e8565ea1ccc34a21ace4bb2e46b40cb7c07556ccab56a473dfc02'
+        '0x5c007b8707268f08eafefb64721e109216cc2281508d36eb47cac031b771327c'
       ),
   },
 };

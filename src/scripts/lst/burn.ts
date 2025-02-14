@@ -3,7 +3,7 @@ import { blizzardTestnet, executeTx, keypair, POW_9 } from '../utils.script';
 
 // Add a coin object id
 const SNOW_COIN_ID =
-  '0x30c20447b960b7ad6cc64a516aca93d53680ac6585ad0c9f480bbd1f07dadf68';
+  '0x215d9b888bdd7ca60f494b5e49c32857bd8246f6fa490ed2605175fd88572e47';
 
 (async () => {
   const { returnValues: withdrawIXs, tx } = await blizzardTestnet.fcfs({
