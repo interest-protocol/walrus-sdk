@@ -15,7 +15,7 @@
       "types": "./dist/blizzard/index.d.ts"
     }
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "blizzard sdk",
   "publishConfig": {
     "access": "public"
@@ -42,7 +42,8 @@
     "last-epoch-apr": "tsx src/scripts/lst/last-epoch-apr.ts",
     "to-wal-at-epoch": "tsx src/scripts/lst/to-wal-at-epoch.ts",
     "to-lst-at-epoch": "tsx src/scripts/lst/to-lst-at-epoch.ts",
-    "get-fees": "tsx src/scripts/lst/get-fees.ts"
+    "get-fees": "tsx src/scripts/lst/get-fees.ts",
+    "allowed-nodes": "tsx src/scripts/lst/allowed-nodes.ts"
   },
   "keywords": [],
   "license": "ISC",

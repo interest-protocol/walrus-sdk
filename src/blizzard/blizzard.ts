@@ -26,7 +26,7 @@ import {
 } from './blizzard.types';
 import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
-import { OptionU64 } from './structs';
+import { ID, OptionU64 } from './structs';
 import { getEpochData, getFees, msToDays } from './utils';
 
 const lstTypeCache = new Map<string, string>();
@@ -567,6 +567,28 @@ export class BlizzardSDK extends SDK {
     ]);
 
     return result[0][0] ? BigInt(result[0][0]) : null;
+  }
+
+  public async allowedNodes(blizzardStaking: SharedObject) {
+    const tx = new Transaction();
+
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD,
+      module: this.modules.Protocol,
+      function: 'allowed_nodes',
+      typeArguments: [lstType],
+      arguments: [this.sharedObject(tx, blizzardStaking)],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.vector(ID)],
+    ]);
+
+    return result[0][0];
   }
 
   async maybeFetchAndCacheLstType(blizzardStaking: SharedObject) {
