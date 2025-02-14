@@ -31,13 +31,13 @@ export const PACKAGES: Record<Network, Package> = {
   },
   [Network.Testnet]: {
     SNOW: normalizeSuiAddress(
-      '0x76651fc50af2e28ee39394d25bcd917a121a6db5fdc1eb61abeaed290f1e32b1'
+      '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
     ),
     BLIZZARD: normalizeSuiAddress(
-      '0x5bb6d4d0436496f8e3ce8d80a8e6e7512cbdbf8285a99f9c5684b47e7c3e791d'
+      '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
     ),
     BLIZZARD_HOOKS: normalizeSuiAddress(
-      '0x85c887c6ad7218b5f6aaceef57a431e123426b9c8395cb41081fd8f126382c6f'
+      '0x1c8290270bd3d5a485ff4710594e21193bad35200a22d563dbda5f9381ed7819'
     ),
     WAL: normalizeSuiAddress(
       '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
@@ -46,7 +46,7 @@ export const PACKAGES: Record<Network, Package> = {
       '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
     ),
     BLIZZARD_UTILS: normalizeSuiAddress(
-      '0x5dc3e0034144cb596aa37898c467179416619644ae275acdd58b343f5947af01'
+      '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
     ),
   },
 } as const;
@@ -65,31 +65,31 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
   },
   [Network.Testnet]: {
     SNOW_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xbdd005e28564366734a9b3250d19f1619ead778cd7da769162c00312948cbdb4'
+      '0x11bbcafce2f1ac5059fac52ac0ad06b2f9e5012a02bb51e13c9f5a4136dcbe29'
     ),
     BLIZZARD_SUPER_ADMIN: normalizeSuiAddress(
-      '0xad0b5733c7fc1fe1a185d11a872233620a320605182478094a6921b2f94cc3ff'
+      '0xfe0d30f60d424bb651b3141da1032fc8779710ab0baaed97f46fd613fb3e0122'
     ),
     BLIZZARD_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x5c665bbb36129fa1eed596c067772770d8ac18238e25805d007f6e2cbd540e73'
+      '0xce03202ae505a79b175252db48d406003d058ae083cc1c649bdb169863ada7bf'
     ),
     BLIZZARD_STAKE_NFT_PUBLISHER: normalizeSuiAddress(
-      '0xb7bc20e24c6b21128f25cf623938dd6a2cb71d7881bee6456f36d3fb16350152'
+      '0x6ac62637f465051f451e03d44a3c65cf98cf9d249599cd5125eb64b0e76e78cc'
     ),
     SNOW_SUPER_ADMIN: normalizeSuiAddress(
       '0x00dc2d0d5eef7eed3cca372983e0e6bd2c7a1646b21653f03604fa6230216392'
     ),
     BLIZZARD_PUBLISHER: normalizeSuiAddress(
-      '0x4bc86f831e9b44f3a4e31e0dde6b86d0c7e3ee7930a1223d32b821f33fe87660'
+      '0xef03dd353d28a9ea42f3d5901d4240a225ac7009ed5e3ad3a148f3febd11c375'
     ),
     BLIZZARD_STAKE_NFT_DISPLAY: normalizeSuiAddress(
-      '0x0ab08fa9de5dcf4b1f7cc4b9bdc869da15d9d1c3f4766df1d4a716b4a6c7cc02'
+      '0xa84802d2a2f8020e7fcc63c96c960c30ec57c6980cd81794dfbe2529594a9639'
     ),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xb97499543378a64a1c9f40e2dd64e486403d70804f2231974fb53795458b456b'
+      '0x4abcad6930b284abac5eb1f31cd4e73c5c326bf0861275110a545a297688ad91'
     ),
     BLIZZARD_UTILS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x404600c6fccd7f2daa936a2c3a050ec43a3a9f63b942f03a25d9094d7e29a0e6'
+      '0x88f38b4543425a8cd4e67847cde8fd5855069e6010e08f82e66b55d34929ff31'
     ),
   },
 } as const;
@@ -137,23 +137,23 @@ export const SHARED_OBJECTS = {
     }),
     SNOW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x3ea28372cb41f5376c22716a0dab893b96f0697980bf21622468af54cd9b1721'
+        '0x00027caf92b6a305879bfee4e7eafa0971399b2b1fd1a36652beadf364afbae0'
       ),
-      initialSharedVersion: '129657967',
+      initialSharedVersion: '371949582',
       mutable,
     }),
     BLIZZARD_AV: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0x3cf39d48669ff88b0734292b4e8e2f46cfda1456a2003c94d02759967a1f79bc'
+        '0x872eff737c1a78dce463e58a490c65d81fa6411f46304a3cb849aac6fbcfdfa5'
       ),
-      initialSharedVersion: '370268908',
+      initialSharedVersion: '371949583',
       mutable,
     }),
     BLIZZARD_ACL: ({ mutable }: { mutable: boolean }) => ({
       objectId: normalizeSuiObjectId(
-        '0xed9392214b39d0c8a9d9aeec9a2d4754fad67154ebca3b56bf35c2c57ecfbfb0'
+        '0xe36d344c5031045a900191b728364dc4d28fae10d1863854179d289a12bf3ef0'
       ),
-      initialSharedVersion: '370268908',
+      initialSharedVersion: '371949583',
       mutable,
     }),
     SNOW_ACL: ({ mutable }: { mutable: boolean }) => ({

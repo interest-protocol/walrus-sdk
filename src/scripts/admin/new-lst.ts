@@ -9,7 +9,7 @@ import {
 } from '../utils.script';
 
 const SNOW_TREASURY_CAP =
-  '0xdb3a2575c034b9137700a1397213c70fd51f2c441713be96856ca7b196583696';
+  '0x0e63f8925bab09d466cf31878dcbcf79b0dcae02049ff3ffaf24eaf03650eb63';
 
 (async () => {
   const superAdminRecipient = keypair.toSuiAddress();
