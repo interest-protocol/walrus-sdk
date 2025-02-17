@@ -16,7 +16,7 @@ export enum Modules {
 export const INNER_WALRUS_STAKING_ID = {
   [Network.Mainnet]: normalizeSuiObjectId('0x0'),
   [Network.Testnet]: normalizeSuiObjectId(
-    '0x06e1418b6daf7a37787611bb3112d4d026d82076ad82e74ddf79c59c9426355a'
+    '0x73593d21f89d29ecdbad8b6cf58e2be280cc369cb3d9d90c4707f70385884bad'
   ),
 };
 
