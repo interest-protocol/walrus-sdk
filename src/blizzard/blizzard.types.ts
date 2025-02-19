@@ -34,9 +34,14 @@ export interface MaybeTx {
   tx?: Transaction;
 }
 
+export interface PackageValue {
+  original: string;
+  latest: string;
+}
+
 export type Package = Record<
   'SNOW' | 'BLIZZARD' | 'BLIZZARD_HOOKS' | 'WAL' | 'WALRUS' | 'BLIZZARD_UTILS',
-  string
+  PackageValue & Record<string, string>
 >;
 
 export type SharedObjects = Record<

@@ -22,32 +22,80 @@ export const INNER_WALRUS_STAKING_ID = {
 
 export const PACKAGES: Record<Network, Package> = {
   [Network.Mainnet]: {
-    SNOW: normalizeSuiAddress('0x0'),
-    BLIZZARD: normalizeSuiAddress('0x0'),
-    BLIZZARD_HOOKS: normalizeSuiAddress('0x0'),
-    WAL: normalizeSuiAddress('0x0'),
-    WALRUS: normalizeSuiAddress('0x0'),
-    BLIZZARD_UTILS: normalizeSuiAddress('0x0'),
+    SNOW: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
+    BLIZZARD: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
+    BLIZZARD_HOOKS: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
+    WAL: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
+    WALRUS: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
+    BLIZZARD_UTILS: {
+      original: normalizeSuiAddress('0x0'),
+      latest: normalizeSuiAddress('0x0'),
+    },
   },
   [Network.Testnet]: {
-    SNOW: normalizeSuiAddress(
-      '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
-    ),
-    BLIZZARD: normalizeSuiAddress(
-      '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
-    ),
-    BLIZZARD_HOOKS: normalizeSuiAddress(
-      '0x1c8290270bd3d5a485ff4710594e21193bad35200a22d563dbda5f9381ed7819'
-    ),
-    WAL: normalizeSuiAddress(
-      '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
-    ),
-    WALRUS: normalizeSuiAddress(
-      '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
-    ),
-    BLIZZARD_UTILS: normalizeSuiAddress(
-      '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
-    ),
+    SNOW: {
+      original: normalizeSuiAddress(
+        '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
+      ),
+      latest: normalizeSuiAddress(
+        '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
+      ),
+    },
+    BLIZZARD: {
+      original: normalizeSuiAddress(
+        '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
+      ),
+      latest: normalizeSuiAddress(
+        '0xc8720c26e97746bebd299efa76463cf376622065177299dc41fd76df038cd19c'
+      ),
+    },
+    WAL: {
+      original: normalizeSuiAddress(
+        '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
+      ),
+      latest: normalizeSuiAddress(
+        '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
+      ),
+    },
+    WALRUS: {
+      original: normalizeSuiAddress(
+        '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
+      ),
+      latest: normalizeSuiAddress(
+        '0x883b27de942203191726d6722dc097b6d5499234be2aa22c3872849c45fdd712'
+      ),
+    },
+    BLIZZARD_UTILS: {
+      original: normalizeSuiAddress(
+        '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
+      ),
+      latest: normalizeSuiAddress(
+        '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
+      ),
+    },
+    BLIZZARD_HOOKS: {
+      original: normalizeSuiAddress(
+        '0x1c8290270bd3d5a485ff4710594e21193bad35200a22d563dbda5f9381ed7819'
+      ),
+      latest: normalizeSuiAddress(
+        '0x1c8290270bd3d5a485ff4710594e21193bad35200a22d563dbda5f9381ed7819'
+      ),
+    },
   },
 } as const;
 
@@ -188,16 +236,16 @@ export const INNER_LST_STATE_ID = {
 
 export const TYPES = {
   [Network.Mainnet]: {
-    SNOW: `${PACKAGES[Network.Mainnet].SNOW}::snow::Snow`,
-    BLIZZARD: `${PACKAGES[Network.Mainnet].BLIZZARD}::blizzard::Blizzard`,
-    WAL: `${PACKAGES[Network.Mainnet].WAL}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS}::staked_wal::StakedWal`,
+    SNOW: `${PACKAGES[Network.Mainnet].SNOW.original}::snow::Snow`,
+    BLIZZARD: `${PACKAGES[Network.Mainnet].BLIZZARD.original}::blizzard::Blizzard`,
+    WAL: `${PACKAGES[Network.Mainnet].WAL.original}::wal::WAL`,
+    STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS.original}::staked_wal::StakedWal`,
   },
   [Network.Testnet]: {
-    SNOW: `${PACKAGES[Network.Testnet].SNOW}::snow::SNOW`,
-    BLIZZARD: `${PACKAGES[Network.Testnet].BLIZZARD}::blizzard::BLIZZARD`,
-    WAL: `${PACKAGES[Network.Testnet].WAL}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS}::staked_wal::StakedWal`,
+    SNOW: `${PACKAGES[Network.Testnet].SNOW.original}::snow::SNOW`,
+    BLIZZARD: `${PACKAGES[Network.Testnet].BLIZZARD.original}::blizzard::BLIZZARD`,
+    WAL: `${PACKAGES[Network.Testnet].WAL.original}::wal::WAL`,
+    STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS.original}::staked_wal::StakedWal`,
   },
 } as const;
 

@@ -71,7 +71,7 @@ export class SDK {
 
   public getAllowedVersions(tx: Transaction) {
     return tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.AllowedVersions,
       function: 'get_allowed_versions',
       arguments: [

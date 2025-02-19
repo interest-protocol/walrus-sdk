@@ -46,7 +46,7 @@ export class BlizzardAclSDK extends SDK {
 
     return {
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.ACL,
         function: 'new_admin',
         typeArguments: [lstType],
@@ -71,7 +71,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'new_and_transfer',
       typeArguments: [lstType],
@@ -99,7 +99,7 @@ export class BlizzardAclSDK extends SDK {
 
     return {
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.ACL,
         function: 'sign_in',
         typeArguments: [lstType],
@@ -124,7 +124,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'revoke',
       typeArguments: [lstType],
@@ -147,7 +147,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'is_admin',
       typeArguments: [lstType],
@@ -171,7 +171,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'destroy_admin',
       typeArguments: [lstType],
@@ -196,7 +196,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'start_transfer',
       typeArguments: [lstType],
@@ -219,7 +219,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'finish_transfer',
       typeArguments: [lstType],
@@ -242,7 +242,7 @@ export class BlizzardAclSDK extends SDK {
     lstType = await this.maybeFetchAndSaveLstType(lstType);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.ACL,
       function: 'destroy',
       typeArguments: [lstType],

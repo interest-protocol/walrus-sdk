@@ -6,7 +6,7 @@ import { blizzardTestnet } from '../utils.script';
     blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
       mutable: true,
     }).objectId,
-    epoch: 15,
+    epoch: 17,
     value: 1_000_000_000n,
   });
 

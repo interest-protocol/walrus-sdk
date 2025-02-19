@@ -1,6 +1,10 @@
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
-import { isValidSuiAddress, normalizeStructTag } from '@mysten/sui/utils';
+import {
+  isValidSuiAddress,
+  normalizeStructTag,
+  normalizeSuiAddress,
+} from '@mysten/sui/utils';
 import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import { Decimal } from 'decimal.js';
 import { pathOr } from 'ramda';
@@ -95,7 +99,7 @@ export class BlizzardSDK extends SDK {
     );
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'new',
       arguments: [
@@ -127,7 +131,7 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'sync_exchange_rate',
       arguments: [
@@ -164,7 +168,7 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.Protocol,
         function: 'mint',
         arguments: [
@@ -200,7 +204,7 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.Protocol,
         function: 'mint_after_votes_finished',
         arguments: [
@@ -220,7 +224,7 @@ export class BlizzardSDK extends SDK {
 
   public keepStakeNft({ tx = new Transaction(), nft }: KeepStakeNftArgs) {
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.StakeNFT,
       function: 'keep',
       arguments: [nft],
@@ -246,7 +250,7 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.Protocol,
         function: 'burn_stake_nft',
         arguments: [
@@ -277,7 +281,7 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD_HOOKS,
+        package: this.packages.BLIZZARD_HOOKS.latest,
         module: this.modules.Hooks,
         function: 'fcfs',
         arguments: [
@@ -302,7 +306,7 @@ export class BlizzardSDK extends SDK {
     this.assertNotZeroAddress(to);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD_UTILS,
+      package: this.packages.BLIZZARD_UTILS.latest,
       module: this.modules.Utils,
       function: 'vector_transfer',
       arguments: [vector, tx.pure.address(to)],
@@ -331,7 +335,7 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: tx.moveCall({
-        package: this.packages.BLIZZARD,
+        package: this.packages.BLIZZARD.latest,
         module: this.modules.Protocol,
         function: 'burn_lst',
         arguments: [
@@ -363,7 +367,7 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'add_node',
       arguments: [
@@ -394,7 +398,7 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'remove_node',
       arguments: [
@@ -453,7 +457,7 @@ export class BlizzardSDK extends SDK {
     const principal = 1_000_000_000n;
 
     tx.moveCall({
-      package: this.packages.WALRUS,
+      package: this.packages.WALRUS.latest,
       module: this.modules.WalrusStaking,
       function: 'calculate_rewards',
       arguments: [
@@ -519,8 +523,23 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     const tx = new Transaction();
+
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'sync_exchange_rate',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
+      ],
+      typeArguments: [lstType],
+    });
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'to_wal_at_epoch',
       arguments: [
@@ -532,11 +551,19 @@ export class BlizzardSDK extends SDK {
       typeArguments: [lstType],
     });
 
-    const result = await devInspectAndGetReturnValues(this.client, tx, [
-      [OptionU64],
-    ]);
+    const result = await this.client.devInspectTransactionBlock({
+      transactionBlock: tx,
+      sender: normalizeSuiAddress('0x0'),
+    });
 
-    return result[0][0] ? BigInt(result[0][0]) : null;
+    invariant(
+      result.results?.[1]?.returnValues?.[0]?.[0]?.length,
+      'Invalid result: no return value found'
+    );
+
+    return OptionU64.parse(
+      Uint8Array.from(result.results?.[1]?.returnValues[0][0])
+    );
   }
 
   public async toLstAtEpoch({
@@ -549,8 +576,23 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     const tx = new Transaction();
+
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'sync_exchange_rate',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
+      ],
+      typeArguments: [lstType],
+    });
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'to_lst_at_epoch',
       arguments: [
@@ -562,11 +604,19 @@ export class BlizzardSDK extends SDK {
       typeArguments: [lstType],
     });
 
-    const result = await devInspectAndGetReturnValues(this.client, tx, [
-      [OptionU64],
-    ]);
+    const result = await this.client.devInspectTransactionBlock({
+      transactionBlock: tx,
+      sender: normalizeSuiAddress('0x0'),
+    });
 
-    return result[0][0] ? BigInt(result[0][0]) : null;
+    invariant(
+      result.results?.[1]?.returnValues?.[0]?.[0]?.length,
+      'Invalid result: no return value found'
+    );
+
+    return OptionU64.parse(
+      Uint8Array.from(result.results?.[1]?.returnValues[0][0])
+    );
   }
 
   public async allowedNodes(blizzardStaking: SharedObject) {
@@ -577,7 +627,7 @@ export class BlizzardSDK extends SDK {
     const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
 
     tx.moveCall({
-      package: this.packages.BLIZZARD,
+      package: this.packages.BLIZZARD.latest,
       module: this.modules.Protocol,
       function: 'allowed_nodes',
       typeArguments: [lstType],
