@@ -2,9 +2,9 @@ import { SHARED_OBJECTS } from '../../blizzard/constants';
 import {
   blizzardTestnet,
   executeTx,
-  MYSTEN_LABS_K8S,
   SNOW_ADMIN_CAP,
   snowAclTestnet,
+  STUDIO_MIRAI,
 } from '../utils.script';
 
 (async () => {
@@ -14,7 +14,7 @@ import {
 
   await blizzardTestnet.addNode({
     tx,
-    nodeId: MYSTEN_LABS_K8S,
+    nodeId: STUDIO_MIRAI,
     adminWitness: returnValues,
     blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
       mutable: true,
