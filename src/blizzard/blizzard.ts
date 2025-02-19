@@ -4,6 +4,7 @@ import {
   isValidSuiAddress,
   normalizeStructTag,
   normalizeSuiAddress,
+  normalizeSuiObjectId,
 } from '@mysten/sui/utils';
 import { devInspectAndGetReturnValues } from '@polymedia/suitcase-core';
 import { Decimal } from 'decimal.js';
@@ -493,6 +494,26 @@ export class BlizzardSDK extends SDK {
       .mul(100);
 
     return apr.toNumber();
+  }
+
+  public async getLatestWalrusPackage() {
+    const staking = await this.client.getObject({
+      id: this.sharedObjects.WALRUS_STAKING({ mutable: false }).objectId,
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    const packageId = pathOr(
+      '',
+      ['data', 'content', 'fields', 'package_id'],
+      staking
+    );
+
+    invariant(packageId, 'Invalid package ID');
+
+    return normalizeSuiObjectId(packageId);
   }
 
   public async typeFromBlizzardStaking(blizzardStaking: SharedObject) {
