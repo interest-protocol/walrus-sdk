@@ -44,7 +44,8 @@
     "to-lst-at-epoch": "tsx src/scripts/lst/to-lst-at-epoch.ts",
     "get-fees": "tsx src/scripts/lst/get-fees.ts",
     "allowed-nodes": "tsx src/scripts/lst/allowed-nodes.ts",
-    "get-latest-walrus-package": "tsx src/scripts/lst/get-latest-walrus-package.ts"
+    "get-latest-walrus-package": "tsx src/scripts/lst/get-latest-walrus-package.ts",
+    "update-nft-display": "tsx src/scripts/admin/update-nft-display.ts"
   },
   "keywords": [],
   "license": "ISC",

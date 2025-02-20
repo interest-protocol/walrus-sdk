@@ -32,7 +32,9 @@ export const SNOW_ADMIN_CAP =
 
 export const POW_9 = 10n ** 9n;
 
-export const testnetClient = new SuiClient({ url: getFullnodeUrl('testnet') });
+export const testnetClient = new SuiClient({
+  url: getFullnodeUrl('testnet'),
+});
 
 export const blizzardAclTestnet = new BlizzardAclSDK({
   acl: SHARED_OBJECTS.testnet.BLIZZARD_ACL({ mutable: true }),

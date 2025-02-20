@@ -240,12 +240,14 @@ export const TYPES = {
     BLIZZARD: `${PACKAGES[Network.Mainnet].BLIZZARD.original}::blizzard::Blizzard`,
     WAL: `${PACKAGES[Network.Mainnet].WAL.original}::wal::WAL`,
     STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS.original}::staked_wal::StakedWal`,
+    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Mainnet].BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
   },
   [Network.Testnet]: {
     SNOW: `${PACKAGES[Network.Testnet].SNOW.original}::snow::SNOW`,
     BLIZZARD: `${PACKAGES[Network.Testnet].BLIZZARD.original}::blizzard::BLIZZARD`,
     WAL: `${PACKAGES[Network.Testnet].WAL.original}::wal::WAL`,
     STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS.original}::staked_wal::StakedWal`,
+    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Testnet].BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
   },
 } as const;
 
