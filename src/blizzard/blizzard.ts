@@ -33,7 +33,7 @@ import {
 import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
 import { ID, IX, OptionU64 } from './structs';
-import { getEpochData, getFees, msToDays } from './utils';
+import { getEpochData, getFees, getStakeNFTData, msToDays } from './utils';
 
 const lstTypeCache = new Map<string, string>();
 
@@ -444,6 +444,53 @@ export class BlizzardSDK extends SDK {
     });
 
     return getFees(data);
+  }
+
+  public async getStakeNFTData(objectId: string) {
+    const data = await this.client.getObject({
+      id: objectId,
+      options: {
+        showContent: true,
+      },
+    });
+
+    const stakeNFTData = getStakeNFTData(data);
+
+    const epochData = await this.getEpochData();
+
+    const tx = new Transaction();
+
+    tx.moveCall({
+      package: this.packages.WALRUS.latest,
+      module: this.modules.WalrusStaking,
+      function: 'calculate_rewards',
+      arguments: [
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
+        tx.pure.id(stakeNFTData.nodeId),
+        tx.pure.u64(stakeNFTData.principal),
+        tx.pure.u32(stakeNFTData.activationEpoch),
+        tx.pure.u32(epochData.currentEpoch),
+      ],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.U64],
+    ]);
+
+    invariant(
+      typeof result[0][0] === 'string',
+      'Invalid result: no rewards found'
+    );
+
+    const rewards = BigInt(result[0][0]);
+
+    return {
+      ...stakeNFTData,
+      rewards,
+    };
   }
 
   /**

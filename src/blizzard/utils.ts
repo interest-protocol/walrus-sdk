@@ -1,4 +1,5 @@
 import { getFullnodeUrl, SuiObjectResponse } from '@mysten/sui/client';
+import { normalizeSuiAddress } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 
 import { GetMsUntilNextEpochArgs, SdkConstructorArgs } from './blizzard.types';
@@ -77,4 +78,20 @@ export const getMsUntilNextEpoch = (
     firstEpochStartTimestamp + currentEpoch * epochDurationMs;
 
   return nextEpochStartTimestamp - now;
+};
+
+export const getStakeNFTData = (response: SuiObjectResponse) => {
+  const fields = pathOr({}, ['data', 'content', 'fields'], response);
+
+  return {
+    principal: BigInt(pathOr('0', ['value'], fields)),
+    activationEpoch: pathOr(0, ['activation_epoch'], fields),
+    id: normalizeSuiAddress(pathOr('0x0', ['id', 'id'], fields)),
+    symbol: pathOr('', ['symbol'], fields),
+    typeName: pathOr('', ['type_name', 'fields', 'name'], fields),
+    nodeId: normalizeSuiAddress(
+      pathOr('0x0', ['inner', 'fields', 'node_id'], fields)
+    ),
+    state: pathOr('', ['inner', 'fields', 'state', 'variant'], fields),
+  };
 };
