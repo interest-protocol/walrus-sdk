@@ -251,21 +251,4 @@ export const TYPES = {
   },
 } as const;
 
-export const OBJECT_TYPES = {
-  [Network.Mainnet]: {
-    SNOW: `${PACKAGES[Network.Mainnet].SNOW.latest}::snow::Snow`,
-    BLIZZARD: `${PACKAGES[Network.Mainnet].BLIZZARD.latest}::blizzard::Blizzard`,
-    WAL: `${PACKAGES[Network.Mainnet].WAL.latest}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS.latest}::staked_wal::StakedWal`,
-    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Mainnet].BLIZZARD.latest}::blizzard_stake_nft::BlizzardStakeNFT`,
-  },
-  [Network.Testnet]: {
-    SNOW: `${PACKAGES[Network.Testnet].SNOW.latest}::snow::SNOW`,
-    BLIZZARD: `${PACKAGES[Network.Testnet].BLIZZARD.latest}::blizzard::BLIZZARD`,
-    WAL: `${PACKAGES[Network.Testnet].WAL.latest}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS.latest}::staked_wal::StakedWal`,
-    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Testnet].BLIZZARD.latest}::blizzard_stake_nft::BlizzardStakeNFT`,
-  },
-} as const;
-
 export const MAX_BPS = 10_000n;

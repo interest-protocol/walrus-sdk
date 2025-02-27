@@ -10,7 +10,7 @@ const SNOW_COIN_ID =
 (async () => {
   const txb = new Transaction();
 
-  const amount = POW_9 / 3n;
+  const amount = POW_9 / 5n;
 
   const wal = txb.splitCoins(txb.object(SNOW_COIN_ID), [txb.pure.u64(amount)]);
 
