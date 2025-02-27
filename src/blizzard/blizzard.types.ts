@@ -17,7 +17,7 @@ export type OwnedObject = TransactionObjectArgument | string | ObjectRef;
 
 export type SharedObject = string | SharedObjectRef;
 
-type U64 = string | bigint | number;
+export type U64 = string | bigint | number;
 
 export interface GetMsUntilNextEpochArgs {
   currentEpoch: number;
@@ -155,6 +155,11 @@ export interface ToLstAtEpochArgs {
   blizzardStaking: SharedObject;
   epoch: number;
   value: U64;
+}
+
+export interface ViewFcfsArgs {
+  value: U64;
+  blizzardStaking: SharedObject;
 }
 
 // === BLIZZARD LST END ===

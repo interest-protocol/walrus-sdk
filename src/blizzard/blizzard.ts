@@ -28,10 +28,11 @@ import {
   ToLstAtEpochArgs,
   ToWalAtEpochArgs,
   VectorTransferArgs,
+  ViewFcfsArgs,
 } from './blizzard.types';
 import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
 import { SDK } from './sdk';
-import { ID, OptionU64 } from './structs';
+import { ID, IX, OptionU64 } from './structs';
 import { getEpochData, getFees, msToDays } from './utils';
 
 const lstTypeCache = new Map<string, string>();
@@ -494,6 +495,37 @@ export class BlizzardSDK extends SDK {
       .mul(100);
 
     return apr.toNumber();
+  }
+
+  /**
+   * Calculate the APR for the last epoch
+   * @param nodeId - The node ID to calculate the APR for the last epoch.
+   * @returns The APR for the last epoch in percentage format. E.g.: 1 === 1%
+   */
+  public async viewFcfs({ value, blizzardStaking }: ViewFcfsArgs) {
+    const tx = new Transaction();
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD_HOOKS.latest,
+      module: this.modules.Hooks,
+      function: 'fcfs',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: true })
+        ),
+        tx.pure.u64(value),
+      ],
+      typeArguments: [lstType],
+    });
+
+    const result = await devInspectAndGetReturnValues(this.client, tx, [
+      [bcs.vector(IX)],
+    ]);
+
+    return result;
   }
 
   public async getLatestWalrusPackage() {

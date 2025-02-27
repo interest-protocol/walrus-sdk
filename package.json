@@ -15,7 +15,7 @@
       "types": "./dist/blizzard/index.d.ts"
     }
   },
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "blizzard sdk",
   "publishConfig": {
     "access": "public"
@@ -45,7 +45,8 @@
     "get-fees": "tsx src/scripts/lst/get-fees.ts",
     "allowed-nodes": "tsx src/scripts/lst/allowed-nodes.ts",
     "get-latest-walrus-package": "tsx src/scripts/lst/get-latest-walrus-package.ts",
-    "update-nft-display": "tsx src/scripts/admin/update-nft-display.ts"
+    "update-nft-display": "tsx src/scripts/admin/update-nft-display.ts",
+    "view-fcfs": "tsx src/scripts/lst/view-fcfs.ts"
   },
   "keywords": [],
   "license": "ISC",
