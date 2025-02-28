@@ -60,8 +60,9 @@ export const PACKAGES: Record<Network, Package> = {
       original: normalizeSuiAddress(
         '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
       ),
+      V2: '0xc8720c26e97746bebd299efa76463cf376622065177299dc41fd76df038cd19c',
       latest: normalizeSuiAddress(
-        '0xc8720c26e97746bebd299efa76463cf376622065177299dc41fd76df038cd19c'
+        '0x66458464ea1168fa2b58bf126764c936069da4238a4cbb0abc5319d9e9746639'
       ),
     },
     WAL: {

@@ -5,7 +5,7 @@ import { blizzardTestnet, executeTx, keypair, POW_9 } from '../utils.script';
 
 // Add a coin object id
 const SNOW_COIN_ID =
-  '0x5ad2fe6b824b967b2fbaf143ffdf44ac96f71b42699862c974c7efdf870d4889';
+  '0x0bfcfede0c1d785a3a0723bb9476e0618b3518e07c5b23b002d16d340a4a3d0e';
 
 (async () => {
   const txb = new Transaction();
