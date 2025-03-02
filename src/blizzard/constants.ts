@@ -16,7 +16,7 @@ export enum Modules {
 export const INNER_WALRUS_STAKING_ID = {
   [Network.Mainnet]: normalizeSuiObjectId('0x0'),
   [Network.Testnet]: normalizeSuiObjectId(
-    '0x73593d21f89d29ecdbad8b6cf58e2be280cc369cb3d9d90c4707f70385884bad'
+    '0x161434e1e4bf91f0d55111602d407039394bb9a72d3e90e74d1ee26f2b16c7b5'
   ),
 };
 
@@ -61,8 +61,9 @@ export const PACKAGES: Record<Network, Package> = {
         '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
       ),
       V2: '0xc8720c26e97746bebd299efa76463cf376622065177299dc41fd76df038cd19c',
+      V3: '0x66458464ea1168fa2b58bf126764c936069da4238a4cbb0abc5319d9e9746639',
       latest: normalizeSuiAddress(
-        '0x66458464ea1168fa2b58bf126764c936069da4238a4cbb0abc5319d9e9746639'
+        '0x2bddde9d73d65a82de0127f6e97f6a511ccef20c976747b94af77d4928e64a4d'
       ),
     },
     WAL: {
@@ -77,8 +78,9 @@ export const PACKAGES: Record<Network, Package> = {
       original: normalizeSuiAddress(
         '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
       ),
+      V2: '0x883b27de942203191726d6722dc097b6d5499234be2aa22c3872849c45fdd712',
       latest: normalizeSuiAddress(
-        '0x883b27de942203191726d6722dc097b6d5499234be2aa22c3872849c45fdd712'
+        '0x261b2e46428a152570f9ac08972d67f7c12d62469ccd381a51774c1df7a829ca'
       ),
     },
     BLIZZARD_UTILS: {
