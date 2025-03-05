@@ -93,10 +93,10 @@ export const PACKAGES: Record<Network, Package> = {
     },
     BLIZZARD_HOOKS: {
       original: normalizeSuiAddress(
-        '0x5752c1a3cb45b3a73e279cd70f693204cb0098c7885bb563bc404a7b6db3c8a0'
+        '0x9c682e7670e2e343a6a652f379670a6c20ba6fbb9f445acf744296fa78fc946a'
       ),
       latest: normalizeSuiAddress(
-        '0xcf1024d7316e235913888a3079e0600ab7efa2fa9fabde082e7f94f4852702b9'
+        '0x9c682e7670e2e343a6a652f379670a6c20ba6fbb9f445acf744296fa78fc946a'
       ),
     },
   },
@@ -137,7 +137,7 @@ export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
       '0xa84802d2a2f8020e7fcc63c96c960c30ec57c6980cd81794dfbe2529594a9639'
     ),
     HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xc022d5f8b9148e183c8c800d9f937a9d9c1c419d7ac32b73d8a5ece4c725eabd'
+      '0x27e5a57cae0bec1c6040a26d42b85269e7a81e29fc984c418c7b86b4fe602771'
     ),
     BLIZZARD_UTILS_UPGRADE_CAP: normalizeSuiObjectId(
       '0x88f38b4543425a8cd4e67847cde8fd5855069e6010e08f82e66b55d34929ff31'

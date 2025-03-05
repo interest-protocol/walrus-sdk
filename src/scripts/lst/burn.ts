@@ -26,7 +26,7 @@ import { blizzardTestnet, executeTx, keypair, POW_9 } from '../utils.script';
     tx,
     lstCoin: wal,
     withdrawIXs,
-    minWalValue: amount - 1n,
+    minWalValue: 0,
     blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
       mutable: true,
     }).objectId,
