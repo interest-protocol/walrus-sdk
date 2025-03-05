@@ -96,7 +96,7 @@ export const PACKAGES: Record<Network, Package> = {
         '0x5752c1a3cb45b3a73e279cd70f693204cb0098c7885bb563bc404a7b6db3c8a0'
       ),
       latest: normalizeSuiAddress(
-        '0x5752c1a3cb45b3a73e279cd70f693204cb0098c7885bb563bc404a7b6db3c8a0'
+        '0xcf1024d7316e235913888a3079e0600ab7efa2fa9fabde082e7f94f4852702b9'
       ),
     },
   },

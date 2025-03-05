@@ -1,18 +1,18 @@
+import { coinWithBalance } from '@mysten/sui/transactions';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { SHARED_OBJECTS, TYPES } from '../../blizzard/constants';
 import { blizzardTestnet, executeTx, keypair, POW_9 } from '../utils.script';
 
-// Add a coin object id
-const SNOW_COIN_ID =
-  '0x0bfcfede0c1d785a3a0723bb9476e0618b3518e07c5b23b002d16d340a4a3d0e';
-
 (async () => {
   const txb = new Transaction();
 
-  const amount = POW_9 / 5n;
+  const amount = POW_9;
 
-  const wal = txb.splitCoins(txb.object(SNOW_COIN_ID), [txb.pure.u64(amount)]);
+  const wal = coinWithBalance({
+    type: TYPES.testnet.SNOW,
+    balance: amount,
+  })(txb);
 
   const { returnValues: withdrawIXs, tx } = await blizzardTestnet.fcfs({
     tx: txb,
