@@ -1,11 +1,10 @@
-import { OWNED_OBJECTS } from 'src/blizzard';
-
-import { executeTx, keypair, snowAclTestnet } from '../utils.script';
+import { OWNED_OBJECTS } from '../../blizzard';
+import { executeTx, keypair, wwalAcl } from '../utils.script';
 
 (async () => {
-  const { tx } = await snowAclTestnet.newAdminAndTransfer({
+  const { tx } = await wwalAcl.newAdminAndTransfer({
     recipient: keypair.toSuiAddress(),
-    superAdmin: OWNED_OBJECTS.testnet.SNOW_SUPER_ADMIN,
+    superAdmin: OWNED_OBJECTS.WWAL_SUPER_ADMIN,
   });
 
   await executeTx(tx);

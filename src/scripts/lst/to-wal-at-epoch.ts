@@ -1,12 +1,12 @@
 import { SHARED_OBJECTS } from '../../blizzard/constants';
-import { blizzardTestnet } from '../utils.script';
+import { blizzardSDK } from '../utils.script';
 
 (async () => {
-  const wal = await blizzardTestnet.toWalAtEpoch({
-    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+  const wal = await blizzardSDK.toWalAtEpoch({
+    blizzardStaking: SHARED_OBJECTS.WWAL_STAKING({
       mutable: true,
     }).objectId,
-    epoch: 17,
+    epoch: 1,
     value: 1_000_000_000n,
   });
 

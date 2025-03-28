@@ -1,9 +1,9 @@
 import { SHARED_OBJECTS } from '../../blizzard/constants';
-import { blizzardTestnet } from '../utils.script';
+import { blizzardSDK } from '../utils.script';
 
 (async () => {
-  const type = await blizzardTestnet.typeFromBlizzardStaking(
-    SHARED_OBJECTS.testnet.SNOW_STAKING({
+  const type = await blizzardSDK.typeFromBlizzardStaking(
+    SHARED_OBJECTS.WWAL_STAKING({
       mutable: true,
     }).objectId
   );

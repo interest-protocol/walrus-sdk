@@ -1,9 +1,9 @@
-import { blizzardAclTestnet } from '../utils.script';
-import { BLIZZARD_ADMIN_CAP } from '../utils.script';
+import { OWNED_OBJECTS } from '../../blizzard';
+import { blizzardAcl } from '../utils.script';
 
 (async () => {
-  const isAdmin = await blizzardAclTestnet.isAdmin({
-    admin: BLIZZARD_ADMIN_CAP,
+  const isAdmin = await blizzardAcl.isAdmin({
+    admin: OWNED_OBJECTS.BLIZZARD_ADMIN,
   });
 
   console.log(isAdmin);

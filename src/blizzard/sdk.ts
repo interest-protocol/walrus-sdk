@@ -5,7 +5,6 @@ import { has } from 'ramda';
 import invariant from 'tiny-invariant';
 
 import {
-  Network,
   OwnedObject,
   Package,
   SdkConstructorArgs,
@@ -19,9 +18,8 @@ export class SDK {
   packages: Package;
   sharedObjects: SharedObjects;
   modules = Modules;
-  types: (typeof TYPES)[keyof typeof TYPES];
+  types: typeof TYPES;
 
-  network: Network;
   #rpcUrl: string;
 
   client: SuiClient;
@@ -47,14 +45,8 @@ export class SDK {
       'You must provide sharedObjects for this specific network'
     );
 
-    invariant(
-      data.network,
-      'You must provide network for this specific network'
-    );
-
     invariant(data.types, 'You must provide types for this specific network');
 
-    this.network = data.network;
     this.#rpcUrl = data.fullNodeUrl;
     this.packages = data.packages;
     this.sharedObjects = data.sharedObjects;
@@ -65,7 +57,6 @@ export class SDK {
   public networkConfig() {
     return {
       rpcUrl: this.#rpcUrl,
-      network: this.network,
     };
   }
 

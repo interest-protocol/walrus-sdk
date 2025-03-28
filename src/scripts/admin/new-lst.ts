@@ -1,25 +1,21 @@
-import {
-  BLIZZARD_ADMIN_CAP,
-  blizzardAclTestnet,
-  blizzardTestnet,
-  executeTx,
-  keypair,
-} from '../utils.script';
+import { OWNED_OBJECTS } from 'src/blizzard';
 
-const SNOW_TREASURY_CAP =
-  '0x0e63f8925bab09d466cf31878dcbcf79b0dcae02049ff3ffaf24eaf03650eb63';
+import { blizzardAcl, blizzardSDK, executeTx, keypair } from '../utils.script';
+
+const LST_TREASURY_CAP =
+  '0x423ec7efb16a74e6885385a49df3436758fa9e79302a9f0de9485b8874cf2aaf';
 
 (async () => {
   const superAdminRecipient = keypair.toSuiAddress();
 
-  const { tx, returnValues } = await blizzardAclTestnet.signIn({
-    admin: BLIZZARD_ADMIN_CAP,
+  const { tx, returnValues } = await blizzardAcl.signIn({
+    admin: OWNED_OBJECTS.BLIZZARD_ADMIN,
   });
 
-  await blizzardTestnet.newLST({
+  await blizzardSDK.newLST({
     tx,
     superAdminRecipient,
-    treasuryCap: SNOW_TREASURY_CAP,
+    treasuryCap: LST_TREASURY_CAP,
     adminWitness: returnValues,
   });
 

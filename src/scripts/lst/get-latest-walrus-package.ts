@@ -1,7 +1,7 @@
-import { blizzardTestnet } from '../utils.script';
+import { blizzardSDK } from '../utils.script';
 
 (async () => {
-  const walrusPackage = await blizzardTestnet.getLatestWalrusPackage();
+  const walrusPackage = await blizzardSDK.getLatestWalrusPackage();
 
   console.log(walrusPackage);
 })();

@@ -1,6 +1,6 @@
 import { normalizeSuiAddress, normalizeSuiObjectId } from '@mysten/sui/utils';
 
-import { Network, OwnedObjects, Package } from './blizzard.types';
+import { OwnedObjects, Package } from './blizzard.types';
 
 export enum Modules {
   AllowedVersions = 'blizzard_allowed_versions',
@@ -13,245 +13,154 @@ export enum Modules {
   WalrusStaking = 'staking',
 }
 
-export const INNER_WALRUS_STAKING_ID = {
-  [Network.Mainnet]: normalizeSuiObjectId('0x0'),
-  [Network.Testnet]: normalizeSuiObjectId(
-    '0x161434e1e4bf91f0d55111602d407039394bb9a72d3e90e74d1ee26f2b16c7b5'
-  ),
-};
+export const INNER_WALRUS_STAKING_ID =
+  '0x5849e7cdbdaad46b6c68a5462ed1fc58c302862785769b450c882679bc452999';
 
-export const PACKAGES: Record<Network, Package> = {
-  [Network.Mainnet]: {
-    SNOW: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
-    BLIZZARD: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
-    BLIZZARD_HOOKS: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
-    WAL: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
-    WALRUS: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
-    BLIZZARD_UTILS: {
-      original: normalizeSuiAddress('0x0'),
-      latest: normalizeSuiAddress('0x0'),
-    },
+export const PACKAGES: Package = {
+  WWAL: {
+    original: normalizeSuiAddress(
+      '0xb1b0650a8862e30e3f604fd6c5838bc25464b8d3d827fbd58af7cb9685b832bf'
+    ),
+    latest: normalizeSuiAddress(
+      '0xb1b0650a8862e30e3f604fd6c5838bc25464b8d3d827fbd58af7cb9685b832bf'
+    ),
   },
-  [Network.Testnet]: {
-    SNOW: {
-      original: normalizeSuiAddress(
-        '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
-      ),
-      latest: normalizeSuiAddress(
-        '0xb9671a4464279e45aa7a1264fabba1415a657ef24fa062c6a0d60d11bf04ee31'
-      ),
-    },
-    BLIZZARD: {
-      original: normalizeSuiAddress(
-        '0x9bcea92f0fe583011e942d3fc50cfd3e54be9652e55fa7221fec77c0d45e7c17'
-      ),
-      V2: '0xc8720c26e97746bebd299efa76463cf376622065177299dc41fd76df038cd19c',
-      V3: '0x66458464ea1168fa2b58bf126764c936069da4238a4cbb0abc5319d9e9746639',
-      latest: normalizeSuiAddress(
-        '0x2bddde9d73d65a82de0127f6e97f6a511ccef20c976747b94af77d4928e64a4d'
-      ),
-    },
-    WAL: {
-      original: normalizeSuiAddress(
-        '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
-      ),
-      latest: normalizeSuiAddress(
-        '0x8190b041122eb492bf63cb464476bd68c6b7e570a4079645a8b28732b6197a82'
-      ),
-    },
-    WALRUS: {
-      original: normalizeSuiAddress(
-        '0x795ddbc26b8cfff2551f45e198b87fc19473f2df50f995376b924ac80e56f88b'
-      ),
-      V2: '0x883b27de942203191726d6722dc097b6d5499234be2aa22c3872849c45fdd712',
-      latest: normalizeSuiAddress(
-        '0x261b2e46428a152570f9ac08972d67f7c12d62469ccd381a51774c1df7a829ca'
-      ),
-    },
-    BLIZZARD_UTILS: {
-      original: normalizeSuiAddress(
-        '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
-      ),
-      latest: normalizeSuiAddress(
-        '0x567785dda392e53a26c536c2e5e1b851e8e65ef474df6e06d01ece05f84b8e00'
-      ),
-    },
-    BLIZZARD_HOOKS: {
-      original: normalizeSuiAddress(
-        '0x9c682e7670e2e343a6a652f379670a6c20ba6fbb9f445acf744296fa78fc946a'
-      ),
-      latest: normalizeSuiAddress(
-        '0x9c682e7670e2e343a6a652f379670a6c20ba6fbb9f445acf744296fa78fc946a'
-      ),
-    },
+  BLIZZARD: {
+    original: normalizeSuiAddress(
+      '0x29ba7f7bc53e776f27a6d1289555ded2f407b4b1a799224f06b26addbcd1c33d'
+    ),
+    latest: normalizeSuiAddress(
+      '0x29ba7f7bc53e776f27a6d1289555ded2f407b4b1a799224f06b26addbcd1c33d'
+    ),
+  },
+  BLIZZARD_HOOKS: {
+    original: normalizeSuiAddress(
+      '0x10a7c91b25090b81a4de1e3a3912c994feb446529a308b7aa549eea259b11842'
+    ),
+    latest: normalizeSuiAddress(
+      '0x10a7c91b25090b81a4de1e3a3912c994feb446529a308b7aa549eea259b11842'
+    ),
+  },
+  WAL: {
+    original: normalizeSuiAddress(
+      '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59'
+    ),
+    latest: normalizeSuiAddress(
+      '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59'
+    ),
+  },
+  WALRUS: {
+    original: normalizeSuiAddress(
+      '0xfdc88f7d7cf30afab2f82e8380d11ee8f70efb90e863d1de8616fae1bb09ea77'
+    ),
+    latest: normalizeSuiAddress(
+      '0xfdc88f7d7cf30afab2f82e8380d11ee8f70efb90e863d1de8616fae1bb09ea77'
+    ),
+  },
+  BLIZZARD_UTILS: {
+    original: normalizeSuiAddress(
+      '0x3e12a9b6dbe7997b441b5fd6cf5e953cf2f3521a8f353f33e7f297cf7dac0ecc'
+    ),
+    latest: normalizeSuiAddress(
+      '0x3e12a9b6dbe7997b441b5fd6cf5e953cf2f3521a8f353f33e7f297cf7dac0ecc'
+    ),
   },
 } as const;
 
-export const OWNED_OBJECTS: Record<Network, OwnedObjects> = {
-  [Network.Mainnet]: {
-    SNOW_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
-    BLIZZARD_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
-    BLIZZARD_STAKE_NFT_PUBLISHER: normalizeSuiAddress('0x0'),
-    BLIZZARD_SUPER_ADMIN: normalizeSuiAddress('0x0'),
-    BLIZZARD_PUBLISHER: normalizeSuiAddress('0x0'),
-    BLIZZARD_STAKE_NFT_DISPLAY: normalizeSuiAddress('0x0'),
-    HOOKS_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
-    SNOW_SUPER_ADMIN: normalizeSuiAddress('0x0'),
-    BLIZZARD_UTILS_UPGRADE_CAP: normalizeSuiObjectId('0x0'),
-  },
-  [Network.Testnet]: {
-    SNOW_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x11bbcafce2f1ac5059fac52ac0ad06b2f9e5012a02bb51e13c9f5a4136dcbe29'
-    ),
-    BLIZZARD_SUPER_ADMIN: normalizeSuiAddress(
-      '0xfe0d30f60d424bb651b3141da1032fc8779710ab0baaed97f46fd613fb3e0122'
-    ),
-    BLIZZARD_UPGRADE_CAP: normalizeSuiObjectId(
-      '0xce03202ae505a79b175252db48d406003d058ae083cc1c649bdb169863ada7bf'
-    ),
-    BLIZZARD_STAKE_NFT_PUBLISHER: normalizeSuiAddress(
-      '0x6ac62637f465051f451e03d44a3c65cf98cf9d249599cd5125eb64b0e76e78cc'
-    ),
-    SNOW_SUPER_ADMIN: normalizeSuiAddress(
-      '0x1f7ea08843ece04349d121649eca925a8dfe01b0f5b8f7f49eec6d7afb7a1a05'
-    ),
-    BLIZZARD_PUBLISHER: normalizeSuiAddress(
-      '0xef03dd353d28a9ea42f3d5901d4240a225ac7009ed5e3ad3a148f3febd11c375'
-    ),
-    BLIZZARD_STAKE_NFT_DISPLAY: normalizeSuiAddress(
-      '0xa84802d2a2f8020e7fcc63c96c960c30ec57c6980cd81794dfbe2529594a9639'
-    ),
-    HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x27e5a57cae0bec1c6040a26d42b85269e7a81e29fc984c418c7b86b4fe602771'
-    ),
-    BLIZZARD_UTILS_UPGRADE_CAP: normalizeSuiObjectId(
-      '0x88f38b4543425a8cd4e67847cde8fd5855069e6010e08f82e66b55d34929ff31'
-    ),
-  },
+export const OWNED_OBJECTS: OwnedObjects = {
+  WWAL_UPGRADE_CAP: normalizeSuiObjectId(
+    '0xdb3ce9226913db734f514ef2f3463c04fdafe59f057c9a90aab994e276b155d1'
+  ),
+  BLIZZARD_UPGRADE_CAP: normalizeSuiObjectId(
+    '0xf77b750e8546131b9fbb91434b70f9a642fd074c31a108cddd888549c8e1d9ac'
+  ),
+  BLIZZARD_STAKE_NFT_PUBLISHER: normalizeSuiAddress(
+    '0x2a0d528f1b78f5c25c43f4f73736493c20ad4e5d1dc53935373ef3212cbffae6'
+  ),
+  BLIZZARD_SUPER_ADMIN: normalizeSuiAddress(
+    '0x4c2321cfa370fdeadd3c2bf47730365b9abc0ec9f6161d191af8bf8fd76d70fd'
+  ),
+  BLIZZARD_PUBLISHER: normalizeSuiAddress(
+    '0xaae6c78f20889a9f0af7c35b4744699abea5b11e0f3a106c02bc63fd8674c20d'
+  ),
+  BLIZZARD_STAKE_NFT_DISPLAY: normalizeSuiAddress(
+    '0x229b40abcabeccb268c85aac9091101a635a21e602dcfd2d7ff1ef153f0ff9c3'
+  ),
+  HOOKS_UPGRADE_CAP: normalizeSuiObjectId(
+    '0x5e566949b8da83f7392293be6bf2f57167722aaf62ac92d6f882ffa656e61e82'
+  ),
+  WWAL_SUPER_ADMIN: normalizeSuiAddress(
+    '0xf4c2e773f52cfdeb54e4393f9a4f21ee13064bed902bfe948863406debf7d99c'
+  ),
+  BLIZZARD_UTILS_UPGRADE_CAP: normalizeSuiObjectId(
+    '0x671b96e76cb85bdadc1bb27591e681b63a32396acd7933d70b05e02240099e0f'
+  ),
+  BLIZZARD_ADMIN: normalizeSuiAddress(
+    '0xf628949db97fa4d7b1fb190c108264d85d471efab4146dca5bf3b4320532f966'
+  ),
+  WWAL_ADMIN: normalizeSuiAddress(
+    '0x110c2c257c4fb6fb346a40441b2f478192f7219db9f54b044a93c6370a394ce6'
+  ),
 } as const;
 
 export const SHARED_OBJECTS = {
-  [Network.Mainnet]: {
-    WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-    SNOW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-    BLIZZARD_AV: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-    BLIZZARD_ACL: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-    SNOW_ACL: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-    SNOW_STAKING: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId('0x0'),
-      initialSharedVersion: '1',
-      mutable,
-    }),
-  },
-  [Network.Testnet]: {
-    WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0x20266a17b4f1a216727f3eef5772f8d486a9e3b5e319af80a5b75809c035561d'
-      ),
-      initialSharedVersion: '334023834',
-      mutable,
-    }),
-    SNOW_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0x00027caf92b6a305879bfee4e7eafa0971399b2b1fd1a36652beadf364afbae0'
-      ),
-      initialSharedVersion: '371949582',
-      mutable,
-    }),
-    BLIZZARD_AV: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0x872eff737c1a78dce463e58a490c65d81fa6411f46304a3cb849aac6fbcfdfa5'
-      ),
-      initialSharedVersion: '371949583',
-      mutable,
-    }),
-    BLIZZARD_ACL: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0xe36d344c5031045a900191b728364dc4d28fae10d1863854179d289a12bf3ef0'
-      ),
-      initialSharedVersion: '371949583',
-      mutable,
-    }),
-    SNOW_ACL: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0x7f10caa269e5fa60063180d8ccbd89d9ba594d3f35aac5d0ebd7623bc19f6eef'
-      ),
-      initialSharedVersion: '374324183',
-      mutable,
-    }),
-    SNOW_STAKING: ({ mutable }: { mutable: boolean }) => ({
-      objectId: normalizeSuiObjectId(
-        '0x816143d7561b92f26e86cb55d143e7e8196d1cbb12163a96cbc8846c5ac0667f'
-      ),
-      initialSharedVersion: '374324183',
-      mutable,
-    }),
-  } as const,
+  WALRUS_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x10b9d30c28448939ce6c4d6c6e0ffce4a7f8a4ada8248bdad09ef8b70e4a3904'
+    ),
+    initialSharedVersion: '317862159',
+    mutable,
+  }),
+  WWAL_COIN_METADATA: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0xb99b3755f138d5a56b3bbc1b9cc19ed7da9be82c79844b39ff84d5c438ee5c40'
+    ),
+    initialSharedVersion: '511167558',
+    mutable,
+  }),
+  BLIZZARD_AV: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x4199e3c5349075a98ec0b6100c7f1785242d97ba1f9311ce7a3a021a696f9e4a'
+    ),
+    initialSharedVersion: '511167559',
+    mutable,
+  }),
+  BLIZZARD_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x4796e5ff6ea2002736a2491b096ae01fa1940de982c4a2dd3810e5936cdc648d'
+    ),
+    initialSharedVersion: '511167559',
+    mutable,
+  }),
+  WWAL_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x274e6692465b9c5f2057d63b3f328c67286d96c15beffb0909aa00fc34bbd0c4'
+    ),
+    initialSharedVersion: '511181119',
+    mutable,
+  }),
+  WWAL_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0xccf034524a2bdc65295e212128f77428bb6860d757250c43323aa38b3d04df6d'
+    ),
+    initialSharedVersion: '511181119',
+    mutable,
+  }),
 };
 
 export const INNER_LST_STATE_ID = {
-  [Network.Mainnet]: {
-    [SHARED_OBJECTS.mainnet.SNOW_STAKING({ mutable: false }).objectId]:
-      normalizeSuiObjectId('0x0'),
-  },
-  [Network.Testnet]: {
-    [SHARED_OBJECTS.testnet.SNOW_STAKING({ mutable: false }).objectId]:
-      normalizeSuiObjectId(
-        '0x5c007b8707268f08eafefb64721e109216cc2281508d36eb47cac031b771327c'
-      ),
-  },
+  [SHARED_OBJECTS.WWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xaf09dc03865554dc44d152f64be0233228b4421e05f97e1f7c227a3fcb7bb653'
+    ),
 };
 
 export const TYPES = {
-  [Network.Mainnet]: {
-    SNOW: `${PACKAGES[Network.Mainnet].SNOW.original}::snow::Snow`,
-    BLIZZARD: `${PACKAGES[Network.Mainnet].BLIZZARD.original}::blizzard::Blizzard`,
-    WAL: `${PACKAGES[Network.Mainnet].WAL.original}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Mainnet].WALRUS.original}::staked_wal::StakedWal`,
-    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Mainnet].BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
-  },
-  [Network.Testnet]: {
-    SNOW: `${PACKAGES[Network.Testnet].SNOW.original}::snow::SNOW`,
-    BLIZZARD: `${PACKAGES[Network.Testnet].BLIZZARD.original}::blizzard::BLIZZARD`,
-    WAL: `${PACKAGES[Network.Testnet].WAL.original}::wal::WAL`,
-    STAKED_WAL: `${PACKAGES[Network.Testnet].WALRUS.original}::staked_wal::StakedWal`,
-    BLIZZARD_STAKE_NFT: `${PACKAGES[Network.Testnet].BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
-  },
+  WWAL: `${PACKAGES.WWAL.original}::wwal::WWAL`,
+  BLIZZARD: `${PACKAGES.BLIZZARD.original}::blizzard::Blizzard`,
+  WAL: `${PACKAGES.WAL.original}::wal::WAL`,
+  STAKED_WAL: `${PACKAGES.WALRUS.original}::staked_wal::StakedWal`,
+  BLIZZARD_STAKE_NFT: `${PACKAGES.BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
 } as const;
 
 export const MAX_BPS = 10_000n;

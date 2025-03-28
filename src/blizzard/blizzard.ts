@@ -27,7 +27,7 @@ import {
   SyncExchangeRateArgs,
   ToLstAtEpochArgs,
   ToWalAtEpochArgs,
-  VectorTransferArgs,
+  VectorTransferStakedWalArgs,
   ViewFcfsArgs,
 } from './blizzard.types';
 import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
@@ -299,20 +299,25 @@ export class BlizzardSDK extends SDK {
     };
   }
 
-  public vectorTransfer({
+  public vectorTransferStakedWal({
     tx = new Transaction(),
     vector,
     to,
-    type,
-  }: VectorTransferArgs) {
+  }: VectorTransferStakedWalArgs) {
     this.assertNotZeroAddress(to);
 
     tx.moveCall({
       package: this.packages.BLIZZARD_UTILS.latest,
       module: this.modules.Utils,
-      function: 'vector_transfer',
-      arguments: [vector, tx.pure.address(to)],
-      typeArguments: [type],
+      function: 'vector_transfer_staked_wal',
+      arguments: [
+        this.sharedObject(
+          tx,
+          this.sharedObjects.WALRUS_STAKING({ mutable: false })
+        ),
+        vector,
+        tx.pure.address(to),
+      ],
     });
 
     return {
@@ -326,7 +331,6 @@ export class BlizzardSDK extends SDK {
     lstCoin,
     withdrawIXs,
     blizzardStaking,
-    minWalValue = 0n,
   }: BurnLstArgs) {
     this.assertObjectId(lstCoin);
 
@@ -348,7 +352,6 @@ export class BlizzardSDK extends SDK {
           ),
           this.ownedObject(tx, lstCoin),
           withdrawIXs,
-          tx.pure.u64(minWalValue),
           this.getAllowedVersions(tx),
         ],
         typeArguments: [lstType],
@@ -420,7 +423,7 @@ export class BlizzardSDK extends SDK {
 
   public async getEpochData() {
     const data = await this.client.getObject({
-      id: INNER_WALRUS_STAKING_ID[this.network],
+      id: INNER_WALRUS_STAKING_ID,
       options: {
         showType: true,
         showContent: true,
@@ -432,7 +435,7 @@ export class BlizzardSDK extends SDK {
 
   public async getFees(blizzardStaking: SharedObject) {
     const data = await this.client.getObject({
-      id: INNER_LST_STATE_ID[this.network][
+      id: INNER_LST_STATE_ID[
         typeof blizzardStaking === 'string'
           ? blizzardStaking
           : blizzardStaking.objectId
@@ -569,7 +572,7 @@ export class BlizzardSDK extends SDK {
     });
 
     const result = await devInspectAndGetReturnValues(this.client, tx, [
-      [bcs.vector(IX)],
+      [bcs.U64, bcs.vector(IX)],
     ]);
 
     return result;

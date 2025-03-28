@@ -1,10 +1,10 @@
 import { SHARED_OBJECTS } from '../../blizzard/constants';
-import { blizzardTestnet, log, POW_9 } from '../utils.script';
+import { blizzardSDK, log, POW_9 } from '../utils.script';
 
 (async () => {
-  const fcfs = await blizzardTestnet.viewFcfs({
+  const fcfs = await blizzardSDK.viewFcfs({
     value: POW_9,
-    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+    blizzardStaking: SHARED_OBJECTS.WWAL_STAKING({
       mutable: true,
     }).objectId,
   });

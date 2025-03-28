@@ -1,9 +1,9 @@
 import { SHARED_OBJECTS } from '../../blizzard/constants';
-import { log, snowAclTestnet } from '../utils.script';
+import { blizzardAcl, log } from '../utils.script';
 
 (async () => {
-  const type = await snowAclTestnet.typeFromBlizzardAcl(
-    SHARED_OBJECTS.testnet.SNOW_ACL({ mutable: false }).objectId
+  const type = await blizzardAcl.typeFromBlizzardAcl(
+    SHARED_OBJECTS.BLIZZARD_ACL({ mutable: false }).objectId
   );
 
   log(type);

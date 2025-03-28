@@ -3,19 +3,13 @@ import { normalizeSuiAddress } from '@mysten/sui/utils';
 import { pathOr } from 'ramda';
 
 import { GetMsUntilNextEpochArgs, SdkConstructorArgs } from './blizzard.types';
-import { Network } from './blizzard.types';
 import { PACKAGES, SHARED_OBJECTS, TYPES } from './constants';
 
-export const getSdkDefaultArgs = (
-  network = Network.Testnet
-): SdkConstructorArgs => ({
-  packages: PACKAGES[network],
-  fullNodeUrl: getFullnodeUrl(
-    network === Network.Mainnet ? 'mainnet' : 'testnet'
-  ),
-  sharedObjects: SHARED_OBJECTS[network],
-  network,
-  types: TYPES[network],
+export const getSdkDefaultArgs = (): SdkConstructorArgs => ({
+  packages: PACKAGES,
+  fullNodeUrl: getFullnodeUrl('mainnet'),
+  sharedObjects: SHARED_OBJECTS,
+  types: TYPES,
 });
 
 export const msToHours = (ms: number) => {

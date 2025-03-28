@@ -4,6 +4,7 @@ import {
   TransactionObjectArgument,
   TransactionResult,
 } from '@mysten/sui/transactions';
+import { NestedResult } from '@polymedia/suitcase-core';
 
 import type { TYPES } from './constants';
 
@@ -25,11 +26,6 @@ export interface GetMsUntilNextEpochArgs {
   firstEpochStartTimestamp: number;
 }
 
-export enum Network {
-  Mainnet = 'mainnet',
-  Testnet = 'testnet',
-}
-
 export interface MaybeTx {
   tx?: Transaction;
 }
@@ -40,12 +36,12 @@ export interface PackageValue {
 }
 
 export type Package = Record<
-  'SNOW' | 'BLIZZARD' | 'BLIZZARD_HOOKS' | 'WAL' | 'WALRUS' | 'BLIZZARD_UTILS',
+  'WWAL' | 'BLIZZARD' | 'BLIZZARD_HOOKS' | 'WAL' | 'WALRUS' | 'BLIZZARD_UTILS',
   PackageValue & Record<string, string>
 >;
 
 export type SharedObjects = Record<
-  | 'SNOW_COIN_METADATA'
+  | 'WWAL_COIN_METADATA'
   | 'BLIZZARD_AV'
   | 'BLIZZARD_ACL'
   | 'WALRUS_STAKING'
@@ -54,15 +50,17 @@ export type SharedObjects = Record<
 >;
 
 export type OwnedObjects = Record<
-  | 'SNOW_UPGRADE_CAP'
-  | 'SNOW_SUPER_ADMIN'
+  | 'WWAL_UPGRADE_CAP'
+  | 'WWAL_SUPER_ADMIN'
   | 'BLIZZARD_UPGRADE_CAP'
   | 'BLIZZARD_SUPER_ADMIN'
   | 'BLIZZARD_PUBLISHER'
   | 'BLIZZARD_STAKE_NFT_PUBLISHER'
   | 'BLIZZARD_STAKE_NFT_DISPLAY'
   | 'HOOKS_UPGRADE_CAP'
-  | 'BLIZZARD_UTILS_UPGRADE_CAP',
+  | 'BLIZZARD_UTILS_UPGRADE_CAP'
+  | 'BLIZZARD_ADMIN'
+  | 'WWAL_ADMIN',
   string
 >;
 
@@ -74,8 +72,7 @@ export interface SdkConstructorArgs {
   fullNodeUrl?: string;
   packages?: Package;
   sharedObjects?: SharedObjects;
-  network?: Network;
-  types?: (typeof TYPES)[keyof typeof TYPES];
+  types?: typeof TYPES;
 }
 
 // === BLIZZARD LST START ===
@@ -105,8 +102,7 @@ export interface BurnStakeNftArgs extends MaybeTx {
 
 export interface BurnLstArgs extends MaybeTx {
   lstCoin: OwnedObject;
-  withdrawIXs: TransactionResult;
-  minWalValue?: U64;
+  withdrawIXs: NestedResult;
   blizzardStaking: SharedObject;
 }
 
@@ -139,10 +135,9 @@ export interface FcfsArgs extends MaybeTx {
   value: U64;
 }
 
-export interface VectorTransferArgs extends MaybeTx {
-  vector: TransactionResult;
+export interface VectorTransferStakedWalArgs extends MaybeTx {
+  vector: NestedResult;
   to: string;
-  type: string;
 }
 
 export interface ToWalAtEpochArgs {

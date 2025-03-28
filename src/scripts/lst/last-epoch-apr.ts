@@ -1,8 +1,9 @@
-import { blizzardTestnet, MYSTEN_LABS_K8S } from '../utils.script';
+import { blizzardSDK } from '../utils.script';
 
 (async () => {
-  const apr = await blizzardTestnet.lastEpochApr({
-    nodeId: MYSTEN_LABS_K8S,
+  const apr = await blizzardSDK.lastEpochApr({
+    nodeId:
+      '0xe2b5df873dbcddfea64dcd16f0b581e3b9893becf991649dacc9541895c898cb',
   });
 
   console.log(apr);

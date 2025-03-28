@@ -1,33 +1,31 @@
-import { Transaction } from '@mysten/sui/transactions';
+import { coinWithBalance, Transaction } from '@mysten/sui/transactions';
 
 import { SHARED_OBJECTS, TYPES } from '../../blizzard/constants';
 import {
-  blizzardTestnet,
+  blizzardSDK,
   executeTx,
-  getCoinOfValue,
-  MYSTEN_LABS_K8S,
+  INTEREST_LABS_NODE,
   POW_9,
 } from '../utils.script';
 
 (async () => {
   const tx = new Transaction();
 
-  const walCoin = await getCoinOfValue({
-    tx,
-    coinType: TYPES.testnet.WAL,
-    coinValue: POW_9,
-  });
+  const walCoin = await coinWithBalance({
+    balance: POW_9,
+    type: TYPES.WAL,
+  })(tx);
 
-  const { returnValues: nft } = await blizzardTestnet.mintAfterVotesFinished({
+  const { returnValues: nft } = await blizzardSDK.mintAfterVotesFinished({
     tx,
-    nodeId: MYSTEN_LABS_K8S,
+    nodeId: INTEREST_LABS_NODE,
     walCoin,
-    blizzardStaking: SHARED_OBJECTS.testnet.SNOW_STAKING({
+    blizzardStaking: SHARED_OBJECTS.WWAL_STAKING({
       mutable: true,
     }).objectId,
   });
 
-  blizzardTestnet.keepStakeNft({
+  blizzardSDK.keepStakeNft({
     tx,
     nft,
   });
