@@ -146,12 +146,30 @@ export const SHARED_OBJECTS = {
     initialSharedVersion: '511181119',
     mutable,
   }),
+  PWAL_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0xd355b8e62f16418a02879de9bc4ab15c4dad9dd2966d15645e1674689bfbc8b9'
+    ),
+    initialSharedVersion: '511946394',
+    mutable,
+  }),
+  PWAL_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x8cb63927925e324164fba2dc555b7e27a00ed4ae80d27c58ce8cf5c4eb61f375'
+    ),
+    initialSharedVersion: '511946394',
+    mutable,
+  }),
 };
 
 export const INNER_LST_STATE_ID = {
   [SHARED_OBJECTS.WWAL_STAKING({ mutable: false }).objectId]:
     normalizeSuiObjectId(
       '0xaf09dc03865554dc44d152f64be0233228b4421e05f97e1f7c227a3fcb7bb653'
+    ),
+  [SHARED_OBJECTS.PWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0x857e3c653b517cf99820e7ee680de933799807eb780ca62344a60940311959a0'
     ),
 };
 

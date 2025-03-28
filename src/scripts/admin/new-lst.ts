@@ -1,12 +1,15 @@
 import { OWNED_OBJECTS } from 'src/blizzard';
+import invariant from 'tiny-invariant';
 
-import { blizzardAcl, blizzardSDK, executeTx, keypair } from '../utils.script';
+import { blizzardAcl, blizzardSDK, executeTx } from '../utils.script';
 
-const LST_TREASURY_CAP =
-  '0x423ec7efb16a74e6885385a49df3436758fa9e79302a9f0de9485b8874cf2aaf';
+const LST_TREASURY_CAP = '';
 
 (async () => {
-  const superAdminRecipient = keypair.toSuiAddress();
+  const superAdminRecipient = '';
+
+  invariant(LST_TREASURY_CAP, 'LST_TREASURY_CAP is not set');
+  invariant(superAdminRecipient, 'superAdminRecipient is not set');
 
   const { tx, returnValues } = await blizzardAcl.signIn({
     admin: OWNED_OBJECTS.BLIZZARD_ADMIN,
