@@ -107,6 +107,9 @@ export const OWNED_OBJECTS: OwnedObjects = {
   PWAL_SUPER_ADMIN: normalizeSuiAddress(
     '0x4f0dbb94b3743c63da78bfb9f4edfeb37655306fd84138a4d3f678a9c27ff8cf'
   ),
+  NWAL_SUPER_ADMIN: normalizeSuiAddress(
+    '0x94a6a2d1f6a677a9f163e78ab291f879a8bfa75c25cba4b60c8e610e1090e5d9'
+  ),
 } as const;
 
 export const SHARED_OBJECTS = {
@@ -180,6 +183,20 @@ export const SHARED_OBJECTS = {
     initialSharedVersion: '512115338',
     mutable,
   }),
+  NWAL_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x75c4a3d4f78aa3157e2ab6e8dfb2230432272c23ab9392b10a2212e4b2fcc9f9'
+    ),
+    initialSharedVersion: '512202210',
+    mutable,
+  }),
+  NWAL_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x6cf34551aacb518179a5266773372385e93ed25d4a3b077d86b6f07b141c7ec5'
+    ),
+    initialSharedVersion: '512202210',
+    mutable,
+  }),
 };
 
 export const INNER_LST_STATE_ID = {
@@ -194,6 +211,10 @@ export const INNER_LST_STATE_ID = {
   [SHARED_OBJECTS.BREAD_WAL_ACL({ mutable: false }).objectId]:
     normalizeSuiObjectId(
       '0x663c44caf0a40f148b9ba76e31d612dcaa138b3f2868990bcd48e89f183fdd44'
+    ),
+  [SHARED_OBJECTS.NWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xf29b73f0f22d2c7fc72c1fe9858859bc0268c3bc5742c4181d4bc2162b6f3f4a'
     ),
 };
 

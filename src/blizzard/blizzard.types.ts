@@ -62,7 +62,8 @@ export type OwnedObjects = Record<
   | 'BLIZZARD_ADMIN'
   | 'WWAL_ADMIN'
   | 'PWAL_SUPER_ADMIN'
-  | 'BREAD_WAL_SUPER_ADMIN',
+  | 'BREAD_WAL_SUPER_ADMIN'
+  | 'NWAL_SUPER_ADMIN',
   string
 >;
 
