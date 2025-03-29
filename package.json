@@ -48,7 +48,8 @@
     "update-nft-display": "tsx src/scripts/admin/update-nft-display.ts",
     "view-fcfs": "tsx src/scripts/lst/view-fcfs.ts",
     "get-staked-nft-data": "tsx src/scripts/lst/get-staked-nft-data.ts",
-    "query-lsts": "tsx src/scripts/lst/query-lsts.ts"
+    "query-lsts": "tsx src/scripts/lst/query-lsts.ts",
+    "update-description": "tsx src/scripts/admin/update-description.ts"
   },
   "keywords": [],
   "license": "ISC",

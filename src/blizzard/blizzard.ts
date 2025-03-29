@@ -27,6 +27,7 @@ import {
   SyncExchangeRateArgs,
   ToLstAtEpochArgs,
   ToWalAtEpochArgs,
+  UpdateMetadataArgs,
   VectorTransferStakedWalArgs,
   ViewFcfsArgs,
 } from './blizzard.types';
@@ -742,6 +743,162 @@ export class BlizzardSDK extends SDK {
     ]);
 
     return result[0][0];
+  }
+
+  public async updateName({
+    tx = new Transaction(),
+    value,
+    adminWitness,
+    blizzardStaking,
+  }: UpdateMetadataArgs) {
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    const coinMetadata = await this.client.getCoinMetadata({
+      coinType: normalizeStructTag(lstType),
+    });
+
+    invariant(
+      coinMetadata?.id,
+      'Invalid Coin Metadata: no coin metadata found'
+    );
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'update_name',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(tx, coinMetadata.id),
+        adminWitness,
+        tx.pure.string(value),
+        this.getAllowedVersions(tx),
+      ],
+      typeArguments: [lstType],
+    });
+
+    return {
+      tx,
+      returnValues: null,
+    };
+  }
+
+  public async updateSymbol({
+    tx = new Transaction(),
+    value,
+    adminWitness,
+    blizzardStaking,
+  }: UpdateMetadataArgs) {
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    const coinMetadata = await this.client.getCoinMetadata({
+      coinType: normalizeStructTag(lstType),
+    });
+
+    invariant(
+      coinMetadata?.id,
+      'Invalid Coin Metadata: no coin metadata found'
+    );
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'update_symbol',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(tx, coinMetadata.id),
+        adminWitness,
+        tx.pure.string(value),
+        this.getAllowedVersions(tx),
+      ],
+      typeArguments: [lstType],
+    });
+
+    return {
+      tx,
+      returnValues: null,
+    };
+  }
+
+  public async updateDescription({
+    tx = new Transaction(),
+    value,
+    adminWitness,
+    blizzardStaking,
+  }: UpdateMetadataArgs) {
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    const coinMetadata = await this.client.getCoinMetadata({
+      coinType: normalizeStructTag(lstType),
+    });
+
+    invariant(
+      coinMetadata?.id,
+      'Invalid Coin Metadata: no coin metadata found'
+    );
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'update_description',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(tx, coinMetadata.id),
+        adminWitness,
+        tx.pure.string(value),
+        this.getAllowedVersions(tx),
+      ],
+      typeArguments: [lstType],
+    });
+
+    return {
+      tx,
+      returnValues: null,
+    };
+  }
+
+  public async updateIconUrl({
+    tx = new Transaction(),
+    value,
+    adminWitness,
+    blizzardStaking,
+  }: UpdateMetadataArgs) {
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    const coinMetadata = await this.client.getCoinMetadata({
+      coinType: normalizeStructTag(lstType),
+    });
+
+    invariant(
+      coinMetadata?.id,
+      'Invalid Coin Metadata: no coin metadata found'
+    );
+
+    tx.moveCall({
+      package: this.packages.BLIZZARD.latest,
+      module: this.modules.Protocol,
+      function: 'update_icon_url',
+      arguments: [
+        this.sharedObject(tx, blizzardStaking),
+        this.sharedObject(tx, coinMetadata.id),
+        adminWitness,
+        tx.pure.string(value),
+        this.getAllowedVersions(tx),
+      ],
+      typeArguments: [lstType],
+    });
+
+    return {
+      tx,
+      returnValues: null,
+    };
   }
 
   async maybeFetchAndCacheLstType(blizzardStaking: SharedObject) {

@@ -217,3 +217,11 @@ export interface IsAdminArgs {
 }
 
 // === ACL Types End ===
+
+// === Update Metadata ===
+
+export interface UpdateMetadataArgs extends MaybeTx {
+  value: string;
+  adminWitness: TransactionResult;
+  blizzardStaking: SharedObject;
+}
