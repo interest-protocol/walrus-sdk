@@ -60,7 +60,9 @@ export type OwnedObjects = Record<
   | 'HOOKS_UPGRADE_CAP'
   | 'BLIZZARD_UTILS_UPGRADE_CAP'
   | 'BLIZZARD_ADMIN'
-  | 'WWAL_ADMIN',
+  | 'WWAL_ADMIN'
+  | 'PWAL_SUPER_ADMIN'
+  | 'BREAD_WAL_SUPER_ADMIN',
   string
 >;
 

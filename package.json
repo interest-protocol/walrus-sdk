@@ -47,7 +47,8 @@
     "get-latest-walrus-package": "tsx src/scripts/lst/get-latest-walrus-package.ts",
     "update-nft-display": "tsx src/scripts/admin/update-nft-display.ts",
     "view-fcfs": "tsx src/scripts/lst/view-fcfs.ts",
-    "get-staked-nft-data": "tsx src/scripts/lst/get-staked-nft-data.ts"
+    "get-staked-nft-data": "tsx src/scripts/lst/get-staked-nft-data.ts",
+    "query-lsts": "tsx src/scripts/lst/query-lsts.ts"
   },
   "keywords": [],
   "license": "ISC",
