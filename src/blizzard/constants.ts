@@ -282,7 +282,7 @@ export const INNER_LST_STATE_ID = {
     normalizeSuiObjectId(
       '0x857e3c653b517cf99820e7ee680de933799807eb780ca62344a60940311959a0'
     ),
-  [SHARED_OBJECTS.BREAD_WAL_ACL({ mutable: false }).objectId]:
+  [SHARED_OBJECTS.BREAD_WAL_STAKING({ mutable: false }).objectId]:
     normalizeSuiObjectId(
       '0x663c44caf0a40f148b9ba76e31d612dcaa138b3f2868990bcd48e89f183fdd44'
     ),
@@ -297,6 +297,33 @@ export const INNER_LST_STATE_ID = {
   [SHARED_OBJECTS.MWAL_STAKING({ mutable: false }).objectId]:
     normalizeSuiObjectId(
       '0x92e5a5312dbd299c7284788e60eca29e5241406ce6b35a2588d94d903a401a40'
+    ),
+};
+
+export const INNER_LST_TREASURY_CAP = {
+  [SHARED_OBJECTS.WWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0x423ec7efb16a74e6885385a49df3436758fa9e79302a9f0de9485b8874cf2aaf'
+    ),
+  [SHARED_OBJECTS.PWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0x2f30428b1ae24b8708b59c0083881c8ebf8149a5932323e6f1f25d59a3d7a53c'
+    ),
+  [SHARED_OBJECTS.BREAD_WAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xc4afc289ea27490d5e59e379c875890af37041f9bdf9651d1c213a097c328216'
+    ),
+  [SHARED_OBJECTS.NWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xbd3194d22731232d22f484bb44a9d02880bef12f2ab1fd5abe802ea9a08e69a5'
+    ),
+  [SHARED_OBJECTS.UP_WAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xa8315b6458e455121e0d8c7a656e31e1c9ccb9433c166289a3c93904d2046cdc'
+    ),
+  [SHARED_OBJECTS.MWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xe1b3079eea6e85fba6b013d101351f9c6397e5a56b8fe48624de5aa71a796933'
     ),
 };
 

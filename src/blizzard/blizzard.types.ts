@@ -237,3 +237,24 @@ export interface UpdateMetadataArgs extends MaybeTx {
   adminWitness: TransactionResult;
   blizzardStaking: SharedObject;
 }
+
+// === LBlizzard Staking ===
+
+export interface FeeConfig {
+  mint: U64;
+  burn: U64;
+  transmute: U64;
+  protocol: U64;
+}
+
+export interface BlizzardStaking {
+  objectId: string;
+  type: string;
+  paused: boolean;
+  walFeeBalance: bigint;
+  lstFeeBalance: bigint;
+  totalWalDeposited: bigint;
+  allowedNodes: string[];
+  feeConfig: FeeConfig;
+  lstSupply: bigint;
+}

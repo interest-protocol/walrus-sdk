@@ -7,7 +7,7 @@ import { blizzardSDK, executeTx, wwalAcl } from '../utils.script';
   });
   await blizzardSDK.updateDescription({
     tx,
-    value: 'A Liquid Staking Wal Coin',
+    value: 'Winter Walrus: The Walrus liquid staking coin.',
     adminWitness: returnValues,
     blizzardStaking: SHARED_OBJECTS.WWAL_STAKING({
       mutable: true,

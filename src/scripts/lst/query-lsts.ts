@@ -1,6 +1,6 @@
 import { PACKAGES } from 'src/blizzard';
 
-import { suiClient } from '../utils.script';
+import { log, suiClient } from '../utils.script';
 
 (async () => {
   const lst = await suiClient.queryEvents({
@@ -20,5 +20,6 @@ import { suiClient } from '../utils.script';
     },
   });
 
-  console.log(objects.map((x) => x.data?.content));
+  log(objects.map((x) => x.data?.content));
+  log(objects.map((x) => x.data?.content).length);
 })();

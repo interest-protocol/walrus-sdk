@@ -15,7 +15,7 @@
       "types": "./dist/blizzard/index.d.ts"
     }
   },
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "blizzard sdk",
   "publishConfig": {
     "access": "public"
@@ -51,7 +51,8 @@
     "query-lsts": "tsx src/scripts/lst/query-lsts.ts",
     "update-description": "tsx src/scripts/admin/update-description.ts",
     "metadata": "tsx src/scripts/metadata.ts",
-    "transfer": "tsx src/scripts/transfer.ts"
+    "transfer": "tsx src/scripts/transfer.ts",
+    "get-blizzard-staking": "tsx src/scripts/lst/get-blizzard-staking.ts"
   },
   "keywords": [],
   "license": "ISC",

@@ -13,6 +13,7 @@ import invariant from 'tiny-invariant';
 
 import {
   AddNodeArgs,
+  BlizzardStaking,
   BurnLstArgs,
   BurnStakeNftArgs,
   FcfsArgs,
@@ -31,10 +32,20 @@ import {
   VectorTransferStakedWalArgs,
   ViewFcfsArgs,
 } from './blizzard.types';
-import { INNER_LST_STATE_ID, INNER_WALRUS_STAKING_ID } from './constants';
+import {
+  INNER_LST_STATE_ID,
+  INNER_LST_TREASURY_CAP,
+  INNER_WALRUS_STAKING_ID,
+} from './constants';
 import { SDK } from './sdk';
 import { ID, IX, OptionU64 } from './structs';
-import { getEpochData, getFees, getStakeNFTData, msToDays } from './utils';
+import {
+  formatBlizzardStaking,
+  getEpochData,
+  getFees,
+  getStakeNFTData,
+  msToDays,
+} from './utils';
 
 const lstTypeCache = new Map<string, string>();
 
@@ -898,6 +909,46 @@ export class BlizzardSDK extends SDK {
     return {
       tx,
       returnValues: null,
+    };
+  }
+
+  public async getBlizzardStaking(
+    blizzardStaking: SharedObject
+  ): Promise<BlizzardStaking> {
+    const id =
+      typeof blizzardStaking === 'string'
+        ? blizzardStaking
+        : blizzardStaking.objectId;
+
+    const [data, treasuryCap, type] = await Promise.all([
+      this.client.getObject({
+        id: INNER_LST_STATE_ID[id],
+        options: {
+          showType: true,
+          showContent: true,
+        },
+      }),
+      this.client.getObject({
+        id: INNER_LST_TREASURY_CAP[id],
+        options: {
+          showType: true,
+          showContent: true,
+        },
+      }),
+      this.typeFromBlizzardStaking(blizzardStaking),
+    ]);
+
+    return {
+      ...(await formatBlizzardStaking(data)),
+      objectId: id,
+      type,
+      lstSupply: BigInt(
+        pathOr(
+          0n,
+          ['data', 'content', 'fields', 'total_supply', 'fields', 'value'],
+          treasuryCap
+        )
+      ),
     };
   }
 
