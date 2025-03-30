@@ -25,6 +25,38 @@ export const PACKAGES: Package = {
       '0xb1b0650a8862e30e3f604fd6c5838bc25464b8d3d827fbd58af7cb9685b832bf'
     ),
   },
+  UP_WAL: {
+    original: normalizeSuiAddress(
+      '0x615b29e7cf458a4e29363a966a01d6a6bf5026349bb4e957daa61ca9ffff639d'
+    ),
+    latest: normalizeSuiAddress(
+      '0x615b29e7cf458a4e29363a966a01d6a6bf5026349bb4e957daa61ca9ffff639d'
+    ),
+  },
+  BREAD_WAL: {
+    original: normalizeSuiAddress(
+      '0x5f70820b716a1d83580e5cf36dd0d0915b8763e1b85e3ef3db821ff40846be44'
+    ),
+    latest: normalizeSuiAddress(
+      '0x5f70820b716a1d83580e5cf36dd0d0915b8763e1b85e3ef3db821ff40846be44'
+    ),
+  },
+  PWAL: {
+    original: normalizeSuiAddress(
+      '0x0f03158a2caec1b656ee929007d08e58d620eeabeacac90ea7657d8b386b00b9'
+    ),
+    latest: normalizeSuiAddress(
+      '0x0f03158a2caec1b656ee929007d08e58d620eeabeacac90ea7657d8b386b00b9'
+    ),
+  },
+  NWAL: {
+    original: normalizeSuiAddress(
+      '0xd8b855d48fb4d8ffbb5c4a3ecac27b00f3712ce58626deb5a16a290e0c6edf84'
+    ),
+    latest: normalizeSuiAddress(
+      '0xd8b855d48fb4d8ffbb5c4a3ecac27b00f3712ce58626deb5a16a290e0c6edf84'
+    ),
+  },
   BLIZZARD: {
     original: normalizeSuiAddress(
       '0x29ba7f7bc53e776f27a6d1289555ded2f407b4b1a799224f06b26addbcd1c33d'
@@ -109,6 +141,9 @@ export const OWNED_OBJECTS: OwnedObjects = {
   ),
   NWAL_SUPER_ADMIN: normalizeSuiAddress(
     '0x94a6a2d1f6a677a9f163e78ab291f879a8bfa75c25cba4b60c8e610e1090e5d9'
+  ),
+  UP_WAL_SUPER_ADMIN: normalizeSuiAddress(
+    '0x945a183ad012e623408a892328a11f6fbbe2b7d77f5880a47c1d668a8cdceaf2'
   ),
 } as const;
 
@@ -197,6 +232,20 @@ export const SHARED_OBJECTS = {
     initialSharedVersion: '512202210',
     mutable,
   }),
+  UP_WAL_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0xea46b7a355838191205aca848fa7e244d976d8711276a2fcbe6be96bc8183b0e'
+    ),
+    initialSharedVersion: '513318745',
+    mutable,
+  }),
+  UP_WAL_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0xa3d69fdb63cbeaec068e8739fe7bda05a184f82999d1e76f0c0f5e9a29e297ed'
+    ),
+    initialSharedVersion: '513318745',
+    mutable,
+  }),
 };
 
 export const INNER_LST_STATE_ID = {
@@ -216,6 +265,10 @@ export const INNER_LST_STATE_ID = {
     normalizeSuiObjectId(
       '0xf29b73f0f22d2c7fc72c1fe9858859bc0268c3bc5742c4181d4bc2162b6f3f4a'
     ),
+  [SHARED_OBJECTS.UP_WAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0xb87a1e9ff830d6855d5197d1946640b67c198378958fece54c4b29f780220eca'
+    ),
 };
 
 export const TYPES = {
@@ -224,6 +277,10 @@ export const TYPES = {
   WAL: `${PACKAGES.WAL.original}::wal::WAL`,
   STAKED_WAL: `${PACKAGES.WALRUS.original}::staked_wal::StakedWal`,
   BLIZZARD_STAKE_NFT: `${PACKAGES.BLIZZARD.original}::blizzard_stake_nft::BlizzardStakeNFT`,
+  UP_WAL: `${PACKAGES.UP_WAL.original}::up_wal::UP_WAL`,
+  BREAD_WAL: `${PACKAGES.BREAD_WAL.original}::bread_wal::BREAD_WAL`,
+  NWAL: `${PACKAGES.NWAL.original}::nwal::NWAL`,
+  PWAL: `${PACKAGES.PWAL.original}::pwal::PWAL`,
 } as const;
 
 export const MAX_BPS = 10_000n;

@@ -36,7 +36,16 @@ export interface PackageValue {
 }
 
 export type Package = Record<
-  'WWAL' | 'BLIZZARD' | 'BLIZZARD_HOOKS' | 'WAL' | 'WALRUS' | 'BLIZZARD_UTILS',
+  | 'WWAL'
+  | 'BLIZZARD'
+  | 'BLIZZARD_HOOKS'
+  | 'WAL'
+  | 'WALRUS'
+  | 'BLIZZARD_UTILS'
+  | 'UP_WAL'
+  | 'BREAD_WAL'
+  | 'PWAL'
+  | 'NWAL',
   PackageValue & Record<string, string>
 >;
 
@@ -63,7 +72,8 @@ export type OwnedObjects = Record<
   | 'WWAL_ADMIN'
   | 'PWAL_SUPER_ADMIN'
   | 'BREAD_WAL_SUPER_ADMIN'
-  | 'NWAL_SUPER_ADMIN',
+  | 'NWAL_SUPER_ADMIN'
+  | 'UP_WAL_SUPER_ADMIN',
   string
 >;
 
