@@ -16,6 +16,7 @@ import {
   BlizzardStaking,
   BurnLstArgs,
   BurnStakeNftArgs,
+  ClaimFeesArgs,
   FcfsArgs,
   KeepStakeNftArgs,
   LastEpochAprArgs,
@@ -949,6 +950,31 @@ export class BlizzardSDK extends SDK {
           treasuryCap
         )
       ),
+    };
+  }
+
+  public async claimFees({
+    tx = new Transaction(),
+    adminWitness,
+    blizzardStaking,
+  }: ClaimFeesArgs) {
+    this.assertObjectId(blizzardStaking);
+
+    const lstType = await this.maybeFetchAndCacheLstType(blizzardStaking);
+
+    return {
+      tx,
+      returnValues: tx.moveCall({
+        package: this.packages.BLIZZARD.latest,
+        module: this.modules.Protocol,
+        function: 'claim_fees',
+        typeArguments: [lstType],
+        arguments: [
+          this.sharedObject(tx, blizzardStaking),
+          adminWitness,
+          this.getAllowedVersions(tx),
+        ],
+      }),
     };
   }
 

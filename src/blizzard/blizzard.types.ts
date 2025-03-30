@@ -228,6 +228,11 @@ export interface IsAdminArgs {
   lstType?: string;
 }
 
+export interface ClaimFeesArgs extends MaybeTx {
+  adminWitness: TransactionResult;
+  blizzardStaking: SharedObject;
+}
+
 // === ACL Types End ===
 
 // === Update Metadata ===
