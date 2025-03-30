@@ -57,6 +57,14 @@ export const PACKAGES: Package = {
       '0xd8b855d48fb4d8ffbb5c4a3ecac27b00f3712ce58626deb5a16a290e0c6edf84'
     ),
   },
+  MWAL: {
+    original: normalizeSuiAddress(
+      '0x64e081287af3fb4eb5720137348661493203d48535f582577177fcd3b253805f'
+    ),
+    latest: normalizeSuiAddress(
+      '0x64e081287af3fb4eb5720137348661493203d48535f582577177fcd3b253805f'
+    ),
+  },
   BLIZZARD: {
     original: normalizeSuiAddress(
       '0x29ba7f7bc53e776f27a6d1289555ded2f407b4b1a799224f06b26addbcd1c33d'
@@ -144,6 +152,9 @@ export const OWNED_OBJECTS: OwnedObjects = {
   ),
   UP_WAL_SUPER_ADMIN: normalizeSuiAddress(
     '0x945a183ad012e623408a892328a11f6fbbe2b7d77f5880a47c1d668a8cdceaf2'
+  ),
+  MWAL_SUPER_ADMIN: normalizeSuiAddress(
+    '0x0d5f13312fbc1645e9c23839049191b03d46f0742acd1dda3f086bbf55923284'
   ),
 } as const;
 
@@ -246,6 +257,20 @@ export const SHARED_OBJECTS = {
     initialSharedVersion: '513318745',
     mutable,
   }),
+  MWAL_ACL: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x3f4b6ed1459ffaa6d0f5a89b15ba6fed9098982d103e0a84ccebdf024b82ffe5'
+    ),
+    initialSharedVersion: '513336587',
+    mutable,
+  }),
+  MWAL_STAKING: ({ mutable }: { mutable: boolean }) => ({
+    objectId: normalizeSuiObjectId(
+      '0x1c98a3851302351913b34491a07930e83b1bd502cf1c6e9428b1c5d690d1e074'
+    ),
+    initialSharedVersion: '513336587',
+    mutable,
+  }),
 };
 
 export const INNER_LST_STATE_ID = {
@@ -269,6 +294,10 @@ export const INNER_LST_STATE_ID = {
     normalizeSuiObjectId(
       '0xb87a1e9ff830d6855d5197d1946640b67c198378958fece54c4b29f780220eca'
     ),
+  [SHARED_OBJECTS.MWAL_STAKING({ mutable: false }).objectId]:
+    normalizeSuiObjectId(
+      '0x92e5a5312dbd299c7284788e60eca29e5241406ce6b35a2588d94d903a401a40'
+    ),
 };
 
 export const TYPES = {
@@ -281,6 +310,7 @@ export const TYPES = {
   BREAD_WAL: `${PACKAGES.BREAD_WAL.original}::bread_wal::BREAD_WAL`,
   NWAL: `${PACKAGES.NWAL.original}::nwal::NWAL`,
   PWAL: `${PACKAGES.PWAL.original}::pwal::PWAL`,
+  MWAL: `${PACKAGES.MWAL.original}::mwal::MWAL`,
 } as const;
 
 export const MAX_BPS = 10_000n;

@@ -45,7 +45,8 @@ export type Package = Record<
   | 'UP_WAL'
   | 'BREAD_WAL'
   | 'PWAL'
-  | 'NWAL',
+  | 'NWAL'
+  | 'MWAL',
   PackageValue & Record<string, string>
 >;
 
@@ -73,7 +74,8 @@ export type OwnedObjects = Record<
   | 'PWAL_SUPER_ADMIN'
   | 'BREAD_WAL_SUPER_ADMIN'
   | 'NWAL_SUPER_ADMIN'
-  | 'UP_WAL_SUPER_ADMIN',
+  | 'UP_WAL_SUPER_ADMIN'
+  | 'MWAL_SUPER_ADMIN',
   string
 >;
 
