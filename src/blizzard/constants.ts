@@ -276,7 +276,7 @@ export const SHARED_OBJECTS = {
 export const INNER_LST_STATE_ID = {
   [SHARED_OBJECTS.WWAL_STAKING({ mutable: false }).objectId]:
     normalizeSuiObjectId(
-      '0xaf09dc03865554dc44d152f64be0233228b4421e05f97e1f7c227a3fcb7bb653'
+      '0xa9c43ae543b29a20467cdc3e933c3b7651089d56b1d99d6d4d863ae09fdc5624'
     ),
   [SHARED_OBJECTS.PWAL_STAKING({ mutable: false }).objectId]:
     normalizeSuiObjectId(
