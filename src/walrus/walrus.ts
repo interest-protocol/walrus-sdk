@@ -1,6 +1,6 @@
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { normalizeSuiObjectId } from '@mysten/sui/utils';
+import { isValidSuiObjectId, normalizeSuiObjectId } from '@mysten/sui/utils';
 import { chunkArray, sleep } from '@polymedia/suitcase-core';
 import { has, pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
@@ -15,11 +15,15 @@ import { getEpochData, getSdkDefaultArgs, getStakedWal } from './utils';
 import {
   JoinStakedWalArgs,
   OwnedObject,
+  RequestWithdrawingStake,
   SdkConstructorArgs,
+  SharedObject,
   SplitStakedWalArgs,
   StakedWal,
   StakedWalState,
+  StakeWithPoolArgs,
   U64,
+  WithdrawStake,
 } from './walrus.types';
 
 export class WalrusSDK {
@@ -229,6 +233,71 @@ export class WalrusSDK {
     } catch {
       return false;
     }
+  }
+
+  public stakeWithPool({
+    tx = new Transaction(),
+    walCoin,
+    nodeId,
+  }: StakeWithPoolArgs) {
+    invariant(isValidSuiObjectId(nodeId), 'Node ID must be a valid Sui ID');
+
+    return {
+      tx,
+      returnValue: tx.moveCall({
+        function: `stake_with_pool`,
+        arguments: [
+          this.sharedObject(tx, WALRUS_STAKING_OBJECT({ mutable: true })),
+          this.ownedObject(tx, walCoin),
+          tx.pure.id(nodeId),
+        ],
+        package: this.walrusPackages.latest,
+        module: this.modules.Staking,
+      }),
+    };
+  }
+
+  public requestWithdrawing({
+    tx = new Transaction(),
+    stakedWal,
+  }: RequestWithdrawingStake) {
+    tx.moveCall({
+      function: `request_withdraw_stake`,
+      arguments: [
+        this.sharedObject(tx, WALRUS_STAKING_OBJECT({ mutable: true })),
+        this.ownedObject(tx, stakedWal),
+      ],
+      package: this.walrusPackages.latest,
+      module: this.modules.Staking,
+    });
+
+    return {
+      tx,
+      returnValue: null,
+    };
+  }
+
+  public withdrawStake({ tx = new Transaction(), stakedWal }: WithdrawStake) {
+    return {
+      tx,
+      returnValue: tx.moveCall({
+        function: `withdraw_stake`,
+        arguments: [
+          this.sharedObject(tx, WALRUS_STAKING_OBJECT({ mutable: true })),
+          this.ownedObject(tx, stakedWal),
+        ],
+        package: this.walrusPackages.latest,
+        module: this.modules.Staking,
+      }),
+    };
+  }
+
+  sharedObject(tx: Transaction, obj: SharedObject) {
+    if (typeof obj === 'string') {
+      return tx.object(obj);
+    }
+
+    return tx.sharedObjectRef(obj);
   }
 
   ownedObject(tx: Transaction, obj: OwnedObject) {

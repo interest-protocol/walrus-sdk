@@ -7,6 +7,14 @@ export type U64 = string | bigint | number;
 
 export type OwnedObject = TransactionObjectArgument | string | ObjectRef;
 
+interface SharedObjectRef {
+  objectId: string;
+  mutable: boolean;
+  initialSharedVersion: number | string;
+}
+
+export type SharedObject = string | SharedObjectRef;
+
 export interface GetMsUntilNextEpochArgs {
   currentEpoch: number;
   epochDurationMs: number;
@@ -45,4 +53,17 @@ export interface JoinStakedWalArgs extends MaybeTx {
 export interface SplitStakedWalArgs extends MaybeTx {
   from: OwnedObject;
   amount: U64;
+}
+
+export interface StakeWithPoolArgs extends MaybeTx {
+  walCoin: OwnedObject;
+  nodeId: string;
+}
+
+export interface RequestWithdrawing extends MaybeTx {
+  stakedWal: OwnedObject;
+}
+
+export interface WithdrawStake extends MaybeTx {
+  stakedWal: OwnedObject;
 }

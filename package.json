@@ -33,7 +33,8 @@
     "can-be-joined": "tsx ./src/scripts/can-be-joined.ts",
     "can-be-split": "tsx ./src/scripts/can-be-split.ts",
     "split-staked-wal": "tsx ./src/scripts/split-staked-wal.ts",
-    "join-staked-wal": "tsx ./src/scripts/join-staked-wal.ts"
+    "join-staked-wal": "tsx ./src/scripts/join-staked-wal.ts",
+    "stake-with-pool": "tsx ./src/scripts/stake-with-pool.ts"
   },
   "keywords": [],
   "license": "ISC",
