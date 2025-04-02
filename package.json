@@ -1,29 +1,29 @@
 {
-  "name": "@interest-protocol/blizzard-sdk",
+  "name": "@interest-protocol/walrus-sdk",
   "author": "jose cerqueira",
   "files": [
     "dist"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/blizzard/index.d.ts",
+  "types": "./dist/walrus/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/blizzard/index.ts",
+      "source": "./src/walrus/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
-      "types": "./dist/blizzard/index.d.ts"
+      "types": "./dist/walrus/index.d.ts"
     }
   },
-  "version": "1.6.0",
-  "description": "blizzard sdk",
+  "version": "1.0.0",
+  "description": "walrus sdk",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "lint": "npx eslint . --fix",
     "clean": "rimraf dist && rimraf tsconfig.prod.tsbuildinfo && rimraf tsconfig.tsbuildinfo",
-    "build:tsup": "tsup './src/blizzard/index.ts' --format esm,cjs --sourcemap",
+    "build:tsup": "tsup './src/walrus/index.ts' --format esm,cjs --sourcemap",
     "build:types": "tsc --project tsconfig.prod.json",
     "build": "pnpm run clean && pnpm run build:tsup && pnpm run build:types",
     "prepublishOnly": "pnpm run clean && pnpm run build",
