@@ -1,0 +1,241 @@
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeSuiObjectId } from '@mysten/sui/utils';
+import { chunkArray, sleep } from '@polymedia/suitcase-core';
+import { has, pathOr } from 'ramda';
+import invariant from 'tiny-invariant';
+
+import {
+  INNER_WALRUS_STAKING_ID,
+  Modules,
+  WALRUS_PACKAGES,
+  WALRUS_STAKING_OBJECT,
+} from './constants';
+import { getEpochData, getSdkDefaultArgs, getStakedWal } from './utils';
+import {
+  JoinStakedWalArgs,
+  OwnedObject,
+  SdkConstructorArgs,
+  SplitStakedWalArgs,
+  StakedWal,
+  StakedWalState,
+  U64,
+} from './walrus.types';
+
+export class WalrusSDK {
+  walrusPackages = WALRUS_PACKAGES;
+  modules = Modules;
+
+  minimumStake = 1_000_000_000n;
+
+  #client: SuiClient;
+
+  constructor(args: SdkConstructorArgs | undefined | null = {}) {
+    const data = {
+      ...getSdkDefaultArgs(),
+      ...args,
+    };
+
+    invariant(data.fullNodeUrl, 'Full node URL is required');
+
+    this.#client = new SuiClient({
+      url: data.fullNodeUrl,
+    });
+  }
+
+  public async getEpochData() {
+    const data = await this.#client.getObject({
+      id: INNER_WALRUS_STAKING_ID,
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    return getEpochData(data);
+  }
+
+  public async getLatestWalrusPackage() {
+    const staking = await this.#client.getObject({
+      id: WALRUS_STAKING_OBJECT({ mutable: false }).objectId,
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    const packageId = pathOr(
+      '',
+      ['data', 'content', 'fields', 'package_id'],
+      staking
+    );
+
+    invariant(packageId, 'Invalid package ID');
+
+    return normalizeSuiObjectId(packageId);
+  }
+
+  public async getStakedWal(objectId: string) {
+    const stakedWalObject = await this.#client.getObject({
+      id: objectId,
+      options: {
+        showType: true,
+        showContent: true,
+      },
+    });
+
+    return getStakedWal(stakedWalObject);
+  }
+
+  public async getStakedWals(objectIds: string[], sleepMs = 300) {
+    const chunks = chunkArray(objectIds, 50);
+
+    const stakedWals = [];
+
+    for (const chunk of chunks) {
+      const stakedWalObjects = await this.#client.multiGetObjects({
+        ids: chunk,
+        options: {
+          showType: true,
+          showContent: true,
+        },
+      });
+
+      await sleep(sleepMs);
+
+      stakedWals.push(...stakedWalObjects.map(getStakedWal));
+    }
+
+    return stakedWals;
+  }
+
+  public joinStakedWal({
+    tx = new Transaction(),
+    from,
+    other,
+  }: JoinStakedWalArgs) {
+    tx.moveCall({
+      function: `join`,
+      arguments: [this.ownedObject(tx, from), this.ownedObject(tx, other)],
+      package: this.walrusPackages.latest,
+      module: this.modules.StakedWal,
+    });
+
+    return {
+      tx,
+      returnValue: null,
+    };
+  }
+
+  public splitStakedWal({
+    tx = new Transaction(),
+    from,
+    amount,
+  }: SplitStakedWalArgs) {
+    const bingIntAmount = BigInt(amount);
+    invariant(
+      bingIntAmount >= this.minimumStake,
+      'Amount must be greater than minimum stake'
+    );
+
+    return {
+      tx,
+      returnValue: tx.moveCall({
+        function: `split`,
+        arguments: [this.ownedObject(tx, from), tx.pure.u64(amount)],
+        package: this.walrusPackages.latest,
+        module: this.modules.StakedWal,
+      }),
+    };
+  }
+
+  public async canBeJoined(
+    from: string | StakedWal,
+    other: string | StakedWal
+  ) {
+    try {
+      if (typeof from === 'string') {
+        from = await this.getStakedWal(from);
+      }
+
+      if (typeof other === 'string') {
+        other = await this.getStakedWal(other);
+      }
+
+      invariant(from.objectId !== other.objectId, 'Objects must be different');
+
+      invariant(from.nodeId === other.nodeId, 'Nodes must be the same');
+      invariant(
+        from.activationEpoch === other.activationEpoch,
+        'Activation epochs must be the same'
+      );
+
+      if (from.state === StakedWalState.Staked) {
+        invariant(
+          other.state === StakedWalState.Staked,
+          'StakedWal must be staked'
+        );
+
+        return true;
+      }
+
+      invariant(
+        from.state === StakedWalState.Withdrawing &&
+          other.state === StakedWalState.Staked,
+        'StakedWal must be withdrawing'
+      );
+
+      invariant(
+        typeof from.withdrawingEpoch === 'number' &&
+          typeof other.withdrawingEpoch === 'number',
+        'Withdrawing epochs must be numbers'
+      );
+
+      invariant(
+        from.withdrawingEpoch === other.withdrawingEpoch,
+        'From and other must have the same withdrawing epoch'
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public async canBeSplit(from: string | StakedWal, amount: U64) {
+    try {
+      if (typeof from === 'string') {
+        from = await this.getStakedWal(from);
+      }
+
+      const bigIntAmount = BigInt(amount);
+
+      invariant(
+        bigIntAmount >= this.minimumStake,
+        'Amount must be greater than minimum stake'
+      );
+
+      invariant(
+        from.principal > bigIntAmount,
+        'Principal must be greater than amount'
+      );
+
+      invariant(
+        from.principal - bigIntAmount >= this.minimumStake,
+        'Principal must be greater than amount'
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  ownedObject(tx: Transaction, obj: OwnedObject) {
+    if (has('objectId', obj) && has('version', obj) && has('digest', obj)) {
+      return tx.objectRef(obj);
+    }
+
+    return typeof obj === 'string' ? tx.object(obj) : obj;
+  }
+}

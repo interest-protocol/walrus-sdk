@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import invariant from 'tiny-invariant';
 import util from 'util';
 
-import { BlizzardAclSDK, BlizzardSDK, SHARED_OBJECTS } from '../blizzard';
+import { WalrusSDK } from '../walrus';
 
 dotenv.config();
 
@@ -24,15 +24,7 @@ export const suiClient = new SuiClient({
   url: getFullnodeUrl('mainnet'),
 });
 
-export const blizzardAcl = new BlizzardAclSDK({
-  acl: SHARED_OBJECTS.BLIZZARD_ACL({ mutable: true }),
-});
-
-export const wwalAcl = new BlizzardAclSDK({
-  acl: SHARED_OBJECTS.WWAL_ACL({ mutable: true }),
-});
-
-export const blizzardSDK = new BlizzardSDK();
+export const walrusSDK = new WalrusSDK();
 
 export const log = (x: unknown) =>
   console.log(util.inspect(x, false, null, true));
@@ -55,6 +47,25 @@ export const executeTx = async (tx: Transaction, client = suiClient) => {
   if (result.effects.created) {
     log(result.effects.created);
   }
+};
+
+interface DevInspectTransactionArgs {
+  tx: Transaction;
+  client?: SuiClient;
+  sender?: string;
+}
+
+export const devInspectTransaction = async ({
+  tx,
+  client = suiClient,
+  sender = keypair.toSuiAddress(),
+}: DevInspectTransactionArgs) => {
+  const txData = await client.devInspectTransactionBlock({
+    transactionBlock: tx,
+    sender,
+  });
+
+  log(txData);
 };
 
 export const sleep = async (ms = 0) =>
