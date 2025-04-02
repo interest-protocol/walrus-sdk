@@ -1,6 +1,11 @@
+import { bcs } from '@mysten/sui/bcs';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { isValidSuiObjectId, normalizeSuiObjectId } from '@mysten/sui/utils';
+import {
+  isValidSuiObjectId,
+  normalizeSuiAddress,
+  normalizeSuiObjectId,
+} from '@mysten/sui/utils';
 import { chunkArray, sleep } from '@polymedia/suitcase-core';
 import { has, pathOr } from 'ramda';
 import invariant from 'tiny-invariant';
@@ -290,6 +295,71 @@ export class WalrusSDK {
         module: this.modules.Staking,
       }),
     };
+  }
+
+  public async canWithdrawEarly(stakedWal: string | StakedWal) {
+    const id = typeof stakedWal === 'string' ? stakedWal : stakedWal.objectId;
+
+    const tx = new Transaction();
+
+    tx.moveCall({
+      function: `can_withdraw_staked_wal_early`,
+      arguments: [
+        this.sharedObject(tx, WALRUS_STAKING_OBJECT({ mutable: false })),
+        tx.object(id),
+      ],
+      package: this.walrusPackages.latest,
+      module: this.modules.Staking,
+    });
+
+    const response = await this.#client.devInspectTransactionBlock({
+      transactionBlock: tx,
+      sender: normalizeSuiAddress('0x0'),
+    });
+
+    const returnValues = response.results || [];
+
+    invariant(returnValues.length === 1, 'Invalid return values');
+
+    const returnValue = returnValues[0].returnValues || [];
+
+    return bcs.bool().parse(Uint8Array.from(returnValue[0][0]));
+  }
+
+  public async calculatePendingRewards(stakedWal: string | StakedWal) {
+    if (typeof stakedWal === 'string') {
+      stakedWal = await this.getStakedWal(stakedWal);
+    }
+
+    const tx = new Transaction();
+
+    const currentEpoch = await this.getEpochData();
+
+    tx.moveCall({
+      function: `calculate_rewards`,
+      arguments: [
+        this.sharedObject(tx, WALRUS_STAKING_OBJECT({ mutable: false })),
+        tx.pure.id(stakedWal.nodeId),
+        tx.pure.u64(stakedWal.principal),
+        tx.pure.u32(stakedWal.activationEpoch),
+        tx.pure.u32(currentEpoch.currentEpoch),
+      ],
+      package: this.walrusPackages.latest,
+      module: this.modules.Staking,
+    });
+
+    const response = await this.#client.devInspectTransactionBlock({
+      transactionBlock: tx,
+      sender: normalizeSuiAddress('0x0'),
+    });
+
+    const returnValues = response.results || [];
+
+    invariant(returnValues.length === 1, 'Invalid return values');
+
+    const returnValue = returnValues[0].returnValues || [];
+
+    return BigInt(bcs.u64().parse(Uint8Array.from(returnValue[0][0])));
   }
 
   sharedObject(tx: Transaction, obj: SharedObject) {

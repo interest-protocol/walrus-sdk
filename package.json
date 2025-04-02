@@ -34,7 +34,9 @@
     "can-be-split": "tsx ./src/scripts/can-be-split.ts",
     "split-staked-wal": "tsx ./src/scripts/split-staked-wal.ts",
     "join-staked-wal": "tsx ./src/scripts/join-staked-wal.ts",
-    "stake-with-pool": "tsx ./src/scripts/stake-with-pool.ts"
+    "stake-with-pool": "tsx ./src/scripts/stake-with-pool.ts",
+    "can-withdraw-early": "tsx ./src/scripts/can-withdraw-early.ts",
+    "calculate-pending-rewards": "tsx ./src/scripts/calculate-pending-rewards.ts"
   },
   "keywords": [],
   "license": "ISC",
