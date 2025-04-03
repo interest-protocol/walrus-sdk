@@ -60,7 +60,7 @@ export interface StakeWithPoolArgs extends MaybeTx {
   nodeId: string;
 }
 
-export interface RequestWithdrawing extends MaybeTx {
+export interface RequestWithdrawingStake extends MaybeTx {
   stakedWal: OwnedObject;
 }
 
